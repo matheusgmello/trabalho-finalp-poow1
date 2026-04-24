@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:15
+    container_name: cadastro_bolsistas_db
+    environment:
+      POSTGRES_DB: cadastroBolsista
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - "5436:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
