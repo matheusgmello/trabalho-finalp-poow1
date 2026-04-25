@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${bolsista != null ? 'Editar' : 'Novo'} Bolsista - SisBolsa</title>
+    <title>${laboratorio != null ? 'Editar' : 'Novo'} Laboratório - SisBolsa</title>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -138,6 +138,7 @@
             padding: 15px;
             border-radius: 5px;
             margin-bottom: 20px;
+            grid-column: span 2;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -156,7 +157,7 @@
 
     <div class="main-content">
         <div class="container">
-            <h1><i class="fas fa-user-plus"></i> ${bolsista != null ? 'Editar' : 'Cadastrar Novo'} Bolsista</h1>
+            <h1><i class="fas fa-flask"></i> ${laboratorio != null ? 'Editar' : 'Cadastrar Novo'} Laboratório</h1>
             
             <c:if test="${not empty erro}">
                 <div class="error-msg">
@@ -164,53 +165,32 @@
                 </div>
             </c:if>
 
-            <form action="bolsista" method="post">
-                <input type="hidden" name="id" value="${bolsista.id}">
+            <form action="laboratorio" method="post">
+                <input type="hidden" name="id" value="${laboratorio.id}">
                 <div class="form-grid">
                     <div class="form-group full-width">
-                        <label for="nome">Nome Completo</label>
-                        <input type="text" name="nome" id="nome" value="${bolsista.nome}" required>
+                        <label for="nome">Nome do Laboratório</label>
+                        <input type="text" name="nome" id="nome" value="${laboratorio.nome}" required>
                     </div>
                     <div class="form-group">
-                        <label for="dataNascimento">Data de Nascimento</label>
-                        <input type="date" name="dataNascimento" id="dataNascimento" value="${bolsista.dataNascimento}" required>
+                        <label for="areaPesquisa">Área de Pesquisa</label>
+                        <input type="text" name="areaPesquisa" id="areaPesquisa" value="${laboratorio.areaPesquisa}" required>
                     </div>
                     <div class="form-group">
-                        <label for="curso">Curso</label>
-                        <input type="text" name="curso" id="curso" value="${bolsista.curso}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">E-mail Acadêmico</label>
-                        <input type="email" name="email" id="email" value="${bolsista.email}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="matricula">Matrícula</label>
-                        <input type="text" name="matricula" id="matricula" value="${bolsista.matricula}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="cpf">CPF</label>
-                        <input type="text" name="cpf" id="cpf" value="${bolsista.cpf}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="telefone">Telefone</label>
-                        <input type="text" name="telefone" id="telefone" value="${bolsista.telefone}">
-                    </div>
-                    <div class="form-group">
-                        <label for="laboratorioId">Laboratório</label>
-                        <select name="laboratorioId" id="laboratorioId">
-                            <option value="">Selecione um laboratório</option>
-                            <c:forEach var="lab" items="${laboratorios}">
-                                <option value="${lab.id}" ${bolsista.laboratorioId == lab.id ? 'selected' : ''}>${lab.nome}</option>
-                            </c:forEach>
+                        <label for="status">Status</label>
+                        <select name="status" id="status" required>
+                            <option value="Ativo" ${laboratorio.status == 'Ativo' ? 'selected' : ''}>Ativo</option>
+                            <option value="Em Pausa" ${laboratorio.status == 'Em Pausa' ? 'selected' : ''}>Em Pausa</option>
+                            <option value="Concluido" ${laboratorio.status == 'Concluido' ? 'selected' : ''}>Concluído</option>
                         </select>
                     </div>
                     <div class="form-group full-width">
-                        <label for="senha">Senha de Acesso</label>
-                        <input type="password" name="senha" id="senha" value="${bolsista.senha}" required>
+                        <label for="tituloProjeto">Título do Projeto</label>
+                        <input type="text" name="tituloProjeto" id="tituloProjeto" value="${laboratorio.tituloProjeto}" required>
                     </div>
                     <div class="actions">
-                        <button type="submit" class="btn btn-submit"><i class="fas fa-save"></i> Salvar Bolsista</button>
-                        <a href="bolsista" class="btn btn-cancel">Cancelar</a>
+                        <button type="submit" class="btn btn-submit"><i class="fas fa-save"></i> Salvar Laboratório</button>
+                        <a href="laboratorio" class="btn btn-cancel">Cancelar</a>
                     </div>
                 </div>
             </form>

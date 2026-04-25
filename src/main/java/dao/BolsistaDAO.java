@@ -15,16 +15,18 @@ public class BolsistaDAO {
     }
 
     public boolean inserir(Bolsista b) throws SQLException {
-        String sql = "INSERT INTO bolsista (nome, data_nascimento, curso, email, matricula, cpf, telefone, senha, ativo) " +
+        String sql = "INSERT INTO bolsista (nome, data_nascimento, curso, email, matricula, cpf, telefone, senha, ativo, laboratorio_id) " +
                      "VALUES ('" + b.getNome() + "', '" + b.getDataNascimento() + "', '" + b.getCurso() + "', '" +
                      b.getEmail() + "', '" + b.getMatricula() + "', '" + b.getCpf() + "', '" + b.getTelefone() + "', '" +
-                     b.getSenha() + "', " + b.isAtivo() + ")";
+                     b.getSenha() + "', " + b.isAtivo() + ", " + (b.getLaboratorioId() > 0 ? b.getLaboratorioId() : "NULL") + ")";
         stmt.execute(sql);
         return true;
     }
 
     public Bolsista autenticar(String email, String senha) throws SQLException {
-        String sql = "SELECT * FROM bolsista WHERE email = '" + email + "' AND senha = '" + senha + "'";
+        String sql = "SELECT b.*, l.nome as nome_laboratorio FROM bolsista b " +
+                     "LEFT JOIN laboratorio l ON b.laboratorio_id = l.id " +
+                     "WHERE b.email = '" + email + "' AND b.senha = '" + senha + "'";
         ResultSet rs = stmt.executeQuery(sql);
         if (rs.next()) {
             return extrairBolsista(rs);
@@ -34,7 +36,9 @@ public class BolsistaDAO {
 
     public ArrayList<Bolsista> getBolsistasPorNome(String nome) throws SQLException {
         ArrayList<Bolsista> bolsistas = new ArrayList<>();
-        String sql = "SELECT * FROM bolsista WHERE nome ILIKE '%" + nome + "%'";
+        String sql = "SELECT b.*, l.nome as nome_laboratorio FROM bolsista b " +
+                     "LEFT JOIN laboratorio l ON b.laboratorio_id = l.id " +
+                     "WHERE b.nome ILIKE '%" + nome + "%'";
         ResultSet rs = stmt.executeQuery(sql);
         while (rs.next()) {
             bolsistas.add(extrairBolsista(rs));
@@ -44,7 +48,9 @@ public class BolsistaDAO {
 
     public ArrayList<Bolsista> getBolsistasPorCurso(String curso) throws SQLException {
         ArrayList<Bolsista> bolsistas = new ArrayList<>();
-        String sql = "SELECT * FROM bolsista WHERE curso ILIKE '%" + curso + "%'";
+        String sql = "SELECT b.*, l.nome as nome_laboratorio FROM bolsista b " +
+                     "LEFT JOIN laboratorio l ON b.laboratorio_id = l.id " +
+                     "WHERE b.curso ILIKE '%" + curso + "%'";
         ResultSet rs = stmt.executeQuery(sql);
         while (rs.next()) {
             bolsistas.add(extrairBolsista(rs));
@@ -64,12 +70,15 @@ public class BolsistaDAO {
         b.setTelefone(rs.getString("telefone"));
         b.setSenha(rs.getString("senha"));
         b.setAtivo(rs.getBoolean("ativo"));
+        b.setLaboratorioId(rs.getInt("laboratorio_id"));
+        b.setNomeLaboratorio(rs.getString("nome_laboratorio"));
         return b;
     }
 
     public ArrayList<Bolsista> getBolsistas() throws SQLException {
         ArrayList<Bolsista> bolsistas = new ArrayList<>();
-        String sql = "SELECT * FROM bolsista";
+        String sql = "SELECT b.*, l.nome as nome_laboratorio FROM bolsista b " +
+                     "LEFT JOIN laboratorio l ON b.laboratorio_id = l.id";
         ResultSet rs = stmt.executeQuery(sql);
         while (rs.next()) {
             bolsistas.add(extrairBolsista(rs));
@@ -93,7 +102,8 @@ public class BolsistaDAO {
                      "cpf = '" + b.getCpf() + "', " +
                      "telefone = '" + b.getTelefone() + "', " +
                      "senha = '" + b.getSenha() + "', " +
-                     "ativo = " + b.isAtivo() + " " +
+                     "ativo = " + b.isAtivo() + ", " +
+                     "laboratorio_id = " + (b.getLaboratorioId() > 0 ? b.getLaboratorioId() : "NULL") + " " +
                      "WHERE id = " + b.getId();
         stmt.execute(sql);
         return true;

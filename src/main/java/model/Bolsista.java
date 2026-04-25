@@ -13,10 +13,12 @@ public class Bolsista {
     private String cpf;
     private String telefone;
     private boolean ativo;
+    private int laboratorioId;
+    private String nomeLaboratorio;
 
     public Bolsista() {}
 
-    public Bolsista(int id, String nome, String senha, LocalDate dataNascimento, String curso, String email, String matricula, String cpf, String telefone, boolean ativo) {
+    public Bolsista(int id, String nome, String senha, LocalDate dataNascimento, String curso, String email, String matricula, String cpf, String telefone, boolean ativo, int laboratorioId, String nomeLaboratorio) {
         this.id = id;
         this.nome = nome;
         this.senha = senha;
@@ -27,11 +29,19 @@ public class Bolsista {
         this.cpf = cpf;
         this.telefone = telefone;
         this.ativo = ativo;
+        this.laboratorioId = laboratorioId;
+        this.nomeLaboratorio = nomeLaboratorio;
     }
 
     // Getters e Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
+
+    public int getLaboratorioId() { return laboratorioId; }
+    public void setLaboratorioId(int laboratorioId) { this.laboratorioId = laboratorioId; }
+
+    public String getNomeLaboratorio() { return nomeLaboratorio; }
+    public void setNomeLaboratorio(String nomeLaboratorio) { this.nomeLaboratorio = nomeLaboratorio; }
 
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }

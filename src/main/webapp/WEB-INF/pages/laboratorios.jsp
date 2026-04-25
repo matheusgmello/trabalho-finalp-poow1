@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciar Bolsistas - SisBolsa</title>
+    <title>Gerenciar Laboratórios - SisBolsa</title>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -16,6 +16,8 @@
             --bg-color: #f4f7f6;
             --sidebar-width: 250px;
             --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
         }
 
         body {
@@ -71,7 +73,7 @@
             margin-top: auto;
             margin-bottom: 20px;
             padding: 15px 25px;
-            background-color: #e74c3c;
+            background-color: var(--danger-color);
             text-align: center;
             color: white;
             text-decoration: none;
@@ -118,40 +120,6 @@
 
         .btn-new:hover { background-color: #219150; }
 
-        /* Search Section */
-        .search-section {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 10px;
-            border: 1px solid #eee;
-        }
-
-        .search-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-        }
-
-        .search-group input {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            flex: 1;
-        }
-
-        .btn-search {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
         /* Table Style */
         .table-container { overflow-x: auto; }
 
@@ -166,8 +134,24 @@
             font-size: 12px;
             font-weight: bold;
         }
-        .badge-active { background: #d4edda; color: #155724; }
-        .badge-inactive { background: #f8d7da; color: #721c24; }
+        .status-ativo { background: #d4edda; color: #155724; }
+        .status-em-pausa { background: #fff3cd; color: #856404; }
+        .status-concluido { background: #cce5ff; color: #004085; }
+
+        .actions-cell {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-icon {
+            padding: 5px 10px;
+            border-radius: 3px;
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .btn-edit { background-color: var(--accent-color); }
+        .btn-delete { background-color: var(--danger-color); }
 
         .error-msg {
             background-color: #f8d7da;
@@ -193,9 +177,9 @@
 
     <div class="main-content">
         <div class="header-actions">
-            <h1>Gerenciar Bolsistas</h1>
-            <a href="bolsista?action=novo" class="btn-new">
-                <i class="fas fa-plus"></i> Cadastrar Novo Bolsista
+            <h1>Gerenciar Laboratórios</h1>
+            <a href="laboratorio?action=novo" class="btn-new">
+                <i class="fas fa-plus"></i> Cadastrar Novo Laboratório
             </a>
         </div>
 
@@ -205,64 +189,41 @@
             </div>
         </c:if>
 
-        <!-- Listagem e Busca -->
         <div class="container">
-            <h2><i class="fas fa-list"></i> Listagem de Bolsistas</h2>
-
-            <!-- Search Bars -->
-            <div class="search-section">
-                <form action="bolsista" method="get" class="search-group">
-                    <label for="buscaNome">Por Nome:</label>
-                    <input type="text" name="buscaNome" id="buscaNome" placeholder="Pesquisar nome...">
-                    <button type="submit" class="btn-search"><i class="fas fa-search"></i></button>
-                </form>
-                
-                <form action="bolsista" method="get" class="search-group">
-                    <label for="buscaCurso">Por Curso:</label>
-                    <input type="text" name="buscaCurso" id="buscaCurso" placeholder="Pesquisar curso...">
-                    <button type="submit" class="btn-search"><i class="fas fa-search"></i></button>
-                </form>
-
-                <div class="search-group" style="flex: 0;">
-                    <a href="bolsista" class="btn-search" style="background: #666; text-decoration: none;"><i class="fas fa-sync"></i> Limpar</a>
-                </div>
-            </div>
+            <h2><i class="fas fa-list"></i> Listagem de Laboratórios</h2>
 
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
                             <th>Nome</th>
-                            <th>Curso</th>
-                            <th>Laboratório</th>
-                            <th>E-mail</th>
-                            <th>Matrícula</th>
+                            <th>Área de Pesquisa</th>
+                            <th>Título do Projeto</th>
                             <th>Status</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <c:forEach var="bolsista" items="${listabolsistas}">
+                        <c:forEach var="lab" items="${listaLaboratorios}">
                             <tr>
-                                <td><strong>${bolsista.nome}</strong></td>
-                                <td>${bolsista.curso}</td>
-                                <td>${not empty bolsista.nomeLaboratorio ? bolsista.nomeLaboratorio : '---'}</td>
-                                <td>${bolsista.email}</td>
-                                <td>${bolsista.matricula}</td>
+                                <td><strong>${lab.nome}</strong></td>
+                                <td>${lab.areaPesquisa}</td>
+                                <td>${lab.tituloProjeto}</td>
                                 <td>
-                                    <span class="badge ${bolsista.ativo ? 'badge-active' : 'badge-inactive'}">
-                                        ${bolsista.ativo ? 'Ativo' : 'Inativo'}
+                                    <span class="badge status-${lab.status.toLowerCase().replace(' ', '-')}">
+                                        ${lab.status}
                                     </span>
                                 </td>
-                                <td>
-                                    <a href="bolsista?action=editar&id=${bolsista.id}" style="color: var(--accent-color);"><i class="fas fa-edit"></i> Editar</a>
+                                <td class="actions-cell">
+                                    <a href="laboratorio?action=editar&id=${lab.id}" class="btn-icon btn-edit" title="Editar"><i class="fas fa-edit"></i></a>
+                                    <a href="laboratorio?action=excluir&id=${lab.id}" class="btn-icon btn-delete" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este laboratório?')"><i class="fas fa-trash"></i></a>
                                 </td>
                             </tr>
                         </c:forEach>
-                        <c:if test="${empty listabolsistas}">
+                        <c:if test="${empty listaLaboratorios}">
                             <tr>
-                                <td colspan="6" style="text-align: center; padding: 30px; color: #999;">
-                                    Nenhum bolsista encontrado.
+                                <td colspan="5" style="text-align: center; padding: 30px; color: #999;">
+                                    Nenhum laboratório encontrado.
                                 </td>
                             </tr>
                         </c:if>

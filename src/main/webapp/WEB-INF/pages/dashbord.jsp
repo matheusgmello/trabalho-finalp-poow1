@@ -163,7 +163,7 @@
         <ul>
             <li><a href="dashboard"><i class="fas fa-home" style="margin-right: 10px;"></i> Dashboard</a></li>
             <li><a href="bolsista"><i class="fas fa-user-graduate" style="margin-right: 10px;"></i> Bolsistas</a></li>
-            <li><a href="#"><i class="fas fa-flask" style="margin-right: 10px;"></i> Laboratórios</a></li>
+            <li><a href="laboratorio"><i class="fas fa-flask" style="margin-right: 10px;"></i> Laboratórios</a></li>
         </ul>
         <a href="index.jsp" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Sair</a>
     </div>
@@ -183,10 +183,10 @@
                 <p>Cadastre, visualize e pesquise bolsistas acadêmicos no sistema.</p>
             </a>
 
-            <a href="#" class="card">
+            <a href="laboratorio" class="card">
                 <i class="fas fa-flask"></i>
                 <h3>Laboratórios</h3>
-                <p>Em breve: Gestão de laboratórios e alocação de bolsistas.</p>
+                <p>Gerencie laboratórios, áreas de pesquisa e projetos vinculados.</p>
             </a>
 
             <div class="card" style="opacity: 0.7; cursor: default;">
