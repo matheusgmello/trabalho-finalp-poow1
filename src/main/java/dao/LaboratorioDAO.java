@@ -14,9 +14,9 @@ public class LaboratorioDAO {
     }
 
     public boolean inserir(Laboratorio lab) throws SQLException {
-        String sql = "INSERT INTO laboratorio (nome, area_pesquisa, titulo_projeto, status) " +
+        String sql = "INSERT INTO laboratorio (nome, area_pesquisa, titulo_projeto, status, capacidade, coordenador) " +
                      "VALUES ('" + lab.getNome() + "', '" + lab.getAreaPesquisa() + "', '" + 
-                     lab.getTituloProjeto() + "', '" + lab.getStatus() + "')";
+                     lab.getTituloProjeto() + "', '" + lab.getStatus() + "', " + lab.getCapacidade() + ", '" + lab.getCoordenador() + "')";
         stmt.execute(sql);
         return true;
     }
@@ -45,7 +45,9 @@ public class LaboratorioDAO {
                      "nome = '" + lab.getNome() + "', " +
                      "area_pesquisa = '" + lab.getAreaPesquisa() + "', " +
                      "titulo_projeto = '" + lab.getTituloProjeto() + "', " +
-                     "status = '" + lab.getStatus() + "' " +
+                     "status = '" + lab.getStatus() + "', " +
+                     "capacidade = " + lab.getCapacidade() + ", " +
+                     "coordenador = '" + lab.getCoordenador() + "' " +
                      "WHERE id = " + lab.getId();
         stmt.execute(sql);
         return true;
@@ -64,6 +66,17 @@ public class LaboratorioDAO {
         lab.setAreaPesquisa(rs.getString("area_pesquisa"));
         lab.setTituloProjeto(rs.getString("titulo_projeto"));
         lab.setStatus(rs.getString("status"));
+        lab.setCapacidade(rs.getInt("capacidade"));
+        lab.setCoordenador(rs.getString("coordenador"));
         return lab;
+    }
+
+    public int contarBolsistasNoLaboratorio(int labId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM bolsista WHERE laboratorio_id = " + labId;
+        ResultSet rs = stmt.executeQuery(sql);
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+        return 0;
     }
 }

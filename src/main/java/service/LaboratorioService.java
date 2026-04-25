@@ -60,4 +60,16 @@ public class LaboratorioService {
             return false;
         }
     }
+
+    public boolean temVaga(int labId) {
+        try {
+            Laboratorio lab = dao.getLaboratorioPorId(labId);
+            if (lab == null) return false;
+            int totalBolsistas = dao.contarBolsistasNoLaboratorio(labId);
+            return totalBolsistas < lab.getCapacidade();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

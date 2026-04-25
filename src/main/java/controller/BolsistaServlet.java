@@ -8,8 +8,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Bolsista;
 import service.BolsistaService;
+import service.LaboratorioService;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,6 +21,12 @@ public class BolsistaServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Bolsista usuarioLogado = (Bolsista) req.getSession().getAttribute("usuario");
+        if (usuarioLogado == null) {
+            resp.sendRedirect("index.jsp");
+            return;
+        }
+
         String idStr = req.getParameter("id");
         String nome = req.getParameter("nome");
         String dataNascimentoStr = req.getParameter("dataNascimento");
@@ -29,6 +37,13 @@ public class BolsistaServlet extends HttpServlet {
         String telefone = req.getParameter("telefone");
         String senha = req.getParameter("senha");
         String laboratorioIdStr = req.getParameter("laboratorioId");
+        String tipoUsuario = req.getParameter("tipoUsuario");
+
+        // Regra de Segurança: Apenas ADMIN pode cadastrar/editar outros ou mudar tipo de usuário
+        if (!usuarioLogado.isAdmin() && (idStr == null || Integer.parseInt(idStr) != usuarioLogado.getId())) {
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Você não tem permissão para esta ação.");
+            return;
+        }
 
         Bolsista b = new Bolsista();
         if (idStr != null && !idStr.isEmpty()) {
@@ -43,8 +58,18 @@ public class BolsistaServlet extends HttpServlet {
         b.setTelefone(telefone);
         b.setSenha(senha);
         b.setAtivo(true);
+        b.setTipoUsuario(tipoUsuario != null ? tipoUsuario : "BOLSISTA");
+        
         if (laboratorioIdStr != null && !laboratorioIdStr.isEmpty()) {
-            b.setLaboratorioId(Integer.parseInt(laboratorioIdStr));
+            int labId = Integer.parseInt(laboratorioIdStr);
+            LaboratorioService labService = new LaboratorioService();
+            // Validação de Capacidade (Requisito 1.3/Evolução)
+            if (b.getId() == 0 && !labService.temVaga(labId)) {
+                req.setAttribute("erro", "Laboratório atingiu a capacidade máxima!");
+                doGet(req, resp);
+                return;
+            }
+            b.setLaboratorioId(labId);
         }
 
         try {
@@ -71,17 +96,32 @@ public class BolsistaServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Bolsista usuarioLogado = (Bolsista) req.getSession().getAttribute("usuario");
+        if (usuarioLogado == null) {
+            resp.sendRedirect("index.jsp");
+            return;
+        }
+
         String action = req.getParameter("action");
         
+        if ("exportar".equals(action)) {
+            exportarParaCSV(resp);
+            return;
+        }
+
         if ("novo".equals(action) || "editar".equals(action)) {
-            service.LaboratorioService labService = new service.LaboratorioService();
+            LaboratorioService labService = new LaboratorioService();
             req.setAttribute("laboratorios", labService.listarTodos());
 
             if ("editar".equals(action)) {
                 try {
                     int id = Integer.parseInt(req.getParameter("id"));
+                    // Apenas ADMIN edita qualquer um, BOLSISTA edita só a si mesmo
+                    if (!usuarioLogado.isAdmin() && id != usuarioLogado.getId()) {
+                        resp.sendRedirect("bolsista");
+                        return;
+                    }
                     BolsistaService service = new BolsistaService();
-                    // Como não temos buscarPorId no BolsistaService, vamos precisar adicionar ou filtrar da lista
                     Bolsista b = service.listarTodos().stream()
                                     .filter(bol -> bol.getId() == id)
                                     .findFirst().orElse(null);
@@ -94,6 +134,15 @@ public class BolsistaServlet extends HttpServlet {
             RequestDispatcher rd = req.getRequestDispatcher("WEB-INF/pages/cadastro-bolsista.jsp");
             rd.forward(req, resp);
             return;
+        }
+
+        if ("excluir".equals(action) && usuarioLogado.isAdmin()) {
+            try {
+                int id = Integer.parseInt(req.getParameter("id"));
+                new BolsistaService().excluir(id);
+                resp.sendRedirect("bolsista");
+                return;
+            } catch (SQLException e) { e.printStackTrace(); }
         }
 
         String buscaNome = req.getParameter("buscaNome");
@@ -117,6 +166,21 @@ public class BolsistaServlet extends HttpServlet {
             req.setAttribute("erro", "ERRO AO LISTAR BOLSISTAS: " + e.getMessage());
         }
         forwardParaListagem(req, resp);
+    }
+
+    private void exportarParaCSV(HttpServletResponse resp) throws IOException {
+        resp.setContentType("text/csv");
+        resp.setHeader("Content-Disposition", "attachment; filename=bolsistas.csv");
+        try (PrintWriter writer = resp.getWriter()) {
+            writer.println("ID,Nome,Email,Curso,Laboratorio,Status");
+            BolsistaService service = new BolsistaService();
+            for (Bolsista b : service.listarTodos()) {
+                writer.println(b.getId() + "," + b.getNome() + "," + b.getEmail() + "," + 
+                               b.getCurso() + "," + b.getNomeLaboratorio() + "," + (b.isAtivo() ? "Ativo" : "Inativo"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void forwardParaListagem(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

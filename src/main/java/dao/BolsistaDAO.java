@@ -15,10 +15,11 @@ public class BolsistaDAO {
     }
 
     public boolean inserir(Bolsista b) throws SQLException {
-        String sql = "INSERT INTO bolsista (nome, data_nascimento, curso, email, matricula, cpf, telefone, senha, ativo, laboratorio_id) " +
+        String sql = "INSERT INTO bolsista (nome, data_nascimento, curso, email, matricula, cpf, telefone, senha, ativo, laboratorio_id, tipo_usuario, foto_url) " +
                      "VALUES ('" + b.getNome() + "', '" + b.getDataNascimento() + "', '" + b.getCurso() + "', '" +
                      b.getEmail() + "', '" + b.getMatricula() + "', '" + b.getCpf() + "', '" + b.getTelefone() + "', '" +
-                     b.getSenha() + "', " + b.isAtivo() + ", " + (b.getLaboratorioId() > 0 ? b.getLaboratorioId() : "NULL") + ")";
+                     b.getSenha() + "', " + b.isAtivo() + ", " + (b.getLaboratorioId() > 0 ? b.getLaboratorioId() : "NULL") + 
+                     ", '" + b.getTipoUsuario() + "', '" + b.getFotoUrl() + "')";
         stmt.execute(sql);
         return true;
     }
@@ -58,6 +59,18 @@ public class BolsistaDAO {
         return bolsistas;
     }
 
+    public ArrayList<Bolsista> getBolsistasPorLaboratorio(int laboratorioId) throws SQLException {
+        ArrayList<Bolsista> bolsistas = new ArrayList<>();
+        String sql = "SELECT b.*, l.nome as nome_laboratorio FROM bolsista b " +
+                     "LEFT JOIN laboratorio l ON b.laboratorio_id = l.id " +
+                     "WHERE b.laboratorio_id = " + laboratorioId;
+        ResultSet rs = stmt.executeQuery(sql);
+        while (rs.next()) {
+            bolsistas.add(extrairBolsista(rs));
+        }
+        return bolsistas;
+    }
+
     private Bolsista extrairBolsista(ResultSet rs) throws SQLException {
         Bolsista b = new Bolsista();
         b.setId(rs.getInt("id"));
@@ -72,6 +85,8 @@ public class BolsistaDAO {
         b.setAtivo(rs.getBoolean("ativo"));
         b.setLaboratorioId(rs.getInt("laboratorio_id"));
         b.setNomeLaboratorio(rs.getString("nome_laboratorio"));
+        b.setTipoUsuario(rs.getString("tipo_usuario"));
+        b.setFotoUrl(rs.getString("foto_url"));
         return b;
     }
 
@@ -103,8 +118,11 @@ public class BolsistaDAO {
                      "telefone = '" + b.getTelefone() + "', " +
                      "senha = '" + b.getSenha() + "', " +
                      "ativo = " + b.isAtivo() + ", " +
-                     "laboratorio_id = " + (b.getLaboratorioId() > 0 ? b.getLaboratorioId() : "NULL") + " " +
-                     "WHERE id = " + b.getId();
+                     "laboratorio_id = " + (b.getLaboratorioId() > 0 ? b.getLaboratorioId() : "NULL") + ", " +
+                     "tipo_usuario = '" + b.getTipoUsuario() + "', " +
+                     "foto_url = '" + b.getFotoUrl() + "' " +
+                     "WHERE id = b.getId()";
+        sql = sql.replace("WHERE id = b.getId()", "WHERE id = " + b.getId());
         stmt.execute(sql);
         return true;
     }

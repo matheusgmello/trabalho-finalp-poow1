@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@page isELIgnored="false" %>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -7,95 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciar Laboratórios - SisBolsa</title>
+    <link rel="stylesheet" href="css/style.css">
     <style>
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #34495e;
-            --accent-color: #3498db;
-            --text-color: #ecf0f1;
-            --bg-color: #f4f7f6;
-            --sidebar-width: 250px;
-            --success-color: #27ae60;
-            --danger-color: #e74c3c;
-            --warning-color: #f39c12;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            display: flex;
-            background-color: var(--bg-color);
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: var(--sidebar-width);
-            height: 100vh;
-            background-color: var(--primary-color);
-            color: var(--text-color);
-            position: fixed;
-            display: flex;
-            flex-direction: column;
-            padding: 20px 0;
-        }
-
-        .sidebar h2 {
-            text-align: center;
-            font-size: 1.5rem;
-            margin-bottom: 30px;
-            color: var(--accent-color);
-        }
-
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .sidebar ul li {
-            padding: 15px 25px;
-            transition: background 0.3s;
-        }
-
-        .sidebar ul li:hover {
-            background-color: var(--secondary-color);
-        }
-
-        .sidebar ul li a {
-            color: var(--text-color);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            font-weight: 500;
-        }
-
-        .logout-btn {
-            margin-top: auto;
-            margin-bottom: 20px;
-            padding: 15px 25px;
-            background-color: var(--danger-color);
-            text-align: center;
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: var(--sidebar-width);
-            flex: 1;
-            padding: 30px;
-        }
-
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            margin-bottom: 30px;
-        }
-
         .header-actions {
             display: flex;
             justify-content: space-between;
@@ -165,15 +79,7 @@
 </head>
 <body>
 
-    <div class="sidebar">
-        <h2>SisBolsa</h2>
-        <ul>
-            <li><a href="dashboard"><i class="fas fa-home" style="margin-right: 10px;"></i> Dashboard</a></li>
-            <li><a href="bolsista"><i class="fas fa-user-graduate" style="margin-right: 10px;"></i> Bolsistas</a></li>
-            <li><a href="laboratorio"><i class="fas fa-flask" style="margin-right: 10px;"></i> Laboratórios</a></li>
-        </ul>
-        <a href="index.jsp" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Sair</a>
-    </div>
+    <t:sidebar />
 
     <div class="main-content">
         <div class="header-actions">
@@ -215,6 +121,7 @@
                                     </span>
                                 </td>
                                 <td class="actions-cell">
+                                    <a href="laboratorio?action=detalhes&id=${lab.id}" class="btn-icon" style="background-color: var(--secondary-color);" title="Detalhes"><i class="fas fa-eye"></i></a>
                                     <a href="laboratorio?action=editar&id=${lab.id}" class="btn-icon btn-edit" title="Editar"><i class="fas fa-edit"></i></a>
                                     <a href="laboratorio?action=excluir&id=${lab.id}" class="btn-icon btn-delete" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este laboratório?')"><i class="fas fa-trash"></i></a>
                                 </td>

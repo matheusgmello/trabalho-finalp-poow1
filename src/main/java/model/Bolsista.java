@@ -15,10 +15,12 @@ public class Bolsista {
     private boolean ativo;
     private int laboratorioId;
     private String nomeLaboratorio;
+    private String tipoUsuario;
+    private String fotoUrl;
 
     public Bolsista() {}
 
-    public Bolsista(int id, String nome, String senha, LocalDate dataNascimento, String curso, String email, String matricula, String cpf, String telefone, boolean ativo, int laboratorioId, String nomeLaboratorio) {
+    public Bolsista(int id, String nome, String senha, LocalDate dataNascimento, String curso, String email, String matricula, String cpf, String telefone, boolean ativo, int laboratorioId, String nomeLaboratorio, String tipoUsuario, String fotoUrl) {
         this.id = id;
         this.nome = nome;
         this.senha = senha;
@@ -31,20 +33,19 @@ public class Bolsista {
         this.ativo = ativo;
         this.laboratorioId = laboratorioId;
         this.nomeLaboratorio = nomeLaboratorio;
+        this.tipoUsuario = tipoUsuario;
+        this.fotoUrl = fotoUrl;
     }
 
     // Getters e Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
-    public int getLaboratorioId() { return laboratorioId; }
-    public void setLaboratorioId(int laboratorioId) { this.laboratorioId = laboratorioId; }
-
-    public String getNomeLaboratorio() { return nomeLaboratorio; }
-    public void setNomeLaboratorio(String nomeLaboratorio) { this.nomeLaboratorio = nomeLaboratorio; }
-
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
+
+    public String getSenha() { return senha; }
+    public void setSenha(String senha) { this.senha = senha; }
 
     public LocalDate getDataNascimento() { return dataNascimento; }
     public void setDataNascimento(LocalDate dataNascimento) { this.dataNascimento = dataNascimento; }
@@ -64,9 +65,22 @@ public class Bolsista {
     public String getTelefone() { return telefone; }
     public void setTelefone(String telefone) { this.telefone = telefone; }
 
-    public String getSenha() { return senha; }
-    public void setSenha(String senha) { this.senha = senha; }
-
     public boolean isAtivo() { return ativo; }
     public void setAtivo(boolean ativo) { this.ativo = ativo; }
+
+    public int getLaboratorioId() { return laboratorioId; }
+    public void setLaboratorioId(int laboratorioId) { this.laboratorioId = laboratorioId; }
+
+    public String getNomeLaboratorio() { return nomeLaboratorio; }
+    public void setNomeLaboratorio(String nomeLaboratorio) { this.nomeLaboratorio = nomeLaboratorio; }
+
+    public String getTipoUsuario() { return tipoUsuario; }
+    public void setTipoUsuario(String tipoUsuario) { this.tipoUsuario = tipoUsuario; }
+
+    public String getFotoUrl() { return fotoUrl; }
+    public void setFotoUrl(String fotoUrl) { this.fotoUrl = fotoUrl; }
+
+    public boolean isAdmin() {
+        return "ADMIN".equals(this.tipoUsuario);
+    }
 }

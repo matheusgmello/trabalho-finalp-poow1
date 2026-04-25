@@ -28,6 +28,10 @@ public class BolsistaService {
         return dao.getBolsistasPorCurso(curso);
     }
 
+    public ArrayList<Bolsista> buscarPorLaboratorio(int laboratorioId) throws SQLException {
+        return dao.getBolsistasPorLaboratorio(laboratorioId);
+    }
+
     public Bolsista autenticar(String email, String senha) throws SQLException {
         return dao.autenticar(email, senha);
     }

@@ -6,15 +6,19 @@ public class Laboratorio {
     private String areaPesquisa;
     private String tituloProjeto;
     private String status;
+    private int capacidade;
+    private String coordenador;
 
     public Laboratorio() {}
 
-    public Laboratorio(int id, String nome, String areaPesquisa, String tituloProjeto, String status) {
+    public Laboratorio(int id, String nome, String areaPesquisa, String tituloProjeto, String status, int capacidade, String coordenador) {
         this.id = id;
         this.nome = nome;
         this.areaPesquisa = areaPesquisa;
         this.tituloProjeto = tituloProjeto;
         this.status = status;
+        this.capacidade = capacidade;
+        this.coordenador = coordenador;
     }
 
     // Getters e Setters
@@ -32,4 +36,10 @@ public class Laboratorio {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public int getCapacidade() { return capacidade; }
+    public void setCapacidade(int capacidade) { this.capacidade = capacidade; }
+
+    public String getCoordenador() { return coordenador; }
+    public void setCoordenador(String coordenador) { this.coordenador = coordenador; }
 }
