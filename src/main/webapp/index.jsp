@@ -121,7 +121,7 @@
         <form action="login" method="post">
             <div class="form-group">
                 <label for="email">E-mail</label>
-                <input value="pietra@teste" type="email" placeholder="seu@email.com" name="email" required>
+                <input value="admin@sisbolsa.com" type="email" placeholder="seu@email.com" name="email" required>
             </div>
 
             <div class="form-group">

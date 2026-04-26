@@ -8,5 +8,5 @@
         <li><a href="frequencia"><i class="fas fa-calendar-check" style="margin-right: 10px;"></i> Frequência</a></li>
         <li><a href="relatorio"><i class="fas fa-chart-bar" style="margin-right: 10px;"></i> Relatórios</a></li>
     </ul>
-    <a href="index.jsp" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Sair</a>
+    <a href="logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Sair</a>
 </div>

@@ -14,7 +14,7 @@ import service.LoginService;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet("login")
+@WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
     private LoginService loginService =
@@ -42,6 +42,9 @@ public class LoginServlet extends HttpServlet {
 
         String email = req.getParameter("email");
         String senha = req.getParameter("senha");
+
+        email = email != null ? email.trim() : "";
+        senha = senha != null ? senha.trim() : "";
 
         System.out.println("Email: "+email);
         System.out.println("Senha: "+senha);

@@ -75,7 +75,10 @@ public class BolsistaDAO {
         Bolsista b = new Bolsista();
         b.setId(rs.getInt("id"));
         b.setNome(rs.getString("nome"));
-        b.setDataNascimento(rs.getDate("data_nascimento").toLocalDate());
+        Date dataNascimento = rs.getDate("data_nascimento");
+        if (dataNascimento != null) {
+            b.setDataNascimento(dataNascimento.toLocalDate());
+        }
         b.setCurso(rs.getString("curso"));
         b.setEmail(rs.getString("email"));
         b.setMatricula(rs.getString("matricula"));

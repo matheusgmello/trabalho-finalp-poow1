@@ -18,6 +18,12 @@
     <div class="main-content">
         <h1><i class="fas fa-calendar-check"></i> Registro de Frequência</h1>
 
+        <c:if test="${not empty erro}">
+            <div class="error-msg" style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+                <i class="fas fa-exclamation-circle"></i> ${erro}
+            </div>
+        </c:if>
+
         <!-- Formulário de Registro (Apenas para Bolsistas comum registrarem o seu) -->
         <div class="container" style="max-width: 600px; margin-left: 0;">
             <h2>Novo Registro</h2>

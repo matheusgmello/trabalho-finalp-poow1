@@ -27,9 +27,18 @@ public class FrequenciaServlet extends HttpServlet {
             return;
         }
 
-        String dataStr = req.getParameter("data");
-        String horasStr = req.getParameter("horas");
-        String descricao = req.getParameter("descricao");
+        String dataStr = limpar(req.getParameter("data"));
+        String horasStr = limpar(req.getParameter("horas"));
+        String descricao = limpar(req.getParameter("descricao"));
+
+        String erroValidacao = validarFrequencia(dataStr, horasStr, descricao);
+        if (erroValidacao != null) {
+            req.setAttribute("erro", erroValidacao);
+            carregarFrequencias(req, usuarioLogado);
+            RequestDispatcher rd = req.getRequestDispatcher("WEB-INF/pages/frequencia.jsp");
+            rd.forward(req, resp);
+            return;
+        }
 
         Frequencia f = new Frequencia();
         f.setBolsistaId(usuarioLogado.getId());
@@ -41,7 +50,9 @@ public class FrequenciaServlet extends HttpServlet {
             resp.sendRedirect("frequencia");
         } else {
             req.setAttribute("erro", "Erro ao registrar frequência.");
-            doGet(req, resp);
+            carregarFrequencias(req, usuarioLogado);
+            RequestDispatcher rd = req.getRequestDispatcher("WEB-INF/pages/frequencia.jsp");
+            rd.forward(req, resp);
         }
     }
 
@@ -56,21 +67,70 @@ public class FrequenciaServlet extends HttpServlet {
         String action = req.getParameter("action");
 
         if ("excluir".equals(action) && usuarioLogado.isAdmin()) {
-            int id = Integer.parseInt(req.getParameter("id"));
-            service.excluir(id);
+            try {
+                int id = Integer.parseInt(req.getParameter("id"));
+                service.excluir(id);
+            } catch (NumberFormatException e) {
+                req.setAttribute("erro", "ID da frequência inválido.");
+            }
             resp.sendRedirect("frequencia");
             return;
         }
 
+        carregarFrequencias(req, usuarioLogado);
+        RequestDispatcher rd = req.getRequestDispatcher("WEB-INF/pages/frequencia.jsp");
+        rd.forward(req, resp);
+    }
+
+    private String validarFrequencia(String dataStr, String horasStr, String descricao) {
+        if (estaVazio(dataStr)) {
+            return "A data da frequência é obrigatória.";
+        }
+        try {
+            LocalDate data = LocalDate.parse(dataStr);
+            if (data.isAfter(LocalDate.now())) {
+                return "A data da frequência não pode ser futura.";
+            }
+        } catch (Exception e) {
+            return "A data da frequência é inválida.";
+        }
+
+        if (estaVazio(horasStr)) {
+            return "A quantidade de horas é obrigatória.";
+        }
+        try {
+            double horas = Double.parseDouble(horasStr);
+            if (horas <= 0) {
+                return "A quantidade de horas deve ser maior que zero.";
+            }
+            if (horas > 24) {
+                return "A quantidade de horas não pode ser maior que 24.";
+            }
+        } catch (NumberFormatException e) {
+            return "A quantidade de horas deve ser um número válido.";
+        }
+
+        if (descricao.length() > 500) {
+            return "A descrição deve ter no máximo 500 caracteres.";
+        }
+        return null;
+    }
+
+    private void carregarFrequencias(HttpServletRequest req, Bolsista usuarioLogado) {
         ArrayList<Frequencia> lista;
         if (usuarioLogado.isAdmin()) {
             lista = service.listarTodas();
         } else {
             lista = service.listarPorBolsista(usuarioLogado.getId());
         }
-
         req.setAttribute("listaFrequencia", lista);
-        RequestDispatcher rd = req.getRequestDispatcher("WEB-INF/pages/frequencia.jsp");
-        rd.forward(req, resp);
+    }
+
+    private String limpar(String valor) {
+        return valor != null ? valor.trim() : "";
+    }
+
+    private boolean estaVazio(String valor) {
+        return valor == null || valor.trim().isEmpty();
     }
 }

@@ -39,8 +39,8 @@ INSERT INTO laboratorio (nome, area_pesquisa, titulo_projeto, status, capacidade
 ('Lab de Química Orgânica', 'Química', 'Síntese de Novos Medicamentos', 'Ativo', 8, 'Dra. Marie Curie'),
 ('Lab de Robótica', 'Engenharia', 'Drones de Entrega', 'Ativo', 10, 'Dr. Isaac Asimov');
 
-INSERT INTO bolsista (nome, senha, email, curso, tipo_usuario, ativo) VALUES 
-('Administrador', 'teste123', 'admin@sisbolsa.com', 'Gestão', 'ADMIN', true);
+INSERT INTO bolsista (nome, senha, data_nascimento, email, curso, tipo_usuario, ativo) VALUES 
+('Administrador', 'teste123', '1990-01-01', 'admin@sisbolsa.com', 'Gestão', 'ADMIN', true);
 
 INSERT INTO bolsista (nome, senha, email, curso, tipo_usuario, ativo, laboratorio_id) VALUES 
 ('João Silva', 'teste123', 'joao@teste.com', 'Ciência da Computação', 'BOLSISTA', true, 1),

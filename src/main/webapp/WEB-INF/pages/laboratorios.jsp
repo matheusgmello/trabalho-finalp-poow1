@@ -34,7 +34,6 @@
 
         .btn-new:hover { background-color: #219150; }
 
-        /* Table Style */
         .table-container { overflow-x: auto; }
 
         table { width: 100%; border-collapse: collapse; }
@@ -84,9 +83,11 @@
     <div class="main-content">
         <div class="header-actions">
             <h1>Gerenciar Laboratórios</h1>
-            <a href="laboratorio?action=novo" class="btn-new">
-                <i class="fas fa-plus"></i> Cadastrar Novo Laboratório
-            </a>
+            <c:if test="${usuario.admin}">
+                <a href="laboratorio?action=novo" class="btn-new">
+                    <i class="fas fa-plus"></i> Cadastrar Novo Laboratório
+                </a>
+            </c:if>
         </div>
 
         <c:if test="${not empty erro}">
@@ -122,8 +123,10 @@
                                 </td>
                                 <td class="actions-cell">
                                     <a href="laboratorio?action=detalhes&id=${lab.id}" class="btn-icon" style="background-color: var(--secondary-color);" title="Detalhes"><i class="fas fa-eye"></i></a>
-                                    <a href="laboratorio?action=editar&id=${lab.id}" class="btn-icon btn-edit" title="Editar"><i class="fas fa-edit"></i></a>
-                                    <a href="laboratorio?action=excluir&id=${lab.id}" class="btn-icon btn-delete" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este laboratório?')"><i class="fas fa-trash"></i></a>
+                                    <c:if test="${usuario.admin}">
+                                        <a href="laboratorio?action=editar&id=${lab.id}" class="btn-icon btn-edit" title="Editar"><i class="fas fa-edit"></i></a>
+                                        <a href="laboratorio?action=excluir&id=${lab.id}" class="btn-icon btn-delete" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este laboratório?')"><i class="fas fa-trash"></i></a>
+                                    </c:if>
                                 </td>
                             </tr>
                         </c:forEach>
