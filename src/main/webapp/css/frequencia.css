@@ -1,0 +1,79 @@
+.error-msg {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.form-container {
+    max-width: 600px;
+    margin-left: 0;
+}
+
+.frequency-form {
+    display: grid;
+    gap: 15px;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-col {
+    flex: 1;
+}
+
+.frequency-form input,
+.frequency-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.submit-button {
+    background-color: var(--success-color);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead tr {
+    background-color: var(--primary-color);
+    color: white;
+    text-align: left;
+}
+
+th,
+td {
+    padding: 12px;
+}
+
+tbody tr {
+    border-bottom: 1px solid #eee;
+}
+
+.action-delete {
+    color: #e74c3c;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 20px;
+    color: #999;
+}

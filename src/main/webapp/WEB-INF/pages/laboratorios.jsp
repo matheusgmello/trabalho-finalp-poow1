@@ -9,71 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciar Laboratórios - SisBolsa</title>
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        .header-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        h1, h2 { color: var(--primary-color); margin: 0; }
-
-        .btn-new {
-            background-color: var(--success-color);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: background 0.3s;
-        }
-
-        .btn-new:hover { background-color: #219150; }
-
-        .table-container { overflow-x: auto; }
-
-        table { width: 100%; border-collapse: collapse; }
-        th { background-color: var(--primary-color); color: white; text-align: left; padding: 15px; }
-        td { padding: 12px 15px; border-bottom: 1px solid #eee; }
-        tr:hover { background-color: #f9f9f9; }
-
-        .badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .status-ativo { background: #d4edda; color: #155724; }
-        .status-em-pausa { background: #fff3cd; color: #856404; }
-        .status-concluido { background: #cce5ff; color: #004085; }
-
-        .actions-cell {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-icon {
-            padding: 5px 10px;
-            border-radius: 3px;
-            color: white;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-        .btn-edit { background-color: var(--accent-color); }
-        .btn-delete { background-color: var(--danger-color); }
-
-        .error-msg {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="css/laboratorios.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -122,7 +58,7 @@
                                     </span>
                                 </td>
                                 <td class="actions-cell">
-                                    <a href="laboratorio?action=detalhes&id=${lab.id}" class="btn-icon" style="background-color: var(--secondary-color);" title="Detalhes"><i class="fas fa-eye"></i></a>
+                                    <a href="laboratorio?action=detalhes&id=${lab.id}" class="btn-icon btn-details" title="Detalhes"><i class="fas fa-eye"></i></a>
                                     <c:if test="${usuario.admin}">
                                         <a href="laboratorio?action=editar&id=${lab.id}" class="btn-icon btn-edit" title="Editar"><i class="fas fa-edit"></i></a>
                                         <a href="laboratorio?action=excluir&id=${lab.id}" class="btn-icon btn-delete" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este laboratório?')"><i class="fas fa-trash"></i></a>
@@ -132,7 +68,7 @@
                         </c:forEach>
                         <c:if test="${empty listaLaboratorios}">
                             <tr>
-                                <td colspan="5" style="text-align: center; padding: 30px; color: #999;">
+                                <td colspan="5" class="empty-state">
                                     Nenhum laboratório encontrado.
                                 </td>
                             </tr>

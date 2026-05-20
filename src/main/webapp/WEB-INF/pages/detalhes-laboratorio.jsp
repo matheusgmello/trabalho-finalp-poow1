@@ -9,62 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalhes do Laboratório - SisBolsa</title>
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        .lab-header {
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .lab-info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .info-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .info-label {
-            font-weight: bold;
-            color: var(--secondary-color);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-        }
-
-        .info-value {
-            font-size: 1.1rem;
-            color: var(--primary-color);
-        }
-
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th { background-color: var(--primary-color); color: white; text-align: left; padding: 12px; }
-        td { padding: 12px; border-bottom: 1px solid #eee; }
-
-        .btn-back {
-            background-color: var(--secondary-color);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .status-ativo { background: #d4edda; color: #155724; }
-    </style>
+    <link rel="stylesheet" href="css/detalhes-laboratorio.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -87,7 +32,7 @@
                     <span class="info-label">Status</span>
                     <span class="info-value"><span class="badge status-${laboratorio.status.toLowerCase()}">${laboratorio.status}</span></span>
                 </div>
-                <div class="info-item" style="grid-column: span 2;">
+                <div class="info-item info-item-full">
                     <span class="info-label">Título do Projeto</span>
                     <span class="info-value">${laboratorio.tituloProjeto}</span>
                 </div>
@@ -115,7 +60,7 @@
                         </c:forEach>
                         <c:if test="${empty bolsistas}">
                             <tr>
-                                <td colspan="4" style="text-align: center; padding: 20px; color: #999;">
+                                <td colspan="4" class="empty-state">
                                     Nenhum bolsista vinculado a este laboratório.
                                 </td>
                             </tr>

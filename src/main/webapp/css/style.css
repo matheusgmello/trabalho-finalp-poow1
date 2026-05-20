@@ -61,6 +61,10 @@ body {
     font-weight: 500;
 }
 
+.sidebar ul li a i {
+    margin-right: 10px;
+}
+
 .logout-btn {
     margin-top: auto;
     margin-bottom: 20px;
