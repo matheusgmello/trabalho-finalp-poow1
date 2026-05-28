@@ -18,7 +18,12 @@
         </div>
         <h1>SisBolsa</h1>
         <h2>Cadastro de Administrador</h2>
-        <p class="subtitulo">Crie a conta de administrador do sistema.</p>
+        <p class="subtitulo">
+            Crie uma conta de administrador do sistema.
+            <c:if test="${not empty adminsRestantes}">
+                <br><small>Vagas disponíveis: ${adminsRestantes} de 3.</small>
+            </c:if>
+        </p>
 
         <form action="cadastro-admin" method="post">
             <div class="form-group">

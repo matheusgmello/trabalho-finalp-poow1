@@ -110,10 +110,13 @@ public class BolsistaDAO {
         return true;
     }
 
-    public boolean existeAdmin() throws SQLException {
-        String sql = "SELECT 1 FROM bolsista WHERE tipo_usuario = 'ADMIN' LIMIT 1";
+    public int contarAdmins() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM bolsista WHERE tipo_usuario = 'ADMIN'";
         ResultSet rs = stmt.executeQuery(sql);
-        return rs.next();
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+        return 0;
     }
 
     public boolean atualizar(Bolsista b) throws SQLException {

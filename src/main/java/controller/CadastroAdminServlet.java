@@ -1,6 +1,5 @@
 package controller;
 
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -16,18 +15,22 @@ import java.time.LocalDate;
 @WebServlet("/cadastro-admin")
 public class CadastroAdminServlet extends HttpServlet {
 
+    private static final int LIMITE_ADMINS = 3;
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             BolsistaService service = new BolsistaService();
-            if (service.existeAdmin()) {
-                req.setAttribute("erro", "Já existe um administrador cadastrado no sistema.");
+            int total = service.contarAdmins();
+            if (total >= LIMITE_ADMINS) {
+                req.setAttribute("erro", "O sistema já possui o número máximo de administradores (" + LIMITE_ADMINS + ").");
                 req.getRequestDispatcher("index.jsp").forward(req, resp);
                 return;
             }
+            req.setAttribute("adminsRestantes", LIMITE_ADMINS - total);
         } catch (SQLException e) {
             e.printStackTrace();
-            req.setAttribute("erro", "Erro ao verificar administrador: " + e.getMessage());
+            req.setAttribute("erro", "Erro ao verificar administradores: " + e.getMessage());
             req.getRequestDispatcher("index.jsp").forward(req, resp);
             return;
         }
@@ -37,9 +40,9 @@ public class CadastroAdminServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String nome  = limpar(req.getParameter("nome"));
-        String email = limpar(req.getParameter("email"));
-        String senha = limpar(req.getParameter("senha"));
+        String nome         = limpar(req.getParameter("nome"));
+        String email        = limpar(req.getParameter("email"));
+        String senha        = limpar(req.getParameter("senha"));
         String confirmaSenha = limpar(req.getParameter("confirmaSenha"));
 
         String erro = validar(nome, email, senha, confirmaSenha);
@@ -52,8 +55,8 @@ public class CadastroAdminServlet extends HttpServlet {
         try {
             BolsistaService service = new BolsistaService();
 
-            if (service.existeAdmin()) {
-                req.setAttribute("erro", "Já existe um administrador cadastrado no sistema.");
+            if (service.contarAdmins() >= LIMITE_ADMINS) {
+                req.setAttribute("erro", "O sistema já possui o número máximo de administradores (" + LIMITE_ADMINS + ").");
                 req.getRequestDispatcher("index.jsp").forward(req, resp);
                 return;
             }

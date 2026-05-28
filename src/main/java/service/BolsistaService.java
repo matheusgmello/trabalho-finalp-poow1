@@ -44,7 +44,7 @@ public class BolsistaService {
         return dao.atualizar(b);
     }
 
-    public boolean existeAdmin() throws SQLException {
-        return dao.existeAdmin();
+    public int contarAdmins() throws SQLException {
+        return dao.contarAdmins();
     }
 }
