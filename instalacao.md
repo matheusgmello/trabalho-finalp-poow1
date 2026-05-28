@@ -1,6 +1,6 @@
 # Instalação e Execução do SisBolsa
 
-Este documento descreve como preparar o ambiente, subir o banco de dados e executar o sistema SisBolsa pelo IntelliJ IDEA.
+Este documento descreve como preparar o ambiente e executar o sistema SisBolsa pelo IntelliJ IDEA.
 
 ## Pré-requisitos
 
@@ -8,25 +8,37 @@ Antes de executar o projeto, instale:
 
 - Java JDK
 - Maven
-- Docker
-- Docker Compose
+- PostgreSQL (com pgAdmin) **ou** Docker e Docker Compose
 - WildFly
 
 ## 1. Abrir o projeto
 
-Abra a pasta do projeto:
+Abra a pasta do projeto no IntelliJ IDEA e aguarde a IDE carregar as dependências do Maven.
 
-```bash
-CadastroBolsistas
+## 2. Configurar o banco de dados
+
+Escolha uma das opções abaixo:
+
+### Opção A — PostgreSQL local com pgAdmin (recomendado para laboratório)
+
+1. Abra o pgAdmin.
+2. Clique com botão direito em **Databases → Create → Database**.
+3. Informe o nome: `cadastroBolsista` (exatamente assim, com B maiúsculo).
+4. Clique em **Save**.
+5. Clique com botão direito no banco criado → **Query Tool**.
+6. Vá em **File → Open File**, navegue até a pasta do projeto e selecione `db/init.sql`.
+7. Clique em **Execute (F5)**.
+
+Configurações esperadas pelo sistema:
+
+```text
+Banco:   cadastroBolsista
+Usuário: postgres
+Senha:   1234
+Porta:   5432
 ```
 
-Ou, pelo terminal:
-
-```bash
-cd CadastroBolsistas
-```
-
-## 2. Subir o banco PostgreSQL
+### Opção B — Docker Compose
 
 Na raiz do projeto, execute:
 
@@ -34,32 +46,23 @@ Na raiz do projeto, execute:
 docker compose up -d
 ```
 
-Esse comando cria um container PostgreSQL usando o arquivo:
+O Docker sobe o PostgreSQL e executa o `db/init.sql` automaticamente.
 
-```text
-docker-compose.yml
+Para parar (mantém os dados):
+
+```bash
+docker compose down
 ```
 
-Configurações do banco:
+Para parar e apagar os dados:
 
-```text
-Banco: cadastroBolsista
-Usuário: postgres
-Senha: 1234
-Porta local: 5436
+```bash
+docker compose down -v
 ```
-
-Durante a criação do container, o Docker executa automaticamente o script:
-
-```text
-db/init.sql
-```
-
-Esse script cria as tabelas e insere dados iniciais.
 
 ## 3. Conferir a conexão com o banco
 
-A conexão usada pelo sistema está configurada em:
+A conexão está configurada em:
 
 ```text
 src/main/java/dao/ConectaDBPostgres.java
@@ -68,76 +71,44 @@ src/main/java/dao/ConectaDBPostgres.java
 Configuração atual:
 
 ```text
-jdbc:postgresql://localhost:5436/cadastroBolsista
+jdbc:postgresql://localhost:5432/cadastroBolsista
 Usuário: postgres
-Senha: 1234
+Senha:   1234
 ```
 
-Se alterar usuário, senha, banco ou porta no Docker, atualize também esse arquivo.
+Se as credenciais do seu PostgreSQL forem diferentes, atualize esse arquivo antes de rodar.
 
 ## 4. Rodar pelo IntelliJ IDEA
 
-Abra o projeto no IntelliJ IDEA e aguarde a IDE carregar as dependências do Maven.
+1. Vá em `Run > Edit Configurations`.
+2. Adicione uma configuração de servidor WildFly.
+3. Selecione o artefato `cadastroBolsistas:war exploded`.
+4. Inicie o servidor pela IDE.
 
-Depois, configure um servidor de aplicação compatível com Jakarta Servlet, como WildFly
- 
-No IntelliJ:
-
-- Vá em `Run > Edit Configurations`.
-- Adicione uma configuração do servidor.
-- Selecione o artefato do projeto `cadastroBolsista:war exploded` ou `cadastroBolsistas:war exploded`.
-- Inicie o servidor pela própria IDE.
-
-O IntelliJ fará a compilação e publicação do projeto automaticamente.
+O IntelliJ compilará e publicará o projeto automaticamente.
 
 ## 5. Acessar o sistema
-
-Após iniciar o servidor pelo IntelliJ, acesse pelo navegador conforme a porta configurada.
-
-Exemplo comum:
 
 ```text
 http://localhost:8080/cadastroBolsistas
 ```
 
-## 6. Usuário inicial
+## 6. Primeiro acesso
 
-O script `db/init.sql` cria um usuário administrador:
+O `db/init.sql` já cria um administrador de exemplo:
 
 ```text
 E-mail: admin@sisbolsa.com
-Senha: teste123
-Tipo: ADMIN
+Senha:  teste123
 ```
 
-Use esse usuário para acessar o sistema pela primeira vez.
+Caso queira criar um novo administrador do zero (banco vazio), acesse a tela de login e clique em **Cadastrar administrador**. O sistema permite até 3 administradores.
 
 ## 7. Como utilizar
 
 Após entrar no sistema:
 
-1. Acesse o menu `Laboratórios`.
-2. Cadastre, edite, liste ou exclua laboratórios.
-3. Acesse o menu `Bolsistas`.
-4. Cadastre, edite, liste ou exclua bolsistas.
-5. Vincule bolsistas aos laboratórios cadastrados.
-6. Acesse o menu `Frequência`.
-7. Registre horas trabalhadas.
-8. Acesse o menu `Relatórios`.
-9. Visualize os dados processados pelo sistema.
-
-## 8. Parar o banco de dados
-
-Para parar o container PostgreSQL:
-
-```bash
-docker compose down
-```
-
-Para parar e remover também o volume com os dados:
-
-```bash
-docker compose down -v
-```
-
-Use `docker compose down -v` apenas se quiser recriar o banco do zero.
+1. Acesse o menu **Laboratórios** — cadastre, edite, liste ou exclua laboratórios.
+2. Acesse o menu **Bolsistas** — cadastre, edite, liste ou exclua bolsistas e vincule-os a laboratórios.
+3. Acesse o menu **Frequência** — registre e edite horas trabalhadas.
+4. Acesse o menu **Relatórios** — visualize os dados processados pelo sistema.

@@ -4,9 +4,9 @@ Sistema web desenvolvido para gerenciamento de bolsistas, laboratórios de pesqu
 
 ## Descrição do Sistema
 
-O SisBolsa é uma aplicação web para apoio à gestão de bolsistas em laboratórios acadêmicos. O sistema possui autenticação por login, controle de sessão, cadastro de bolsistas, cadastro de laboratórios, registro de frequência e geração de relatórios.
+O SisBolsa é uma aplicação web para apoio à gestão de bolsistas em laboratórios acadêmicos. O sistema possui autenticação por login, controle de sessão, cadastro de administradores, cadastro de bolsistas, cadastro de laboratórios, registro e edição de frequência e geração de relatórios.
 
-Usuários administradores podem gerenciar bolsistas e laboratórios. Usuários bolsistas podem acessar o sistema, visualizar informações e registrar sua própria frequência.
+Usuários administradores podem gerenciar bolsistas e laboratórios. Usuários bolsistas podem acessar o sistema, visualizar informações, registrar e editar sua própria frequência.
 
 ## Preview do Projeto
 ![Preview](docs/images/previw.gif)
@@ -34,6 +34,10 @@ Fluxo principal:
 
 ## Funcionalidades
 
+### Cadastro de Administrador
+
+Na tela de login há o link **Cadastrar administrador**, disponível enquanto o sistema possuir menos de 3 administradores cadastrados. Ao acessar, é exibido um formulário para criar uma conta de administrador. Caso o limite de 3 administradores já tenha sido atingido, o acesso ao formulário é bloqueado automaticamente.
+
 ### Autenticação e Sessão
 
 - Login por e-mail e senha.
@@ -48,7 +52,7 @@ O sistema permite:
 - Cadastrar bolsista.
 - Listar bolsistas.
 - Editar bolsista.
-- Excluir bolsista.
+- Excluir bolsista (apenas ADMIN).
 - Buscar bolsistas por nome.
 - Buscar bolsistas por curso.
 - Exportar lista de bolsistas em CSV.
@@ -64,7 +68,6 @@ Campos principais:
 - Telefone
 - Senha
 - Laboratório
-- Tipo de usuário
 - Status ativo
 - Foto
 
@@ -84,13 +87,16 @@ Campos principais:
 - Nome
 - Área de pesquisa
 - Título do projeto
-- Status
+- Status (Ativo, Em Pausa, Concluído)
 - Capacidade máxima
 - Coordenador
 
 ### Registro de Frequência
 
-O sistema permite que bolsistas registrem suas horas trabalhadas.
+O sistema permite que bolsistas registrem e editem suas horas trabalhadas.
+
+- Bolsistas podem registrar novos registros e editar apenas os seus próprios.
+- Administradores podem visualizar todos os registros, editar qualquer registro e excluir registros.
 
 Campos principais:
 
@@ -98,8 +104,6 @@ Campos principais:
 - Data
 - Horas trabalhadas
 - Descrição das atividades
-
-Administradores conseguem visualizar os registros de frequência e excluir registros.
 
 ### Relatórios
 
@@ -110,8 +114,6 @@ O sistema possui uma tela de relatórios que processa as informações cadastrad
 - Total de laboratórios.
 - Quantidade de bolsistas por curso.
 - Quantidade de laboratórios por status.
-
-Essa funcionalidade atende ao requisito de processamento das informações inseridas nos CRUDs.
 
 ## Estrutura do Banco de Dados
 
@@ -139,13 +141,7 @@ O script principal está em:
 db/init.sql
 ```
 
-Ele cria as tabelas:
-
-- `laboratorio`
-- `bolsista`
-- `frequencia`
-
-Também insere dados iniciais para teste, incluindo laboratórios, bolsistas e um usuário administrador.
+Ele cria as tabelas `laboratorio`, `bolsista` e `frequencia`, e insere dados iniciais para teste, incluindo 6 laboratórios, 10 bolsistas e um usuário administrador.
 
 ## Instalação e Execução
 
@@ -153,7 +149,7 @@ As instruções completas para instalar e rodar o projeto estão no arquivo:
 
 [instalacao.md](instalacao.md)
 
-## Usuário Inicial
+## Acesso inicial
 
 O script `db/init.sql` cria um usuário administrador para acesso inicial:
 
@@ -163,12 +159,12 @@ Senha: teste123
 Tipo: ADMIN
 ```
 
-Também são criados bolsistas e laboratórios de exemplo.
+Também é possível cadastrar novos administradores pela tela de login, até o limite de 3.
 
 ## Como Utilizar
 
 1. Acesse a tela de login.
-2. Entre com o usuário administrador.
+2. Entre com o usuário administrador ou cadastre um novo pelo link na tela de login.
 3. Use o menu lateral para navegar entre as áreas do sistema.
 4. Cadastre laboratórios.
 5. Cadastre bolsistas e vincule-os a laboratórios.
