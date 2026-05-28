@@ -44,6 +44,25 @@ public class FrequenciaDAO {
         return lista;
     }
 
+    public Frequencia buscarPorId(int id) throws SQLException {
+        String sql = "SELECT f.*, b.nome as nome_bolsista FROM frequencia f " +
+                     "JOIN bolsista b ON f.bolsista_id = b.id WHERE f.id = " + id;
+        ResultSet rs = stmt.executeQuery(sql);
+        if (rs.next()) {
+            return extrairFrequencia(rs);
+        }
+        return null;
+    }
+
+    public boolean atualizar(Frequencia f) throws SQLException {
+        String sql = "UPDATE frequencia SET data = '" + f.getData() + "', " +
+                     "horas_trabalhadas = " + f.getHorasTrabalhadas() + ", " +
+                     "descricao = '" + f.getDescricao() + "' " +
+                     "WHERE id = " + f.getId();
+        stmt.execute(sql);
+        return true;
+    }
+
     public boolean excluir(int id) throws SQLException {
         String sql = "DELETE FROM frequencia WHERE id = " + id;
         stmt.execute(sql);

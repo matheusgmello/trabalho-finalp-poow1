@@ -27,7 +27,8 @@ public class FrequenciaServlet extends HttpServlet {
             return;
         }
 
-        String dataStr = limpar(req.getParameter("data"));
+        String idStr    = limpar(req.getParameter("id"));
+        String dataStr  = limpar(req.getParameter("data"));
         String horasStr = limpar(req.getParameter("horas"));
         String descricao = limpar(req.getParameter("descricao"));
 
@@ -35,8 +36,46 @@ public class FrequenciaServlet extends HttpServlet {
         if (erroValidacao != null) {
             req.setAttribute("erro", erroValidacao);
             carregarFrequencias(req, usuarioLogado);
-            RequestDispatcher rd = req.getRequestDispatcher("WEB-INF/pages/frequencia.jsp");
-            rd.forward(req, resp);
+            req.getRequestDispatcher("WEB-INF/pages/frequencia.jsp").forward(req, resp);
+            return;
+        }
+
+        int id = 0;
+        if (!estaVazio(idStr)) {
+            try {
+                id = Integer.parseInt(idStr);
+            } catch (NumberFormatException e) {
+                req.setAttribute("erro", "ID da frequência inválido.");
+                carregarFrequencias(req, usuarioLogado);
+                req.getRequestDispatcher("WEB-INF/pages/frequencia.jsp").forward(req, resp);
+                return;
+            }
+        }
+
+        if (id > 0) {
+            Frequencia existente = service.buscarPorId(id);
+            if (existente == null) {
+                req.setAttribute("erro", "Registro de frequência não encontrado.");
+                carregarFrequencias(req, usuarioLogado);
+                req.getRequestDispatcher("WEB-INF/pages/frequencia.jsp").forward(req, resp);
+                return;
+            }
+            if (!usuarioLogado.isAdmin() && existente.getBolsistaId() != usuarioLogado.getId()) {
+                resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+
+            existente.setData(LocalDate.parse(dataStr));
+            existente.setHorasTrabalhadas(Double.parseDouble(horasStr));
+            existente.setDescricao(descricao);
+
+            if (service.atualizar(existente)) {
+                resp.sendRedirect("frequencia");
+            } else {
+                req.setAttribute("erro", "Erro ao atualizar frequência.");
+                carregarFrequencias(req, usuarioLogado);
+                req.getRequestDispatcher("WEB-INF/pages/frequencia.jsp").forward(req, resp);
+            }
             return;
         }
 
@@ -51,8 +90,7 @@ public class FrequenciaServlet extends HttpServlet {
         } else {
             req.setAttribute("erro", "Erro ao registrar frequência.");
             carregarFrequencias(req, usuarioLogado);
-            RequestDispatcher rd = req.getRequestDispatcher("WEB-INF/pages/frequencia.jsp");
-            rd.forward(req, resp);
+            req.getRequestDispatcher("WEB-INF/pages/frequencia.jsp").forward(req, resp);
         }
     }
 
@@ -66,6 +104,26 @@ public class FrequenciaServlet extends HttpServlet {
 
         String action = req.getParameter("action");
 
+        if ("editar".equals(action)) {
+            try {
+                int id = Integer.parseInt(req.getParameter("id"));
+                Frequencia f = service.buscarPorId(id);
+                if (f == null) {
+                    req.setAttribute("erro", "Registro de frequência não encontrado.");
+                } else if (!usuarioLogado.isAdmin() && f.getBolsistaId() != usuarioLogado.getId()) {
+                    resp.sendRedirect("frequencia");
+                    return;
+                } else {
+                    req.setAttribute("frequenciaEdicao", f);
+                }
+            } catch (NumberFormatException e) {
+                req.setAttribute("erro", "ID da frequência inválido.");
+            }
+            carregarFrequencias(req, usuarioLogado);
+            req.getRequestDispatcher("WEB-INF/pages/frequencia.jsp").forward(req, resp);
+            return;
+        }
+
         if ("excluir".equals(action) && usuarioLogado.isAdmin()) {
             try {
                 int id = Integer.parseInt(req.getParameter("id"));
@@ -78,8 +136,7 @@ public class FrequenciaServlet extends HttpServlet {
         }
 
         carregarFrequencias(req, usuarioLogado);
-        RequestDispatcher rd = req.getRequestDispatcher("WEB-INF/pages/frequencia.jsp");
-        rd.forward(req, resp);
+        req.getRequestDispatcher("WEB-INF/pages/frequencia.jsp").forward(req, resp);
     }
 
     private String validarFrequencia(String dataStr, String horasStr, String descricao) {
@@ -94,7 +151,6 @@ public class FrequenciaServlet extends HttpServlet {
         } catch (Exception e) {
             return "A data da frequência é inválida.";
         }
-
         if (estaVazio(horasStr)) {
             return "A quantidade de horas é obrigatória.";
         }
@@ -109,7 +165,6 @@ public class FrequenciaServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             return "A quantidade de horas deve ser um número válido.";
         }
-
         if (descricao.length() > 500) {
             return "A descrição deve ter no máximo 500 caracteres.";
         }
