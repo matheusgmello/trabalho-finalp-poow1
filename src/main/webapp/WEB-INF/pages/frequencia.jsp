@@ -28,7 +28,9 @@
         <div class="container form-container">
             <h2>
                 <c:choose>
-                    <c:when test="${not empty frequenciaEdicao}">Editar Registro</c:when>
+                    <c:when test="${not empty frequenciaEdicao}">
+                        Editar Registro — <span class="nome-bolsista-edicao">${frequenciaEdicao.nomeBolsista}</span>
+                    </c:when>
                     <c:otherwise>Novo Registro</c:otherwise>
                 </c:choose>
             </h2>

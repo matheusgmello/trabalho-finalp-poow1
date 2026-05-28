@@ -68,6 +68,11 @@ tbody tr {
     border-bottom: 1px solid #eee;
 }
 
+.nome-bolsista-edicao {
+    color: #8e44ad;
+    font-weight: 700;
+}
+
 .form-actions {
     display: flex;
     gap: 10px;
