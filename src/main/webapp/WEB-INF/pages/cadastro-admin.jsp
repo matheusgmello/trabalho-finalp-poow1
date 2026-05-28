@@ -25,24 +25,26 @@
             </c:if>
         </p>
 
+        <p class="legenda-obrigatorio"><span class="asterisco">*</span> Campos obrigatórios</p>
+
         <form action="cadastro-admin" method="post">
             <div class="form-group">
-                <label for="nome">Nome completo</label>
+                <label for="nome">Nome completo <span class="asterisco">*</span></label>
                 <input type="text" id="nome" name="nome" placeholder="Seu nome completo" required>
             </div>
 
             <div class="form-group">
-                <label for="email">E-mail</label>
+                <label for="email">E-mail <span class="asterisco">*</span></label>
                 <input type="email" id="email" name="email" placeholder="admin@exemplo.com" required>
             </div>
 
             <div class="form-group">
-                <label for="senha">Senha</label>
+                <label for="senha">Senha <span class="asterisco">*</span></label>
                 <input type="password" id="senha" name="senha" placeholder="Mínimo 6 caracteres" required>
             </div>
 
             <div class="form-group">
-                <label for="confirmaSenha">Confirmar senha</label>
+                <label for="confirmaSenha">Confirmar senha <span class="asterisco">*</span></label>
                 <input type="password" id="confirmaSenha" name="confirmaSenha" placeholder="Repita a senha" required>
             </div>
 

@@ -37,6 +37,18 @@ body {
     margin-bottom: 6px;
 }
 
+.asterisco {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.legenda-obrigatorio {
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 16px;
+    text-align: left;
+}
+
 .subtitulo {
     color: #777;
     font-size: 0.95rem;
