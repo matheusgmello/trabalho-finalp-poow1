@@ -36,6 +36,30 @@
             </h2>
             <form action="frequencia" method="post" class="frequency-form">
                 <input type="hidden" name="id" value="${frequenciaEdicao.id}">
+
+                <%-- campo de bolsista: select para admin, nome fixo para bolsista comum --%>
+                <div class="form-group-full">
+                    <label>Bolsista</label>
+                    <c:choose>
+                        <c:when test="${usuario.admin and empty frequenciaEdicao}">
+                            <select name="bolsistaId" required>
+                                <option value="">Selecione o bolsista...</option>
+                                <c:forEach var="b" items="${listaBolsistas}">
+                                    <option value="${b.id}">${b.nome}</option>
+                                </c:forEach>
+                            </select>
+                        </c:when>
+                        <c:when test="${usuario.admin and not empty frequenciaEdicao}">
+                            <%-- em edicao o bolsista nao muda, apenas exibe o nome --%>
+                            <input type="text" value="${frequenciaEdicao.nomeBolsista}" disabled>
+                        </c:when>
+                        <c:otherwise>
+                            <%-- bolsista comum ve apenas o proprio nome, sem possibilidade de troca --%>
+                            <input type="text" value="${usuario.nome}" disabled>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+
                 <div class="form-row">
                     <div class="form-col">
                         <label>Data</label>

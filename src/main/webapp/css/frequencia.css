@@ -25,6 +25,20 @@
     flex: 1;
 }
 
+.form-group-full {
+    margin-bottom: 15px;
+}
+
+.form-group-full select,
+.form-group-full input[disabled] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    background-color: #f9f9f9;
+}
+
 .frequency-form input,
 .frequency-form textarea {
     width: 100%;
