@@ -40,7 +40,7 @@ INSERT INTO laboratorio (nome, area_pesquisa, titulo_projeto, status, capacidade
 ('Lab de Robótica', 'Engenharia', 'Drones de Entrega', 'Ativo', 10, 'Dr. Isaac Asimov'),
 ('Lab de Redes e Segurança', 'Computação', 'Detecção de Intrusão em Redes', 'Ativo', 12, 'Dr. Grace Hopper'),
 ('Lab de Biotecnologia', 'Biologia', 'Edição Genômica com CRISPR', 'Ativo', 6, 'Dra. Rosalind Franklin'),
-('Lab de Energias Renováveis', 'Engenharia', 'Eficiência em Painéis Solares', 'Inativo', 10, 'Dr. Nikola Tesla');
+('Lab de Energias Renováveis', 'Engenharia', 'Eficiência em Painéis Solares', 'Em Pausa', 10, 'Dr. Nikola Tesla');
 
 INSERT INTO bolsista (nome, senha, data_nascimento, email, curso, tipo_usuario, ativo) VALUES
 ('Administrador', 'teste123', '1990-01-01', 'admin@sisbolsa.com', 'Gestão', 'ADMIN', true);
