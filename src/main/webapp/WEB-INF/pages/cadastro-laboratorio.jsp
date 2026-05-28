@@ -20,6 +20,8 @@
         <div class="container">
             <h1><i class="fas fa-flask"></i> ${laboratorio != null ? 'Editar' : 'Cadastrar Novo'} Laboratório</h1>
             
+            <p class="legenda-obrigatorio"><span class="asterisco">*</span> Campos obrigatórios</p>
+
             <c:if test="${not empty erro}">
                 <div class="error-msg">
                     <i class="fas fa-exclamation-circle"></i> ${erro}
@@ -30,33 +32,33 @@
                 <input type="hidden" name="id" value="${laboratorio.id}">
                 <div class="form-grid">
                     <div class="form-group form-group-full">
-                        <label>Nome do Laboratório</label>
-                        <input type="text" name="nome" id="nome" value="${laboratorio.nome}" required minlength="3">
+                        <label>Nome do Laboratório <span class="asterisco">*</span></label>
+                        <input type="text" name="nome" id="nome" value="${laboratorio.nome}" required minlength="3" placeholder="Ex: Lab de Inteligência Artificial">
                     </div>
                     <div class="form-group">
-                        <label>Área de Pesquisa</label>
-                        <input type="text" name="areaPesquisa" id="areaPesquisa" value="${laboratorio.areaPesquisa}" required>
+                        <label>Área de Pesquisa <span class="asterisco">*</span></label>
+                        <input type="text" name="areaPesquisa" id="areaPesquisa" value="${laboratorio.areaPesquisa}" required placeholder="Ex: Computação, Química, Engenharia">
                     </div>
                     <div class="form-group">
-                        <label>Professor Coordenador</label>
-                        <input type="text" name="coordenador" id="coordenador" value="${laboratorio.coordenador}" required>
+                        <label>Professor Coordenador <span class="asterisco">*</span></label>
+                        <input type="text" name="coordenador" id="coordenador" value="${laboratorio.coordenador}" required placeholder="Ex: Dr. Alan Turing">
                     </div>
                     <div class="form-group">
-                        <label>Capacidade Máxima</label>
-                        <input type="number" name="capacidade" id="capacidade" value="${laboratorio.id > 0 ? laboratorio.capacidade : 10}" required min="1">
+                        <label>Capacidade Máxima <span class="asterisco">*</span></label>
+                        <input type="number" name="capacidade" id="capacidade" value="${laboratorio.id > 0 ? laboratorio.capacidade : 10}" required min="1" placeholder="Ex: 10">
                     </div>
                     <div class="form-group">
-                        <label>Status</label>
+                        <label>Status <span class="asterisco">*</span></label>
                         <select name="status" id="status" required>
-                            <option value="">Selecione...</option>
+                            <option value="">Selecione o status...</option>
                             <option value="Ativo" ${laboratorio.status == 'Ativo' ? 'selected' : ''}>Ativo</option>
                             <option value="Em Pausa" ${laboratorio.status == 'Em Pausa' ? 'selected' : ''}>Em Pausa</option>
                             <option value="Concluido" ${laboratorio.status == 'Concluido' ? 'selected' : ''}>Concluído</option>
                         </select>
                     </div>
                     <div class="form-group form-group-full">
-                        <label>Título do Projeto</label>
-                        <input type="text" name="tituloProjeto" id="tituloProjeto" value="${laboratorio.tituloProjeto}" required minlength="5">
+                        <label>Título do Projeto <span class="asterisco">*</span></label>
+                        <input type="text" name="tituloProjeto" id="tituloProjeto" value="${laboratorio.tituloProjeto}" required minlength="5" placeholder="Ex: IA Generativa na Educação">
                     </div>
                     <div class="actions">
                         <button type="submit" class="btn btn-submit"><i class="fas fa-save"></i> Salvar Laboratório</button>
