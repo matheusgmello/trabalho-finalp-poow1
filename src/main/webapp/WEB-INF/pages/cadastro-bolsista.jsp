@@ -19,7 +19,9 @@
     <div class="main-content">
         <div class="container form-container">
             <h1><i class="fas fa-user-plus"></i> ${bolsista != null ? 'Editar' : 'Cadastrar Novo'} Bolsista</h1>
-            
+
+            <p class="legenda-obrigatorio"><span class="asterisco">*</span> Campos obrigatórios</p>
+
             <c:if test="${not empty erro}">
                 <div class="error-msg">
                     <i class="fas fa-exclamation-circle"></i> ${erro}
@@ -30,38 +32,30 @@
                 <input type="hidden" name="id" value="${bolsista.id}">
                 <div class="form-grid">
                     <div class="form-group form-group-full">
-                        <label>Nome Completo</label>
-                        <input type="text" name="nome" id="nome" value="${bolsista.nome}" required minlength="3">
+                        <label>Nome Completo <span class="asterisco">*</span></label>
+                        <input type="text" name="nome" id="nome" value="${bolsista.nome}" required minlength="3" placeholder="Ex: João da Silva">
                     </div>
                     <div class="form-group">
-                        <label>Data de Nascimento</label>
+                        <label>Data de Nascimento <span class="asterisco">*</span></label>
                         <input type="date" name="dataNascimento" id="dataNascimento" value="${bolsista.dataNascimento}" required>
                     </div>
                     <div class="form-group">
-                        <label>Curso</label>
-                        <input type="text" name="curso" id="curso" value="${bolsista.curso}" required>
+                        <label>Curso <span class="asterisco">*</span></label>
+                        <input type="text" name="curso" id="curso" value="${bolsista.curso}" required placeholder="Ex: Ciência da Computação">
                     </div>
                     <div class="form-group">
-                        <label>E-mail Acadêmico</label>
-                        <input type="email" name="email" id="email" value="${bolsista.email}" required>
+                        <label>E-mail Acadêmico <span class="asterisco">*</span></label>
+                        <input type="email" name="email" id="email" value="${bolsista.email}" required placeholder="Ex: joao@universidade.edu.br">
                     </div>
                     <div class="form-group">
-                        <label>Matrícula</label>
-                        <input type="text" name="matricula" id="matricula" value="${bolsista.matricula}" required>
+                        <label>Matrícula <span class="asterisco">*</span></label>
+                        <input type="text" name="matricula" id="matricula" value="${bolsista.matricula}" required placeholder="Ex: 2021001234">
                     </div>
-                    <c:if test="${usuario.admin}">
-                        <div class="form-group">
-                            <label>Tipo de Usuário</label>
-                            <select name="tipoUsuario">
-                                <option value="BOLSISTA" ${bolsista.tipoUsuario == 'BOLSISTA' ? 'selected' : ''}>Bolsista Comum</option>
-                                <option value="ADMIN" ${bolsista.tipoUsuario == 'ADMIN' ? 'selected' : ''}>Administrador</option>
-                            </select>
-                        </div>
-                    </c:if>
+                    <input type="hidden" name="tipoUsuario" value="${not empty bolsista.tipoUsuario ? bolsista.tipoUsuario : 'BOLSISTA'}">
                     <div class="form-group">
                         <label>Laboratório</label>
                         <select name="laboratorioId">
-                            <option value="">Selecione...</option>
+                            <option value="">Selecione um laboratório...</option>
                             <c:forEach var="lab" items="${laboratorios}">
                                 <option value="${lab.id}" ${bolsista.laboratorioId == lab.id ? 'selected' : ''}>${lab.nome}</option>
                             </c:forEach>
@@ -69,11 +63,11 @@
                     </div>
                     <div class="form-group">
                         <label>URL da Foto de Perfil</label>
-                        <input type="text" name="fotoUrl" value="${bolsista.fotoUrl}" placeholder="https://...">
+                        <input type="text" name="fotoUrl" value="${bolsista.fotoUrl}" placeholder="https://exemplo.com/foto.jpg">
                     </div>
                     <div class="form-group">
-                        <label>Senha</label>
-                        <input type="password" name="senha" id="senha" value="${bolsista.senha}" required minlength="6">
+                        <label>Senha <span class="asterisco">*</span></label>
+                        <input type="password" name="senha" id="senha" value="${bolsista.senha}" required minlength="6" placeholder="Mínimo 6 caracteres">
                     </div>
                     <div class="actions">
                         <button type="submit" class="btn btn-submit"><i class="fas fa-save"></i> Salvar</button>

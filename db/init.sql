@@ -67,5 +67,5 @@ INSERT INTO frequencia (bolsista_id, data, horas_trabalhadas, descricao) VALUES
 (7,  CURRENT_DATE - INTERVAL '2 days', 5.5, 'Testes de eficiência em painéis solares'),
 (8,  CURRENT_DATE - INTERVAL '1 day',  4.0, 'Desenvolvimento de modelo de classificação'),
 (9,  CURRENT_DATE - INTERVAL '4 days', 3.0, 'Preparação de reagentes'),
-(11, CURRENT_DATE - INTERVAL '1 day',  4.5, 'Implementação de módulo de autenticação'),
-(12, CURRENT_DATE - INTERVAL '2 days', 6.0, 'Extração e análise de DNA');
+(10, CURRENT_DATE - INTERVAL '2 days', 6.0, 'Extração e análise de DNA'),
+(11, CURRENT_DATE - INTERVAL '1 day',  4.5, 'Implementação de módulo de autenticação');

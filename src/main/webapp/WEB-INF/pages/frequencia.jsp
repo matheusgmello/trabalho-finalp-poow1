@@ -26,25 +26,41 @@
         </c:if>
 
         <div class="container form-container">
-            <h2>Novo Registro</h2>
+            <h2>
+                <c:choose>
+                    <c:when test="${not empty frequenciaEdicao}">
+                        Editar Registro — <span class="nome-bolsista-edicao">${frequenciaEdicao.nomeBolsista}</span>
+                    </c:when>
+                    <c:otherwise>Novo Registro</c:otherwise>
+                </c:choose>
+            </h2>
             <form action="frequencia" method="post" class="frequency-form">
+                <input type="hidden" name="id" value="${frequenciaEdicao.id}">
                 <div class="form-row">
                     <div class="form-col">
                         <label>Data</label>
-                        <input type="date" name="data" required>
+                        <input type="date" name="data" required value="${frequenciaEdicao.data}">
                     </div>
                     <div class="form-col">
                         <label>Horas</label>
-                        <input type="number" step="0.5" name="horas" required placeholder="Ex: 4.5">
+                        <input type="number" step="0.5" name="horas" required placeholder="Ex: 4.5" value="${frequenciaEdicao.horasTrabalhadas}">
                     </div>
                 </div>
                 <div>
                     <label>Descrição das Atividades</label>
-                    <textarea name="descricao" rows="3"></textarea>
+                    <textarea name="descricao" rows="3">${frequenciaEdicao.descricao}</textarea>
                 </div>
-                <button type="submit" class="submit-button">
-                    <i class="fas fa-save"></i> Registrar Horas
-                </button>
+                <div class="form-actions">
+                    <button type="submit" class="submit-button">
+                        <c:choose>
+                            <c:when test="${not empty frequenciaEdicao}"><i class="fas fa-save"></i> Salvar Alterações</c:when>
+                            <c:otherwise><i class="fas fa-save"></i> Registrar Horas</c:otherwise>
+                        </c:choose>
+                    </button>
+                    <c:if test="${not empty frequenciaEdicao}">
+                        <a href="frequencia" class="cancel-button"><i class="fas fa-times"></i> Cancelar</a>
+                    </c:if>
+                </div>
             </form>
         </div>
 
@@ -69,6 +85,9 @@
                                 <td><strong>${f.horasTrabalhadas}h</strong></td>
                                 <td>${f.descricao}</td>
                                 <td>
+                                    <c:if test="${usuario.admin or f.bolsistaId == usuario.id}">
+                                        <a href="frequencia?action=editar&id=${f.id}" class="action-edit"><i class="fas fa-pencil-alt"></i></a>
+                                    </c:if>
                                     <c:if test="${usuario.admin}">
                                         <a href="frequencia?action=excluir&id=${f.id}" class="action-delete" onclick="return confirm('Excluir registro?')"><i class="fas fa-trash"></i></a>
                                     </c:if>

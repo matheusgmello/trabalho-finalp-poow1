@@ -43,4 +43,8 @@ public class BolsistaService {
     public boolean atualizar(Bolsista b) throws SQLException {
         return dao.atualizar(b);
     }
+
+    public int contarAdmins() throws SQLException {
+        return dao.contarAdmins();
+    }
 }

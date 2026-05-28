@@ -43,6 +43,24 @@ public class FrequenciaService {
         }
     }
 
+    public Frequencia buscarPorId(int id) {
+        try {
+            return dao.buscarPorId(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public boolean atualizar(Frequencia f) {
+        try {
+            return dao.atualizar(f);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public boolean excluir(int id) {
         try {
             return dao.excluir(id);
