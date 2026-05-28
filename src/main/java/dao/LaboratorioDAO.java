@@ -4,6 +4,9 @@ import model.Laboratorio;
 import java.sql.*;
 import java.util.ArrayList;
 
+/*
+ * responsavel pelas operacoes sql da tabela laboratorio.
+ */
 public class LaboratorioDAO {
     private Connection conexao;
     private Statement stmt;
@@ -15,7 +18,7 @@ public class LaboratorioDAO {
 
     public boolean inserir(Laboratorio lab) throws SQLException {
         String sql = "INSERT INTO laboratorio (nome, area_pesquisa, titulo_projeto, status, capacidade, coordenador) " +
-                     "VALUES ('" + lab.getNome() + "', '" + lab.getAreaPesquisa() + "', '" + 
+                     "VALUES ('" + lab.getNome() + "', '" + lab.getAreaPesquisa() + "', '" +
                      lab.getTituloProjeto() + "', '" + lab.getStatus() + "', " + lab.getCapacidade() + ", '" + lab.getCoordenador() + "')";
         stmt.execute(sql);
         return true;
@@ -59,6 +62,16 @@ public class LaboratorioDAO {
         return true;
     }
 
+    // conta bolsistas vinculados ao laboratorio — usado para verificar se ha vaga
+    public int contarBolsistasNoLaboratorio(int labId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM bolsista WHERE laboratorio_id = " + labId;
+        ResultSet rs = stmt.executeQuery(sql);
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+        return 0;
+    }
+
     private Laboratorio extrairLaboratorio(ResultSet rs) throws SQLException {
         Laboratorio lab = new Laboratorio();
         lab.setId(rs.getInt("id"));
@@ -69,14 +82,5 @@ public class LaboratorioDAO {
         lab.setCapacidade(rs.getInt("capacidade"));
         lab.setCoordenador(rs.getString("coordenador"));
         return lab;
-    }
-
-    public int contarBolsistasNoLaboratorio(int labId) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM bolsista WHERE laboratorio_id = " + labId;
-        ResultSet rs = stmt.executeQuery(sql);
-        if (rs.next()) {
-            return rs.getInt(1);
-        }
-        return 0;
     }
 }

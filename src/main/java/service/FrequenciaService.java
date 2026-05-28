@@ -5,6 +5,10 @@ import model.Frequencia;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/*
+ * camada de regras de negocio para frequencia.
+ * isola os servlets do dao e trata excecoes de sql internamente.
+ */
 public class FrequenciaService {
     private FrequenciaDAO dao;
 
@@ -19,6 +23,24 @@ public class FrequenciaService {
     public boolean registrar(Frequencia f) {
         try {
             return dao.inserir(f);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public Frequencia buscarPorId(int id) {
+        try {
+            return dao.buscarPorId(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public boolean atualizar(Frequencia f) {
+        try {
+            return dao.atualizar(f);
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -40,24 +62,6 @@ public class FrequenciaService {
         } catch (SQLException e) {
             e.printStackTrace();
             return new ArrayList<>();
-        }
-    }
-
-    public Frequencia buscarPorId(int id) {
-        try {
-            return dao.buscarPorId(id);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public boolean atualizar(Frequencia f) {
-        try {
-            return dao.atualizar(f);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
         }
     }
 

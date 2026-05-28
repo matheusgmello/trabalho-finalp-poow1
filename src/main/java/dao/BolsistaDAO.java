@@ -5,6 +5,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.time.LocalDate;
 
+/*
+ * responsavel por todas as operacoes sql da tabela bolsista.
+ * usa jdbc direto — sem orm.
+ */
 public class BolsistaDAO {
     private Connection conexao;
     private Statement stmt;
@@ -18,12 +22,13 @@ public class BolsistaDAO {
         String sql = "INSERT INTO bolsista (nome, data_nascimento, curso, email, matricula, cpf, telefone, senha, ativo, laboratorio_id, tipo_usuario, foto_url) " +
                      "VALUES ('" + b.getNome() + "', '" + b.getDataNascimento() + "', '" + b.getCurso() + "', '" +
                      b.getEmail() + "', '" + b.getMatricula() + "', '" + b.getCpf() + "', '" + b.getTelefone() + "', '" +
-                     b.getSenha() + "', " + b.isAtivo() + ", " + (b.getLaboratorioId() > 0 ? b.getLaboratorioId() : "NULL") + 
+                     b.getSenha() + "', " + b.isAtivo() + ", " + (b.getLaboratorioId() > 0 ? b.getLaboratorioId() : "NULL") +
                      ", '" + b.getTipoUsuario() + "', '" + b.getFotoUrl() + "')";
         stmt.execute(sql);
         return true;
     }
 
+    // busca bolsista pelo email e senha — usado no login
     public Bolsista autenticar(String email, String senha) throws SQLException {
         String sql = "SELECT b.*, l.nome as nome_laboratorio FROM bolsista b " +
                      "LEFT JOIN laboratorio l ON b.laboratorio_id = l.id " +
@@ -71,28 +76,6 @@ public class BolsistaDAO {
         return bolsistas;
     }
 
-    private Bolsista extrairBolsista(ResultSet rs) throws SQLException {
-        Bolsista b = new Bolsista();
-        b.setId(rs.getInt("id"));
-        b.setNome(rs.getString("nome"));
-        Date dataNascimento = rs.getDate("data_nascimento");
-        if (dataNascimento != null) {
-            b.setDataNascimento(dataNascimento.toLocalDate());
-        }
-        b.setCurso(rs.getString("curso"));
-        b.setEmail(rs.getString("email"));
-        b.setMatricula(rs.getString("matricula"));
-        b.setCpf(rs.getString("cpf"));
-        b.setTelefone(rs.getString("telefone"));
-        b.setSenha(rs.getString("senha"));
-        b.setAtivo(rs.getBoolean("ativo"));
-        b.setLaboratorioId(rs.getInt("laboratorio_id"));
-        b.setNomeLaboratorio(rs.getString("nome_laboratorio"));
-        b.setTipoUsuario(rs.getString("tipo_usuario"));
-        b.setFotoUrl(rs.getString("foto_url"));
-        return b;
-    }
-
     public ArrayList<Bolsista> getBolsistas() throws SQLException {
         ArrayList<Bolsista> bolsistas = new ArrayList<>();
         String sql = "SELECT b.*, l.nome as nome_laboratorio FROM bolsista b " +
@@ -110,6 +93,7 @@ public class BolsistaDAO {
         return true;
     }
 
+    // conta quantos usuarios tem tipo_usuario = 'ADMIN' no banco
     public int contarAdmins() throws SQLException {
         String sql = "SELECT COUNT(*) FROM bolsista WHERE tipo_usuario = 'ADMIN'";
         ResultSet rs = stmt.executeQuery(sql);
@@ -133,9 +117,31 @@ public class BolsistaDAO {
                      "laboratorio_id = " + (b.getLaboratorioId() > 0 ? b.getLaboratorioId() : "NULL") + ", " +
                      "tipo_usuario = '" + b.getTipoUsuario() + "', " +
                      "foto_url = '" + b.getFotoUrl() + "' " +
-                     "WHERE id = b.getId()";
-        sql = sql.replace("WHERE id = b.getId()", "WHERE id = " + b.getId());
+                     "WHERE id = " + b.getId();
         stmt.execute(sql);
         return true;
+    }
+
+    // monta o objeto bolsista a partir de uma linha do resultset
+    private Bolsista extrairBolsista(ResultSet rs) throws SQLException {
+        Bolsista b = new Bolsista();
+        b.setId(rs.getInt("id"));
+        b.setNome(rs.getString("nome"));
+        Date dataNascimento = rs.getDate("data_nascimento");
+        if (dataNascimento != null) {
+            b.setDataNascimento(dataNascimento.toLocalDate());
+        }
+        b.setCurso(rs.getString("curso"));
+        b.setEmail(rs.getString("email"));
+        b.setMatricula(rs.getString("matricula"));
+        b.setCpf(rs.getString("cpf"));
+        b.setTelefone(rs.getString("telefone"));
+        b.setSenha(rs.getString("senha"));
+        b.setAtivo(rs.getBoolean("ativo"));
+        b.setLaboratorioId(rs.getInt("laboratorio_id"));
+        b.setNomeLaboratorio(rs.getString("nome_laboratorio"));
+        b.setTipoUsuario(rs.getString("tipo_usuario"));
+        b.setFotoUrl(rs.getString("foto_url"));
+        return b;
     }
 }

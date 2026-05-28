@@ -16,6 +16,12 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+/*
+ * servlet responsavel pelo crud de bolsistas.
+ * get: lista, busca, exibe formulario e excluir (action=novo|editar|excluir|exportar).
+ * post: salva novo bolsista ou atualiza existente (id > 0).
+ * bolsista comum so pode editar o proprio cadastro.
+ */
 @WebServlet("/bolsista")
 public class BolsistaServlet extends HttpServlet {
 
@@ -51,6 +57,7 @@ public class BolsistaServlet extends HttpServlet {
             }
         }
 
+        // bolsista comum so pode editar o proprio registro
         if (!usuarioLogado.isAdmin() && (id == 0 || id != usuarioLogado.getId())) {
             resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Você não tem permissão para esta ação.");
             return;
@@ -245,6 +252,7 @@ public class BolsistaServlet extends HttpServlet {
         rd.forward(req, resp);
     }
 
+    // gera e envia o arquivo csv com a lista de bolsistas para download
     private void exportarParaCSV(HttpServletResponse resp) throws IOException {
         resp.setContentType("text/csv");
         resp.setHeader("Content-Disposition", "attachment; filename=bolsistas.csv");

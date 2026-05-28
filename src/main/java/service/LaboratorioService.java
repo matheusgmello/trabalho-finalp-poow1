@@ -5,6 +5,10 @@ import model.Laboratorio;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/*
+ * camada de regras de negocio para laboratorio.
+ * isola os servlets do dao e trata excecoes de sql internamente.
+ */
 public class LaboratorioService {
     private LaboratorioDAO dao;
 
@@ -61,6 +65,7 @@ public class LaboratorioService {
         }
     }
 
+    // verifica se o laboratorio ainda tem vagas disponiveis para novos bolsistas
     public boolean temVaga(int labId) {
         try {
             Laboratorio lab = dao.getLaboratorioPorId(labId);

@@ -4,6 +4,10 @@ import model.Frequencia;
 import java.sql.*;
 import java.util.ArrayList;
 
+/*
+ * responsavel pelas operacoes sql da tabela frequencia.
+ * admin ve todos os registros; bolsista ve apenas os seus proprios.
+ */
 public class FrequenciaDAO {
     private Connection conexao;
     private Statement stmt;
@@ -15,12 +19,34 @@ public class FrequenciaDAO {
 
     public boolean inserir(Frequencia f) throws SQLException {
         String sql = "INSERT INTO frequencia (bolsista_id, data, horas_trabalhadas, descricao) " +
-                     "VALUES (" + f.getBolsistaId() + ", '" + f.getData() + "', " + 
+                     "VALUES (" + f.getBolsistaId() + ", '" + f.getData() + "', " +
                      f.getHorasTrabalhadas() + ", '" + f.getDescricao() + "')";
         stmt.execute(sql);
         return true;
     }
 
+    // retorna um registro especifico pelo id — usado para carregar o formulario de edicao
+    public Frequencia buscarPorId(int id) throws SQLException {
+        String sql = "SELECT f.*, b.nome as nome_bolsista FROM frequencia f " +
+                     "JOIN bolsista b ON f.bolsista_id = b.id WHERE f.id = " + id;
+        ResultSet rs = stmt.executeQuery(sql);
+        if (rs.next()) {
+            return extrairFrequencia(rs);
+        }
+        return null;
+    }
+
+    // atualiza apenas data, horas e descricao — bolsista_id nao muda
+    public boolean atualizar(Frequencia f) throws SQLException {
+        String sql = "UPDATE frequencia SET data = '" + f.getData() + "', " +
+                     "horas_trabalhadas = " + f.getHorasTrabalhadas() + ", " +
+                     "descricao = '" + f.getDescricao() + "' " +
+                     "WHERE id = " + f.getId();
+        stmt.execute(sql);
+        return true;
+    }
+
+    // lista registros de um bolsista especifico — usado para usuarios comuns
     public ArrayList<Frequencia> listarPorBolsista(int bolsistaId) throws SQLException {
         ArrayList<Frequencia> lista = new ArrayList<>();
         String sql = "SELECT f.*, b.nome as nome_bolsista FROM frequencia f " +
@@ -33,6 +59,7 @@ public class FrequenciaDAO {
         return lista;
     }
 
+    // lista todos os registros — usado apenas por admins
     public ArrayList<Frequencia> listarTodas() throws SQLException {
         ArrayList<Frequencia> lista = new ArrayList<>();
         String sql = "SELECT f.*, b.nome as nome_bolsista FROM frequencia f " +
@@ -42,25 +69,6 @@ public class FrequenciaDAO {
             lista.add(extrairFrequencia(rs));
         }
         return lista;
-    }
-
-    public Frequencia buscarPorId(int id) throws SQLException {
-        String sql = "SELECT f.*, b.nome as nome_bolsista FROM frequencia f " +
-                     "JOIN bolsista b ON f.bolsista_id = b.id WHERE f.id = " + id;
-        ResultSet rs = stmt.executeQuery(sql);
-        if (rs.next()) {
-            return extrairFrequencia(rs);
-        }
-        return null;
-    }
-
-    public boolean atualizar(Frequencia f) throws SQLException {
-        String sql = "UPDATE frequencia SET data = '" + f.getData() + "', " +
-                     "horas_trabalhadas = " + f.getHorasTrabalhadas() + ", " +
-                     "descricao = '" + f.getDescricao() + "' " +
-                     "WHERE id = " + f.getId();
-        stmt.execute(sql);
-        return true;
     }
 
     public boolean excluir(int id) throws SQLException {

@@ -12,9 +12,15 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
+/*
+ * servlet responsavel pelo cadastro de administradores.
+ * permite criar ate 3 admins no sistema.
+ * acessivel pela tela de login, sem necessidade de estar autenticado.
+ */
 @WebServlet("/cadastro-admin")
 public class CadastroAdminServlet extends HttpServlet {
 
+    // limite maximo de administradores permitidos no sistema
     private static final int LIMITE_ADMINS = 3;
 
     @Override
@@ -22,11 +28,15 @@ public class CadastroAdminServlet extends HttpServlet {
         try {
             BolsistaService service = new BolsistaService();
             int total = service.contarAdmins();
+
+            // bloqueia acesso ao formulario se o limite ja foi atingido
             if (total >= LIMITE_ADMINS) {
-                req.setAttribute("erro", "O sistema já possui o número máximo de administradores (" + LIMITE_ADMINS + ").");
+                req.setAttribute("erro", "O sistema ja possui o numero maximo de administradores (" + LIMITE_ADMINS + ").");
                 req.getRequestDispatcher("index.jsp").forward(req, resp);
                 return;
             }
+
+            // passa para a view quantas vagas ainda restam
             req.setAttribute("adminsRestantes", LIMITE_ADMINS - total);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -40,9 +50,9 @@ public class CadastroAdminServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String nome         = limpar(req.getParameter("nome"));
-        String email        = limpar(req.getParameter("email"));
-        String senha        = limpar(req.getParameter("senha"));
+        String nome          = limpar(req.getParameter("nome"));
+        String email         = limpar(req.getParameter("email"));
+        String senha         = limpar(req.getParameter("senha"));
         String confirmaSenha = limpar(req.getParameter("confirmaSenha"));
 
         String erro = validar(nome, email, senha, confirmaSenha);
@@ -55,8 +65,9 @@ public class CadastroAdminServlet extends HttpServlet {
         try {
             BolsistaService service = new BolsistaService();
 
+            // revalida o limite no post para evitar cadastros duplicados em requisicoes paralelas
             if (service.contarAdmins() >= LIMITE_ADMINS) {
-                req.setAttribute("erro", "O sistema já possui o número máximo de administradores (" + LIMITE_ADMINS + ").");
+                req.setAttribute("erro", "O sistema ja possui o numero maximo de administradores (" + LIMITE_ADMINS + ").");
                 req.getRequestDispatcher("index.jsp").forward(req, resp);
                 return;
             }
@@ -68,15 +79,15 @@ public class CadastroAdminServlet extends HttpServlet {
             admin.setTipoUsuario("ADMIN");
             admin.setAtivo(true);
             admin.setDataNascimento(LocalDate.of(1990, 1, 1));
-            admin.setCurso("Gestão");
+            admin.setCurso("Gestao");
             admin.setMatricula("ADM001");
 
             boolean sucesso = service.inserir(admin);
             if (sucesso) {
-                req.setAttribute("sucesso", "Administrador cadastrado com sucesso! Faça o login.");
+                req.setAttribute("sucesso", "Administrador cadastrado com sucesso! Faca o login.");
                 req.getRequestDispatcher("index.jsp").forward(req, resp);
             } else {
-                req.setAttribute("erro", "Não foi possível cadastrar o administrador.");
+                req.setAttribute("erro", "Nao foi possivel cadastrar o administrador.");
                 req.getRequestDispatcher("WEB-INF/pages/cadastro-admin.jsp").forward(req, resp);
             }
         } catch (SQLException e) {
@@ -91,13 +102,13 @@ public class CadastroAdminServlet extends HttpServlet {
             return "O nome deve ter pelo menos 3 caracteres.";
         }
         if (estaVazio(email) || !email.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
-            return "Informe um e-mail válido.";
+            return "Informe um e-mail valido.";
         }
         if (estaVazio(senha) || senha.length() < 6) {
             return "A senha deve ter pelo menos 6 caracteres.";
         }
         if (!senha.equals(confirmaSenha)) {
-            return "As senhas não coincidem.";
+            return "As senhas nao coincidem.";
         }
         return null;
     }

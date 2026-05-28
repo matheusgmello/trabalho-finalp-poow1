@@ -14,6 +14,13 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+/*
+ * servlet responsavel pelo crud de frequencia.
+ * get: lista registros e carrega formulario de edicao (action=editar|excluir).
+ * post: registra novo ou atualiza existente (id > 0).
+ * admin pode editar e excluir qualquer registro.
+ * bolsista comum so pode registrar e editar os proprios.
+ */
 @WebServlet("/frequencia")
 public class FrequenciaServlet extends HttpServlet {
 
@@ -171,6 +178,7 @@ public class FrequenciaServlet extends HttpServlet {
         return null;
     }
 
+    // admin ve todos os registros; bolsista ve apenas os proprios
     private void carregarFrequencias(HttpServletRequest req, Bolsista usuarioLogado) {
         ArrayList<Frequencia> lista;
         if (usuarioLogado.isAdmin()) {

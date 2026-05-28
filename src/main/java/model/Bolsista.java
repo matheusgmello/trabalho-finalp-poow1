@@ -2,6 +2,11 @@ package model;
 
 import java.time.LocalDate;
 
+/*
+ * representa um usuario do sistema.
+ * tipo_usuario pode ser 'ADMIN' ou 'BOLSISTA'.
+ * nomeLaboratorio e um campo calculado (nao existe na tabela), preenchido pelo join no dao.
+ */
 public class Bolsista {
     private int id;
     private String nome;
@@ -80,6 +85,7 @@ public class Bolsista {
     public String getFotoUrl() { return fotoUrl; }
     public void setFotoUrl(String fotoUrl) { this.fotoUrl = fotoUrl; }
 
+    // usado nos servlets para verificar permissoes de acesso
     public boolean isAdmin() {
         return "ADMIN".equals(this.tipoUsuario);
     }

@@ -5,6 +5,10 @@ import model.Bolsista;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/*
+ * camada de regras de negocio para bolsista.
+ * isola os servlets do dao e trata excecoes de sql internamente.
+ */
 public class BolsistaService {
     private BolsistaDAO dao;
 
@@ -44,6 +48,7 @@ public class BolsistaService {
         return dao.atualizar(b);
     }
 
+    // retorna quantos admins existem — usado para controlar o limite de 3 admins
     public int contarAdmins() throws SQLException {
         return dao.contarAdmins();
     }
