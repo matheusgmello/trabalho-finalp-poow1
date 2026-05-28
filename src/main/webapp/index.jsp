@@ -40,6 +40,16 @@
                 <i class="fas fa-exclamation-triangle"></i> ${erro}
             </div>
         </c:if>
+
+        <c:if test="${not empty sucesso}">
+            <div class="success-msg">
+                <i class="fas fa-check-circle"></i> ${sucesso}
+            </div>
+        </c:if>
+
+        <div class="link-cadastro-admin">
+            <a href="cadastro-admin"><i class="fas fa-user-shield"></i> Cadastrar administrador</a>
+        </div>
     </div>
 
 </body>

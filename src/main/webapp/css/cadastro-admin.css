@@ -1,6 +1,6 @@
 :root {
     --primary-color: #2c3e50;
-    --accent-color: #3498db;
+    --accent-color: #8e44ad;
     --bg-color: #f4f7f6;
 }
 
@@ -14,32 +14,38 @@ body {
     background-color: var(--bg-color);
 }
 
-.login-container {
+.cadastro-container {
     background: white;
     padding: 40px;
     border-radius: 15px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
     text-align: center;
 }
 
-.login-container h1 {
+.cadastro-container h1 {
     color: var(--primary-color);
     margin-bottom: 10px;
     font-size: 2rem;
 }
 
-.login-container h2 {
+.cadastro-container h2 {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.subtitulo {
     color: #777;
-    font-size: 1.1rem;
-    font-weight: 400;
-    margin-bottom: 30px;
+    font-size: 0.95rem;
+    margin-bottom: 28px;
 }
 
 .form-group {
     text-align: left;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
 label {
@@ -55,7 +61,7 @@ input {
     border: 1px solid #ddd;
     border-radius: 8px;
     box-sizing: border-box;
-    font-size: 16px;
+    font-size: 15px;
     transition: border-color 0.3s;
 }
 
@@ -64,22 +70,22 @@ input:focus {
     border-color: var(--accent-color);
 }
 
-.btn-login {
+.btn-cadastrar {
     width: 100%;
     padding: 14px;
     background-color: var(--accent-color);
     color: white;
     border: none;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: bold;
     cursor: pointer;
     transition: background 0.3s;
     margin-top: 10px;
 }
 
-.btn-login:hover {
-    background-color: #2980b9;
+.btn-cadastrar:hover {
+    background-color: #7d3c98;
 }
 
 .error-msg {
@@ -94,29 +100,20 @@ input:focus {
 .logo-icon {
     font-size: 3rem;
     color: var(--accent-color);
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
-.success-msg {
-    color: #1e8449;
-    background-color: #d5f5e3;
-    padding: 10px;
-    border-radius: 5px;
-    margin-top: 20px;
-    font-size: 14px;
-}
-
-.link-cadastro-admin {
+.link-voltar {
     margin-top: 24px;
     font-size: 14px;
 }
 
-.link-cadastro-admin a {
-    color: #8e44ad;
+.link-voltar a {
+    color: var(--accent-color);
     text-decoration: none;
     font-weight: 600;
 }
 
-.link-cadastro-admin a:hover {
+.link-voltar a:hover {
     text-decoration: underline;
 }

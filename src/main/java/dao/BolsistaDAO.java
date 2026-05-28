@@ -110,6 +110,12 @@ public class BolsistaDAO {
         return true;
     }
 
+    public boolean existeAdmin() throws SQLException {
+        String sql = "SELECT 1 FROM bolsista WHERE tipo_usuario = 'ADMIN' LIMIT 1";
+        ResultSet rs = stmt.executeQuery(sql);
+        return rs.next();
+    }
+
     public boolean atualizar(Bolsista b) throws SQLException {
         String sql = "UPDATE bolsista SET " +
                      "nome = '" + b.getNome() + "', " +
