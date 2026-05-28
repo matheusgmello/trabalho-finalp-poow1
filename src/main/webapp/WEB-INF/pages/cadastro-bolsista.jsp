@@ -49,15 +49,7 @@
                         <label>Matrícula</label>
                         <input type="text" name="matricula" id="matricula" value="${bolsista.matricula}" required>
                     </div>
-                    <c:if test="${usuario.admin}">
-                        <div class="form-group">
-                            <label>Tipo de Usuário</label>
-                            <select name="tipoUsuario">
-                                <option value="BOLSISTA" ${bolsista.tipoUsuario == 'BOLSISTA' ? 'selected' : ''}>Bolsista Comum</option>
-                                <option value="ADMIN" ${bolsista.tipoUsuario == 'ADMIN' ? 'selected' : ''}>Administrador</option>
-                            </select>
-                        </div>
-                    </c:if>
+                    <input type="hidden" name="tipoUsuario" value="${not empty bolsista.tipoUsuario ? bolsista.tipoUsuario : 'BOLSISTA'}">
                     <div class="form-group">
                         <label>Laboratório</label>
                         <select name="laboratorioId">
