@@ -23,9 +23,8 @@ public class AuthInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        Bolsista usuario = (Bolsista) request.getSession(false) != null
-                ? (Bolsista) request.getSession(false).getAttribute("usuario")
-                : null;
+        jakarta.servlet.http.HttpSession session = request.getSession(false);
+        Bolsista usuario = session != null ? (Bolsista) session.getAttribute("usuario") : null;
 
         if (usuario == null) {
             response.sendRedirect(request.getContextPath() + "/login");
