@@ -1,4 +1,4 @@
-package model;
+package dev.matheus.cadastroBolsistas.model;
 
 public class Laboratorio {
     private int id;
@@ -11,7 +11,8 @@ public class Laboratorio {
 
     public Laboratorio() {}
 
-    public Laboratorio(int id, String nome, String areaPesquisa, String tituloProjeto, String status, int capacidade, String coordenador) {
+    public Laboratorio(int id, String nome, String areaPesquisa, String tituloProjeto,
+                       String status, int capacidade, String coordenador) {
         this.id = id;
         this.nome = nome;
         this.areaPesquisa = areaPesquisa;
@@ -21,7 +22,6 @@ public class Laboratorio {
         this.coordenador = coordenador;
     }
 
-    // Getters e Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 

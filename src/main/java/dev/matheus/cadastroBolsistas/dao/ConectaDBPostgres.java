@@ -1,4 +1,4 @@
-package dao;
+package dev.matheus.cadastroBolsistas.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,16 +11,9 @@ import java.sql.SQLException;
  */
 public class ConectaDBPostgres {
 
-    public static void main(String[] args) {
-        getConexao();
-    }
-
     public static Connection getConexao() {
         try {
-            // carrega o driver do postgresql
             Class.forName("org.postgresql.Driver");
-
-            // abre a conexao com as credenciais do banco local
             Connection conn = DriverManager.getConnection(
                     "jdbc:postgresql://localhost:5432/cadastroBolsista",
                     "postgres",
@@ -31,6 +24,7 @@ public class ConectaDBPostgres {
             ex.printStackTrace();
         } catch (SQLException ex) {
             System.out.println("erro ao abrir conexao com o banco");
+            ex.printStackTrace();
         }
         return null;
     }

@@ -1,4 +1,4 @@
-package model;
+package dev.matheus.cadastroBolsistas.model;
 
 import java.time.LocalDate;
 
@@ -20,7 +20,6 @@ public class Frequencia {
         this.descricao = descricao;
     }
 
-    // Getters e Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 

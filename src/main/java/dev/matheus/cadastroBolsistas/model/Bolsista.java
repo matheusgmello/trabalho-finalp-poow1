@@ -1,11 +1,11 @@
-package model;
+package dev.matheus.cadastroBolsistas.model;
 
 import java.time.LocalDate;
 
 /*
  * representa um usuario do sistema.
  * tipo_usuario pode ser 'ADMIN' ou 'BOLSISTA'.
- * nomeLaboratorio e um campo calculado (nao existe na tabela), preenchido pelo join no dao.
+ * nomeLaboratorio e um campo calculado preenchido pelo join no dao.
  */
 public class Bolsista {
     private int id;
@@ -25,7 +25,9 @@ public class Bolsista {
 
     public Bolsista() {}
 
-    public Bolsista(int id, String nome, String senha, LocalDate dataNascimento, String curso, String email, String matricula, String cpf, String telefone, boolean ativo, int laboratorioId, String nomeLaboratorio, String tipoUsuario, String fotoUrl) {
+    public Bolsista(int id, String nome, String senha, LocalDate dataNascimento, String curso, String email,
+                    String matricula, String cpf, String telefone, boolean ativo, int laboratorioId,
+                    String nomeLaboratorio, String tipoUsuario, String fotoUrl) {
         this.id = id;
         this.nome = nome;
         this.senha = senha;
@@ -42,7 +44,6 @@ public class Bolsista {
         this.fotoUrl = fotoUrl;
     }
 
-    // Getters e Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -85,7 +86,7 @@ public class Bolsista {
     public String getFotoUrl() { return fotoUrl; }
     public void setFotoUrl(String fotoUrl) { this.fotoUrl = fotoUrl; }
 
-    // usado nos servlets para verificar permissoes de acesso
+    // usado nos controllers para verificar permissoes de acesso
     public boolean isAdmin() {
         return "ADMIN".equals(this.tipoUsuario);
     }

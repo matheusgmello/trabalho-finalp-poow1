@@ -60,7 +60,7 @@
         </c:if>
 
         <div class="link-voltar">
-            <a href="index.jsp"><i class="fas fa-arrow-left"></i> Voltar para o login</a>
+            <a href="login"><i class="fas fa-arrow-left"></i> Voltar para o login</a>
         </div>
     </div>
 
