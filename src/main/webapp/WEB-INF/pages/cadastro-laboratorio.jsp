@@ -41,7 +41,12 @@
                     </div>
                     <div class="form-group">
                         <label>Professor Coordenador <span class="asterisco">*</span></label>
-                        <input type="text" name="coordenador" id="coordenador" value="${laboratorio.coordenador}" required placeholder="Ex: Dr. Alan Turing">
+                        <select name="coordenadorId" id="coordenadorId" required>
+                            <option value="">Selecione um professor...</option>
+                            <c:forEach var="p" items="${professores}">
+                                <option value="${p.id}" ${laboratorio.coordenadorId == p.id ? 'selected' : ''}>${p.nome}</option>
+                            </c:forEach>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Capacidade Máxima <span class="asterisco">*</span></label>
@@ -55,10 +60,6 @@
                             <option value="Em Pausa" ${laboratorio.status == 'Em Pausa' ? 'selected' : ''}>Em Pausa</option>
                             <option value="Concluido" ${laboratorio.status == 'Concluido' ? 'selected' : ''}>Concluído</option>
                         </select>
-                    </div>
-                    <div class="form-group form-group-full">
-                        <label>Título do Projeto <span class="asterisco">*</span></label>
-                        <input type="text" name="tituloProjeto" id="tituloProjeto" value="${laboratorio.tituloProjeto}" required minlength="5" placeholder="Ex: IA Generativa na Educação">
                     </div>
                     <div class="actions">
                         <button type="submit" class="btn btn-submit"><i class="fas fa-save"></i> Salvar Laboratório</button>

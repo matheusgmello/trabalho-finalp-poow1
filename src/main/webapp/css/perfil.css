@@ -1,0 +1,137 @@
+.asterisco {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.profile-header-display {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.avatar-large {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--accent-color);
+}
+
+.avatar-placeholder-large {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background-color: #ddd;
+    color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+}
+
+.profile-meta h2 {
+    margin: 0 0 5px 0;
+    color: var(--primary-color);
+}
+
+.badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.badge-role {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.error-msg {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.success-msg {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group-full {
+    grid-column: span 2;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.form-group input {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.actions {
+    grid-column: span 2;
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.btn {
+    padding: 12px 25px;
+    border-radius: 5px;
+    flex: 1;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-submit {
+    background-color: var(--success-color);
+    color: white;
+    border: none;
+}
+
+.btn-submit:hover {
+    background-color: #219653;
+}
+
+.btn-cancel {
+    background-color: #95a5a6;
+    color: white;
+    text-decoration: none;
+}
+
+.btn-cancel:hover {
+    background-color: #7f8c8d;
+}

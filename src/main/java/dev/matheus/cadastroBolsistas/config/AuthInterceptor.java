@@ -1,6 +1,6 @@
 package dev.matheus.cadastroBolsistas.config;
 
-import dev.matheus.cadastroBolsistas.model.Bolsista;
+import dev.matheus.cadastroBolsistas.model.Usuario;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
@@ -24,7 +24,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
 
         jakarta.servlet.http.HttpSession session = request.getSession(false);
-        Bolsista usuario = session != null ? (Bolsista) session.getAttribute("usuario") : null;
+        Usuario usuario = session != null ? (Usuario) session.getAttribute("usuario") : null;
 
         if (usuario == null) {
             response.sendRedirect(request.getContextPath() + "/login");

@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciar Bolsistas - SisBolsa</title>
+    <title>Gerenciar ${usuario.admin ? 'Usuários' : 'Bolsistas'} - SisBolsa</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/bolsistas.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,14 +18,14 @@
 
     <div class="main-content">
         <div class="header-actions">
-            <h1>Gerenciar Bolsistas</h1>
+            <h1>Gerenciar ${usuario.admin ? 'Usuários' : 'Bolsistas'}</h1>
             <div class="header-buttons">
                 <a href="bolsista?action=exportar" class="btn-new btn-export">
                     <i class="fas fa-file-csv"></i> Exportar CSV
                 </a>
-                <c:if test="${usuario.admin}">
+                <c:if test="${usuario.admin || usuario.professor}">
                     <a href="bolsista?action=novo" class="btn-new btn-create">
-                        <i class="fas fa-plus"></i> Novo Bolsista
+                        <i class="fas fa-plus"></i> Novo ${usuario.admin ? 'Usuário' : 'Bolsista'}
                     </a>
                 </c:if>
             </div>
@@ -50,6 +50,7 @@
                         <tr>
                             <th>Nome</th>
                             <th>Curso</th>
+                            <th>Função</th>
                             <th>Laboratório</th>
                             <th>Tipo</th>
                             <th>Ações</th>
@@ -60,6 +61,7 @@
                             <tr>
                                 <td><strong>${b.nome}</strong></td>
                                 <td>${b.curso}</td>
+                                <td>${not empty b.funcao ? b.funcao : '---'}</td>
                                 <td>${not empty b.nomeLaboratorio ? b.nomeLaboratorio : '---'}</td>
                                 <td>
                                     <span class="badge ${b.admin ? 'badge-admin' : 'badge-bolsista'}">
@@ -67,11 +69,11 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <c:if test="${usuario.admin || b.id == usuario.id}">
+                                    <c:if test="${usuario.admin || usuario.professor || b.id == usuario.id}">
                                         <a href="bolsista?action=editar&id=${b.id}" class="action-link action-link-edit"><i class="fas fa-edit"></i></a>
                                     </c:if>
-                                    <c:if test="${usuario.admin && b.id != usuario.id}">
-                                        <a href="bolsista?action=excluir&id=${b.id}" class="action-link action-link-delete" onclick="return confirm('Excluir este bolsista?')"><i class="fas fa-trash"></i></a>
+                                    <c:if test="${(usuario.admin || usuario.professor) && b.id != usuario.id}">
+                                        <a href="bolsista?action=excluir&id=${b.id}" class="action-link action-link-delete" onclick="return confirm('Excluir este ${usuario.admin ? 'usuário' : 'bolsista'}?')"><i class="fas fa-trash"></i></a>
                                     </c:if>
                                 </td>
                             </tr>

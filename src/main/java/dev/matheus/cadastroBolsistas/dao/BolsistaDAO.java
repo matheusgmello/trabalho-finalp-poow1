@@ -6,10 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.sql.*;
 import java.util.ArrayList;
 
-/*
- * responsavel por todas as operacoes sql da tabela bolsista.
- * usa jdbc direto — sem orm.
- */
 @Repository
 public class BolsistaDAO {
 
@@ -18,23 +14,37 @@ public class BolsistaDAO {
     public boolean inserir(Bolsista b) throws SQLException {
         try (Connection conn = ConectaDBPostgres.getConexao();
              Statement stmt = conn.createStatement()) {
-            String sql = "INSERT INTO bolsista (nome, data_nascimento, curso, email, matricula, cpf, telefone, senha, ativo, laboratorio_id, tipo_usuario, foto_url) " +
+            String sql = "INSERT INTO bolsista (nome, data_nascimento, curso, email, matricula, cpf, telefone, senha, ativo, laboratorio_id, tipo_usuario, foto_url, funcao) " +
                          "VALUES ('" + b.getNome() + "', '" + b.getDataNascimento() + "', '" + b.getCurso() + "', '" +
                          b.getEmail() + "', '" + b.getMatricula() + "', '" + b.getCpf() + "', '" + b.getTelefone() + "', '" +
                          b.getSenha() + "', " + b.isAtivo() + ", " + (b.getLaboratorioId() > 0 ? b.getLaboratorioId() : "NULL") +
-                         ", '" + b.getTipoUsuario() + "', '" + b.getFotoUrl() + "')";
+                         ", '" + b.getTipoUsuario() + "', " + (b.getFotoUrl() != null ? "'" + b.getFotoUrl() + "'" : "NULL") + 
+                         ", " + (b.getFuncao() != null ? "'" + b.getFuncao() + "'" : "NULL") + ")";
             stmt.execute(sql);
             return true;
         }
     }
 
-    // busca bolsista pelo email e senha — usado no login
     public Bolsista autenticar(String email, String senha) throws SQLException {
         try (Connection conn = ConectaDBPostgres.getConexao();
              Statement stmt = conn.createStatement()) {
             String sql = "SELECT b.*, l.nome as nome_laboratorio FROM bolsista b " +
                          "LEFT JOIN laboratorio l ON b.laboratorio_id = l.id " +
-                         "WHERE b.email = '" + email + "' AND b.senha = '" + senha + "'";
+                         "WHERE b.email = '" + email + "' AND b.senha = '" + senha + "' AND b.ativo = true";
+            ResultSet rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                return extrairBolsista(rs);
+            }
+            return null;
+        }
+    }
+
+    public Bolsista getBolsistaPorId(int id) throws SQLException {
+        try (Connection conn = ConectaDBPostgres.getConexao();
+             Statement stmt = conn.createStatement()) {
+            String sql = "SELECT b.*, l.nome as nome_laboratorio FROM bolsista b " +
+                         "LEFT JOIN laboratorio l ON b.laboratorio_id = l.id " +
+                         "WHERE b.id = " + id;
             ResultSet rs = stmt.executeQuery(sql);
             if (rs.next()) {
                 return extrairBolsista(rs);
@@ -49,7 +59,7 @@ public class BolsistaDAO {
             ArrayList<Bolsista> bolsistas = new ArrayList<>();
             String sql = "SELECT b.*, l.nome as nome_laboratorio FROM bolsista b " +
                          "LEFT JOIN laboratorio l ON b.laboratorio_id = l.id " +
-                         "WHERE b.nome ILIKE '%" + nome + "%'";
+                         "WHERE b.nome ILIKE '%" + nome + "%' AND b.ativo = true";
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 bolsistas.add(extrairBolsista(rs));
@@ -64,7 +74,7 @@ public class BolsistaDAO {
             ArrayList<Bolsista> bolsistas = new ArrayList<>();
             String sql = "SELECT b.*, l.nome as nome_laboratorio FROM bolsista b " +
                          "LEFT JOIN laboratorio l ON b.laboratorio_id = l.id " +
-                         "WHERE b.curso ILIKE '%" + curso + "%'";
+                         "WHERE b.curso ILIKE '%" + curso + "%' AND b.ativo = true";
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 bolsistas.add(extrairBolsista(rs));
@@ -79,7 +89,23 @@ public class BolsistaDAO {
             ArrayList<Bolsista> bolsistas = new ArrayList<>();
             String sql = "SELECT b.*, l.nome as nome_laboratorio FROM bolsista b " +
                          "LEFT JOIN laboratorio l ON b.laboratorio_id = l.id " +
-                         "WHERE b.laboratorio_id = " + laboratorioId;
+                         "WHERE b.laboratorio_id = " + laboratorioId + " AND b.ativo = true ORDER BY b.nome";
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                bolsistas.add(extrairBolsista(rs));
+            }
+            return bolsistas;
+        }
+    }
+
+    public ArrayList<Bolsista> getBolsistasPorProjeto(int projetoId) throws SQLException {
+        try (Connection conn = ConectaDBPostgres.getConexao();
+             Statement stmt = conn.createStatement()) {
+            ArrayList<Bolsista> bolsistas = new ArrayList<>();
+            String sql = "SELECT b.*, l.nome as nome_laboratorio FROM bolsista b " +
+                         "INNER JOIN bolsista_projeto bp ON b.id = bp.bolsista_id " +
+                         "LEFT JOIN laboratorio l ON b.laboratorio_id = l.id " +
+                         "WHERE bp.projeto_id = " + projetoId + " AND b.ativo = true ORDER BY b.nome";
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 bolsistas.add(extrairBolsista(rs));
@@ -93,7 +119,8 @@ public class BolsistaDAO {
              Statement stmt = conn.createStatement()) {
             ArrayList<Bolsista> bolsistas = new ArrayList<>();
             String sql = "SELECT b.*, l.nome as nome_laboratorio FROM bolsista b " +
-                         "LEFT JOIN laboratorio l ON b.laboratorio_id = l.id";
+                         "LEFT JOIN laboratorio l ON b.laboratorio_id = l.id " +
+                         "WHERE b.ativo = true ORDER BY b.nome";
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 bolsistas.add(extrairBolsista(rs));
@@ -105,16 +132,16 @@ public class BolsistaDAO {
     public boolean excluir(int id) throws SQLException {
         try (Connection conn = ConectaDBPostgres.getConexao();
              Statement stmt = conn.createStatement()) {
-            stmt.execute("DELETE FROM bolsista WHERE id = " + id);
+            // soft delete: set active to false
+            stmt.execute("UPDATE bolsista SET ativo = false WHERE id = " + id);
             return true;
         }
     }
 
-    // conta quantos usuarios tem tipo_usuario = 'ADMIN' no banco
     public int contarAdmins() throws SQLException {
         try (Connection conn = ConectaDBPostgres.getConexao();
              Statement stmt = conn.createStatement()) {
-            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM bolsista WHERE tipo_usuario = 'ADMIN'");
+            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM bolsista WHERE tipo_usuario = 'ADMIN' AND ativo = true");
             if (rs.next()) {
                 return rs.getInt(1);
             }
@@ -137,14 +164,14 @@ public class BolsistaDAO {
                          "ativo = " + b.isAtivo() + ", " +
                          "laboratorio_id = " + (b.getLaboratorioId() > 0 ? b.getLaboratorioId() : "NULL") + ", " +
                          "tipo_usuario = '" + b.getTipoUsuario() + "', " +
-                         "foto_url = '" + b.getFotoUrl() + "' " +
+                         "foto_url = " + (b.getFotoUrl() != null ? "'" + b.getFotoUrl() + "'" : "NULL") + ", " +
+                         "funcao = " + (b.getFuncao() != null ? "'" + b.getFuncao() + "'" : "NULL") + " " +
                          "WHERE id = " + b.getId();
             stmt.execute(sql);
             return true;
         }
     }
 
-    // monta o objeto bolsista a partir de uma linha do resultset
     private Bolsista extrairBolsista(ResultSet rs) throws SQLException {
         Bolsista b = new Bolsista();
         b.setId(rs.getInt("id"));
@@ -164,6 +191,7 @@ public class BolsistaDAO {
         b.setNomeLaboratorio(rs.getString("nome_laboratorio"));
         b.setTipoUsuario(rs.getString("tipo_usuario"));
         b.setFotoUrl(rs.getString("foto_url"));
+        b.setFuncao(rs.getString("funcao"));
         return b;
     }
 }

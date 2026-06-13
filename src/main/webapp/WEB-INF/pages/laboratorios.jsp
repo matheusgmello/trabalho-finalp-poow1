@@ -41,7 +41,7 @@
                         <tr>
                             <th>Nome</th>
                             <th>Área de Pesquisa</th>
-                            <th>Título do Projeto</th>
+                            <th>Coordenador</th>
                             <th>Status</th>
                             <th>Ações</th>
                         </tr>
@@ -51,7 +51,7 @@
                             <tr>
                                 <td><strong>${lab.nome}</strong></td>
                                 <td>${lab.areaPesquisa}</td>
-                                <td>${lab.tituloProjeto}</td>
+                                <td>${lab.coordenador}</td>
                                 <td>
                                     <span class="badge status-${lab.status.toLowerCase().replace(' ', '-')}">
                                         ${lab.status}

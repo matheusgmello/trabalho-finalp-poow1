@@ -6,9 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.sql.*;
 import java.util.ArrayList;
 
-/*
- * responsavel pelas operacoes sql da tabela laboratorio.
- */
 @Repository
 public class LaboratorioDAO {
 
@@ -17,9 +14,10 @@ public class LaboratorioDAO {
     public boolean inserir(Laboratorio lab) throws SQLException {
         try (Connection conn = ConectaDBPostgres.getConexao();
              Statement stmt = conn.createStatement()) {
-            String sql = "INSERT INTO laboratorio (nome, area_pesquisa, titulo_projeto, status, capacidade, coordenador) " +
+            String sql = "INSERT INTO laboratorio (nome, area_pesquisa, status, capacidade, coordenador_id, ativo) " +
                          "VALUES ('" + lab.getNome() + "', '" + lab.getAreaPesquisa() + "', '" +
-                         lab.getTituloProjeto() + "', '" + lab.getStatus() + "', " + lab.getCapacidade() + ", '" + lab.getCoordenador() + "')";
+                         lab.getStatus() + "', " + lab.getCapacidade() + ", " + 
+                         (lab.getCoordenadorId() > 0 ? lab.getCoordenadorId() : "NULL") + ", " + lab.isAtivo() + ")";
             stmt.execute(sql);
             return true;
         }
@@ -29,7 +27,25 @@ public class LaboratorioDAO {
         try (Connection conn = ConectaDBPostgres.getConexao();
              Statement stmt = conn.createStatement()) {
             ArrayList<Laboratorio> laboratorios = new ArrayList<>();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM laboratorio");
+            String sql = "SELECT l.*, p.nome as coordenador FROM laboratorio l " +
+                         "LEFT JOIN professor p ON l.coordenador_id = p.id " +
+                         "WHERE l.ativo = true ORDER BY l.nome";
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                laboratorios.add(extrairLaboratorio(rs));
+            }
+            return laboratorios;
+        }
+    }
+
+    public ArrayList<Laboratorio> getLaboratoriosPorCoordenador(int professorId) throws SQLException {
+        try (Connection conn = ConectaDBPostgres.getConexao();
+             Statement stmt = conn.createStatement()) {
+            ArrayList<Laboratorio> laboratorios = new ArrayList<>();
+            String sql = "SELECT l.*, p.nome as coordenador FROM laboratorio l " +
+                         "LEFT JOIN professor p ON l.coordenador_id = p.id " +
+                         "WHERE l.coordenador_id = " + professorId + " AND l.ativo = true ORDER BY l.nome";
+            ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 laboratorios.add(extrairLaboratorio(rs));
             }
@@ -40,7 +56,10 @@ public class LaboratorioDAO {
     public Laboratorio getLaboratorioPorId(int id) throws SQLException {
         try (Connection conn = ConectaDBPostgres.getConexao();
              Statement stmt = conn.createStatement()) {
-            ResultSet rs = stmt.executeQuery("SELECT * FROM laboratorio WHERE id = " + id);
+            String sql = "SELECT l.*, p.nome as coordenador FROM laboratorio l " +
+                         "LEFT JOIN professor p ON l.coordenador_id = p.id " +
+                         "WHERE l.id = " + id;
+            ResultSet rs = stmt.executeQuery(sql);
             if (rs.next()) {
                 return extrairLaboratorio(rs);
             }
@@ -54,10 +73,10 @@ public class LaboratorioDAO {
             String sql = "UPDATE laboratorio SET " +
                          "nome = '" + lab.getNome() + "', " +
                          "area_pesquisa = '" + lab.getAreaPesquisa() + "', " +
-                         "titulo_projeto = '" + lab.getTituloProjeto() + "', " +
                          "status = '" + lab.getStatus() + "', " +
                          "capacidade = " + lab.getCapacidade() + ", " +
-                         "coordenador = '" + lab.getCoordenador() + "' " +
+                         "coordenador_id = " + (lab.getCoordenadorId() > 0 ? lab.getCoordenadorId() : "NULL") + ", " +
+                         "ativo = " + lab.isAtivo() + " " +
                          "WHERE id = " + lab.getId();
             stmt.execute(sql);
             return true;
@@ -67,16 +86,17 @@ public class LaboratorioDAO {
     public boolean excluir(int id) throws SQLException {
         try (Connection conn = ConectaDBPostgres.getConexao();
              Statement stmt = conn.createStatement()) {
-            stmt.execute("DELETE FROM laboratorio WHERE id = " + id);
+            // soft delete: set active to false
+            stmt.execute("UPDATE laboratorio SET ativo = false WHERE id = " + id);
             return true;
         }
     }
 
-    // conta bolsistas vinculados ao laboratorio — usado para verificar se ha vaga
     public int contarBolsistasNoLaboratorio(int labId) throws SQLException {
         try (Connection conn = ConectaDBPostgres.getConexao();
              Statement stmt = conn.createStatement()) {
-            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM bolsista WHERE laboratorio_id = " + labId);
+            // only count active bolsistas
+            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM bolsista WHERE laboratorio_id = " + labId + " AND ativo = true");
             if (rs.next()) {
                 return rs.getInt(1);
             }
@@ -89,10 +109,11 @@ public class LaboratorioDAO {
         lab.setId(rs.getInt("id"));
         lab.setNome(rs.getString("nome"));
         lab.setAreaPesquisa(rs.getString("area_pesquisa"));
-        lab.setTituloProjeto(rs.getString("titulo_projeto"));
         lab.setStatus(rs.getString("status"));
         lab.setCapacidade(rs.getInt("capacidade"));
+        lab.setCoordenadorId(rs.getInt("coordenador_id"));
         lab.setCoordenador(rs.getString("coordenador"));
+        lab.setAtivo(rs.getBoolean("ativo"));
         return lab;
     }
 }

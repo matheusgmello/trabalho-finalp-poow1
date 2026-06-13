@@ -1,6 +1,8 @@
 package dev.matheus.cadastroBolsistas.controller;
 
 import dev.matheus.cadastroBolsistas.model.Bolsista;
+import dev.matheus.cadastroBolsistas.model.Laboratorio;
+import dev.matheus.cadastroBolsistas.model.Usuario;
 import dev.matheus.cadastroBolsistas.service.BolsistaService;
 import dev.matheus.cadastroBolsistas.service.LaboratorioService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +25,8 @@ import java.util.ArrayList;
  * responsavel pelo crud de bolsistas.
  * get: lista, busca, exibe formulario e exclui (action=novo|editar|excluir|exportar).
  * post: salva novo bolsista ou atualiza existente (id > 0).
- * bolsista comum so pode editar o proprio cadastro.
+ * bolsista comum so visualiza membros do proprio lab/squad, e edita apenas a si mesmo.
+ * professor visualiza e gerencia os bolsistas do seu laboratorio.
  */
 @Controller
 @RequestMapping("/bolsista")
@@ -44,29 +47,24 @@ public class BolsistaController {
                             HttpServletResponse response,
                             Model model) throws IOException {
 
-        Bolsista usuarioLogado = (Bolsista) session.getAttribute("usuario");
+        Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
 
         if ("exportar".equals(action)) {
-            exportarParaCSV(response);
+            exportarParaCSV(response, usuarioLogado);
             return null;
         }
 
         if ("novo".equals(action) || "editar".equals(action)) {
-            try {
-                model.addAttribute("laboratorios", laboratorioService.listarTodos());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            carregarLaboratoriosDisponiveis(model, usuarioLogado);
 
             if ("editar".equals(action)) {
                 try {
                     int bolsistaId = Integer.parseInt(id);
-                    if (!usuarioLogado.isAdmin() && bolsistaId != usuarioLogado.getId()) {
+                    Bolsista b = bolsistaService.buscarPorId(bolsistaId);
+
+                    if (!podeGerenciarBolsista(usuarioLogado, b) && bolsistaId != usuarioLogado.getId()) {
                         return "redirect:/bolsista";
                     }
-                    Bolsista b = bolsistaService.listarTodos().stream()
-                            .filter(bol -> bol.getId() == bolsistaId)
-                            .findFirst().orElse(null);
                     model.addAttribute("bolsista", b);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -76,9 +74,15 @@ public class BolsistaController {
             return "cadastro-bolsista";
         }
 
-        if ("excluir".equals(action) && usuarioLogado.isAdmin()) {
+        if ("excluir".equals(action)) {
             try {
-                bolsistaService.excluir(Integer.parseInt(id));
+                int bolsistaId = Integer.parseInt(id);
+                Bolsista b = bolsistaService.buscarPorId(bolsistaId);
+                if (b != null && (usuarioLogado.isAdmin() || (usuarioLogado.isProfessor() && podeGerenciarBolsista(usuarioLogado, b)))) {
+                    bolsistaService.excluir(bolsistaId);
+                } else {
+                    model.addAttribute("erro", "Sem permissao para excluir.");
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
                 model.addAttribute("erro", "Erro ao excluir bolsista.");
@@ -97,6 +101,7 @@ public class BolsistaController {
             } else {
                 lista = bolsistaService.listarTodos();
             }
+            lista = filtrarBolsistasPorPermissao(lista, usuarioLogado);
             model.addAttribute("listabolsistas", lista);
         } catch (Exception e) {
             e.printStackTrace();
@@ -119,10 +124,11 @@ public class BolsistaController {
                          @RequestParam(required = false) String laboratorioId,
                          @RequestParam(required = false) String tipoUsuario,
                          @RequestParam(required = false) String fotoUrl,
+                         @RequestParam(required = false) String funcao,
                          HttpSession session,
                          Model model) {
 
-        Bolsista usuarioLogado = (Bolsista) session.getAttribute("usuario");
+        Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
 
         int bolsistaId = 0;
         if (!estaVazio(id)) {
@@ -130,13 +136,13 @@ public class BolsistaController {
                 bolsistaId = Integer.parseInt(id);
             } catch (NumberFormatException e) {
                 model.addAttribute("erro", "ID do bolsista invalido.");
-                carregarLaboratorios(model);
+                carregarLaboratoriosDisponiveis(model, usuarioLogado);
                 return "cadastro-bolsista";
             }
         }
 
         // bolsista comum so pode editar o proprio registro
-        if (!usuarioLogado.isAdmin() && (bolsistaId == 0 || bolsistaId != usuarioLogado.getId())) {
+        if (!usuarioLogado.isAdmin() && !usuarioLogado.isProfessor() && (bolsistaId == 0 || bolsistaId != usuarioLogado.getId())) {
             return "redirect:/bolsista";
         }
 
@@ -152,12 +158,13 @@ public class BolsistaController {
         b.setAtivo(true);
         b.setTipoUsuario(!estaVazio(tipoUsuario) ? tipoUsuario : "BOLSISTA");
         b.setFotoUrl(limpar(fotoUrl));
+        b.setFuncao(limpar(funcao));
 
         String erroValidacao = validarBolsista(b, dataNascimento, laboratorioId, usuarioLogado);
         if (erroValidacao != null) {
             model.addAttribute("erro", erroValidacao);
             model.addAttribute("bolsista", b);
-            carregarLaboratorios(model);
+            carregarLaboratoriosDisponiveis(model, usuarioLogado);
             return "cadastro-bolsista";
         }
 
@@ -165,11 +172,20 @@ public class BolsistaController {
 
         if (!estaVazio(laboratorioId)) {
             int labId = Integer.parseInt(laboratorioId);
+            
+            // se for professor, verifica se ele e o coordenador desse laboratorio
+            if (usuarioLogado.isProfessor() && !podeGerenciarLab(usuarioLogado, labId)) {
+                model.addAttribute("erro", "Sem permissao para vincular bolsista a este laboratorio.");
+                model.addAttribute("bolsista", b);
+                carregarLaboratoriosDisponiveis(model, usuarioLogado);
+                return "cadastro-bolsista";
+            }
+
             try {
                 if (b.getId() == 0 && !laboratorioService.temVaga(labId)) {
                     model.addAttribute("erro", "Laboratorio atingiu a capacidade maxima!");
                     model.addAttribute("bolsista", b);
-                    carregarLaboratorios(model);
+                    carregarLaboratoriosDisponiveis(model, usuarioLogado);
                     return "cadastro-bolsista";
                 }
             } catch (SQLException e) {
@@ -185,42 +201,100 @@ public class BolsistaController {
             } else {
                 model.addAttribute("erro", "Problemas ao salvar o bolsista.");
                 model.addAttribute("bolsista", b);
-                carregarLaboratorios(model);
+                carregarLaboratoriosDisponiveis(model, usuarioLogado);
                 return "cadastro-bolsista";
             }
         } catch (SQLException e) {
             e.printStackTrace();
             model.addAttribute("erro", "Algo aconteceu: " + e.getMessage());
             model.addAttribute("bolsista", b);
-            carregarLaboratorios(model);
+            carregarLaboratoriosDisponiveis(model, usuarioLogado);
             return "cadastro-bolsista";
         }
     }
 
-    // gera e envia o arquivo csv com a lista de bolsistas para download
-    private void exportarParaCSV(HttpServletResponse response) throws IOException {
+    private void exportarParaCSV(HttpServletResponse response, Usuario usuarioLogado) throws IOException {
         response.setContentType("text/csv");
         response.setHeader("Content-Disposition", "attachment; filename=bolsistas.csv");
         try (PrintWriter writer = response.getWriter()) {
-            writer.println("ID,Nome,Email,Curso,Laboratorio,Status");
-            for (Bolsista b : bolsistaService.listarTodos()) {
+            writer.println("ID,Nome,Email,Curso,Laboratorio,Status,Funcao");
+            ArrayList<Bolsista> lista = filtrarBolsistasPorPermissao(bolsistaService.listarTodos(), usuarioLogado);
+            for (Bolsista b : lista) {
                 writer.println(b.getId() + "," + b.getNome() + "," + b.getEmail() + "," +
-                        b.getCurso() + "," + b.getNomeLaboratorio() + "," + (b.isAtivo() ? "Ativo" : "Inativo"));
+                        b.getCurso() + "," + b.getNomeLaboratorio() + "," + (b.isAtivo() ? "Ativo" : "Inativo") + "," + b.getFuncao());
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void carregarLaboratorios(Model model) {
+    private void carregarLaboratoriosDisponiveis(Model model, Usuario usuarioLogado) {
         try {
-            model.addAttribute("laboratorios", laboratorioService.listarTodos());
+            if (usuarioLogado.isAdmin()) {
+                model.addAttribute("laboratorios", laboratorioService.listarTodos());
+            } else if (usuarioLogado.isProfessor()) {
+                model.addAttribute("laboratorios", laboratorioService.listarPorCoordenador(usuarioLogado.getId()));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private String validarBolsista(Bolsista b, String dataNascimentoStr, String laboratorioIdStr, Bolsista usuarioLogado) {
+    private ArrayList<Bolsista> filtrarBolsistasPorPermissao(ArrayList<Bolsista> list, Usuario usuarioLogado) throws SQLException {
+        if (usuarioLogado.isAdmin()) {
+            return list;
+        }
+        if (usuarioLogado.isProfessor()) {
+            ArrayList<Laboratorio> labsCoordenados = laboratorioService.listarPorCoordenador(usuarioLogado.getId());
+            ArrayList<Bolsista> filtrados = new ArrayList<>();
+            for (Bolsista b : list) {
+                boolean pertence = labsCoordenados.stream().anyMatch(l -> l.getId() == b.getLaboratorioId());
+                if (pertence) {
+                    filtrados.add(b);
+                }
+            }
+            return filtrados;
+        }
+        if (usuarioLogado.isBolsista()) {
+            int labId = ((Bolsista) usuarioLogado).getLaboratorioId();
+            ArrayList<Bolsista> filtrados = new ArrayList<>();
+            for (Bolsista b : list) {
+                if (b.getLaboratorioId() == labId) {
+                    filtrados.add(b);
+                }
+            }
+            return filtrados;
+        }
+        return new ArrayList<>();
+    }
+
+    private boolean podeGerenciarBolsista(Usuario usuarioLogado, Bolsista b) {
+        if (usuarioLogado.isAdmin()) return true;
+        if (usuarioLogado.isProfessor() && b != null) {
+            try {
+                ArrayList<Laboratorio> labs = laboratorioService.listarPorCoordenador(usuarioLogado.getId());
+                return labs.stream().anyMatch(l -> l.getId() == b.getLaboratorioId());
+            } catch (SQLException e) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    private boolean podeGerenciarLab(Usuario usuarioLogado, int labId) {
+        if (usuarioLogado.isAdmin()) return true;
+        if (usuarioLogado.isProfessor()) {
+            try {
+                ArrayList<Laboratorio> labs = laboratorioService.listarPorCoordenador(usuarioLogado.getId());
+                return labs.stream().anyMatch(l -> l.getId() == labId);
+            } catch (SQLException e) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    private String validarBolsista(Bolsista b, String dataNascimentoStr, String laboratorioIdStr, Usuario usuarioLogado) {
         if (estaVazio(b.getNome()) || b.getNome().length() < 3) {
             return "O nome do bolsista deve ter pelo menos 3 caracteres.";
         }

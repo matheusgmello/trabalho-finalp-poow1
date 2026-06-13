@@ -41,7 +41,7 @@
                 <div class="form-group-full">
                     <label>Bolsista</label>
                     <c:choose>
-                        <c:when test="${usuario.admin and empty frequenciaEdicao}">
+                        <c:when test="${(usuario.admin or usuario.professor) and empty frequenciaEdicao}">
                             <select name="bolsistaId" required>
                                 <option value="">Selecione o bolsista...</option>
                                 <c:forEach var="b" items="${listaBolsistas}">
@@ -49,7 +49,7 @@
                                 </c:forEach>
                             </select>
                         </c:when>
-                        <c:when test="${usuario.admin and not empty frequenciaEdicao}">
+                        <c:when test="${(usuario.admin or usuario.professor) and not empty frequenciaEdicao}">
                             <%-- em edicao o bolsista nao muda, apenas exibe o nome --%>
                             <input type="text" value="${frequenciaEdicao.nomeBolsista}" disabled>
                         </c:when>
@@ -109,10 +109,10 @@
                                 <td><strong>${f.horasTrabalhadas}h</strong></td>
                                 <td>${f.descricao}</td>
                                 <td>
-                                    <c:if test="${usuario.admin or f.bolsistaId == usuario.id}">
+                                    <c:if test="${usuario.admin or usuario.professor or f.bolsistaId == usuario.id}">
                                         <a href="frequencia?action=editar&id=${f.id}" class="action-edit"><i class="fas fa-pencil-alt"></i></a>
                                     </c:if>
-                                    <c:if test="${usuario.admin}">
+                                    <c:if test="${usuario.admin or usuario.professor}">
                                         <a href="frequencia?action=excluir&id=${f.id}" class="action-delete" onclick="return confirm('Excluir registro?')"><i class="fas fa-trash"></i></a>
                                     </c:if>
                                 </td>

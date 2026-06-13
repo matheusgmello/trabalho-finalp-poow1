@@ -1,6 +1,6 @@
 package dev.matheus.cadastroBolsistas.controller;
 
-import dev.matheus.cadastroBolsistas.model.Bolsista;
+import dev.matheus.cadastroBolsistas.model.Usuario;
 import dev.matheus.cadastroBolsistas.service.LoginService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 /*
  * responsavel pelo login do sistema.
- * autentica o usuario e armazena o objeto bolsista na sessao.
+ * autentica o usuario (bolsista, admin ou professor) e armazena o objeto na sessao.
  */
 @Controller
 public class LoginController {
@@ -33,11 +33,11 @@ public class LoginController {
         email = email != null ? email.trim() : "";
         senha = senha != null ? senha.trim() : "";
 
-        Bolsista bolsistaAutenticado = loginService.autenticar(email, senha);
+        Usuario usuarioAutenticado = loginService.autenticar(email, senha);
 
-        if (bolsistaAutenticado != null) {
+        if (usuarioAutenticado != null) {
             // salva o usuario na sessao para ser verificado em todas as paginas protegidas
-            session.setAttribute("usuario", bolsistaAutenticado);
+            session.setAttribute("usuario", usuarioAutenticado);
             return "redirect:/dashboard";
         }
 

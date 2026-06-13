@@ -15,11 +15,16 @@ public class BolsistaService {
     private BolsistaDAO dao;
 
     public boolean inserir(Bolsista b) throws SQLException {
+        b.setAtivo(true);
         return dao.inserir(b);
     }
 
     public ArrayList<Bolsista> listarTodos() throws SQLException {
         return dao.getBolsistas();
+    }
+
+    public Bolsista buscarPorId(int id) throws SQLException {
+        return dao.getBolsistaPorId(id);
     }
 
     public ArrayList<Bolsista> buscarPorNome(String nome) throws SQLException {
@@ -32,6 +37,10 @@ public class BolsistaService {
 
     public ArrayList<Bolsista> buscarPorLaboratorio(int laboratorioId) throws SQLException {
         return dao.getBolsistasPorLaboratorio(laboratorioId);
+    }
+
+    public ArrayList<Bolsista> buscarPorProjeto(int projetoId) throws SQLException {
+        return dao.getBolsistasPorProjeto(projetoId);
     }
 
     public boolean atualizar(Bolsista b) throws SQLException {

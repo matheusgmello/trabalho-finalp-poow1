@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${bolsista != null ? 'Editar' : 'Novo'} Bolsista - SisBolsa</title>
+    <title>${bolsista != null ? 'Editar' : 'Novo'} ${usuario.admin ? 'Usuário' : 'Bolsista'} - SisBolsa</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/cadastro-bolsista.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,7 +18,7 @@
 
     <div class="main-content">
         <div class="container form-container">
-            <h1><i class="fas fa-user-plus"></i> ${bolsista != null ? 'Editar' : 'Cadastrar Novo'} Bolsista</h1>
+            <h1><i class="fas fa-user-plus"></i> ${bolsista != null ? 'Editar' : 'Cadastrar Novo'} ${usuario.admin ? 'Usuário' : 'Bolsista'}</h1>
 
             <p class="legenda-obrigatorio"><span class="asterisco">*</span> Campos obrigatórios</p>
 
@@ -60,6 +60,10 @@
                                 <option value="${lab.id}" ${bolsista.laboratorioId == lab.id ? 'selected' : ''}>${lab.nome}</option>
                             </c:forEach>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Função no Laboratório</label>
+                        <input type="text" name="funcao" id="funcao" value="${bolsista.funcao}" placeholder="Ex: Desenvolvedor, Pesquisador, etc.">
                     </div>
                     <div class="form-group">
                         <label>URL da Foto de Perfil</label>

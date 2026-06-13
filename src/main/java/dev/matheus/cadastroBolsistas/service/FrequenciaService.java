@@ -15,6 +15,7 @@ public class FrequenciaService {
     private FrequenciaDAO dao;
 
     public boolean registrar(Frequencia f) throws SQLException {
+        f.setAtivo(true);
         return dao.inserir(f);
     }
 
@@ -28,6 +29,10 @@ public class FrequenciaService {
 
     public ArrayList<Frequencia> listarPorBolsista(int bolsistaId) throws SQLException {
         return dao.listarPorBolsista(bolsistaId);
+    }
+
+    public ArrayList<Frequencia> listarPorLaboratorio(int labId) throws SQLException {
+        return dao.listarPorLaboratorio(labId);
     }
 
     public ArrayList<Frequencia> listarTodas() throws SQLException {

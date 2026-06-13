@@ -26,8 +26,8 @@
         <div class="cards-container">
             <a href="bolsista" class="card">
                 <i class="fas fa-user-graduate"></i>
-                <h3>Gerenciar Bolsistas</h3>
-                <p>Cadastre, visualize e pesquise bolsistas acadêmicos no sistema.</p>
+                <h3>Gerenciar ${usuario.admin ? 'Usuários' : 'Bolsistas'}</h3>
+                <p>Cadastre, visualize e pesquise ${usuario.admin ? 'usuários' : 'bolsistas acadêmicos'} no sistema.</p>
             </a>
 
             <a href="laboratorio" class="card">

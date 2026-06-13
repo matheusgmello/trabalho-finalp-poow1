@@ -6,10 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.sql.*;
 import java.util.ArrayList;
 
-/*
- * responsavel pelas operacoes sql da tabela frequencia.
- * admin ve todos os registros; bolsista ve apenas os seus proprios.
- */
 @Repository
 public class FrequenciaDAO {
 
@@ -18,20 +14,19 @@ public class FrequenciaDAO {
     public boolean inserir(Frequencia f) throws SQLException {
         try (Connection conn = ConectaDBPostgres.getConexao();
              Statement stmt = conn.createStatement()) {
-            String sql = "INSERT INTO frequencia (bolsista_id, data, horas_trabalhadas, descricao) " +
+            String sql = "INSERT INTO frequencia (bolsista_id, data, horas_trabalhadas, descricao, ativo) " +
                          "VALUES (" + f.getBolsistaId() + ", '" + f.getData() + "', " +
-                         f.getHorasTrabalhadas() + ", '" + f.getDescricao() + "')";
+                         f.getHorasTrabalhadas() + ", '" + f.getDescricao() + "', " + f.isAtivo() + ")";
             stmt.execute(sql);
             return true;
         }
     }
 
-    // retorna um registro especifico pelo id — usado para carregar o formulario de edicao
     public Frequencia buscarPorId(int id) throws SQLException {
         try (Connection conn = ConectaDBPostgres.getConexao();
              Statement stmt = conn.createStatement()) {
             String sql = "SELECT f.*, b.nome as nome_bolsista FROM frequencia f " +
-                         "JOIN bolsista b ON f.bolsista_id = b.id WHERE f.id = " + id;
+                         "JOIN bolsista b ON f.bolsista_id = b.id WHERE f.id = " + id + " AND f.ativo = true";
             ResultSet rs = stmt.executeQuery(sql);
             if (rs.next()) {
                 return extrairFrequencia(rs);
@@ -40,7 +35,6 @@ public class FrequenciaDAO {
         }
     }
 
-    // atualiza apenas data, horas e descricao — bolsista_id nao muda
     public boolean atualizar(Frequencia f) throws SQLException {
         try (Connection conn = ConectaDBPostgres.getConexao();
              Statement stmt = conn.createStatement()) {
@@ -53,14 +47,13 @@ public class FrequenciaDAO {
         }
     }
 
-    // lista registros de um bolsista especifico — usado para usuarios comuns
     public ArrayList<Frequencia> listarPorBolsista(int bolsistaId) throws SQLException {
         try (Connection conn = ConectaDBPostgres.getConexao();
              Statement stmt = conn.createStatement()) {
             ArrayList<Frequencia> lista = new ArrayList<>();
             String sql = "SELECT f.*, b.nome as nome_bolsista FROM frequencia f " +
                          "JOIN bolsista b ON f.bolsista_id = b.id " +
-                         "WHERE f.bolsista_id = " + bolsistaId + " ORDER BY f.data DESC";
+                         "WHERE f.bolsista_id = " + bolsistaId + " AND f.ativo = true ORDER BY f.data DESC";
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 lista.add(extrairFrequencia(rs));
@@ -69,13 +62,28 @@ public class FrequenciaDAO {
         }
     }
 
-    // lista todos os registros — usado apenas por admins
+    public ArrayList<Frequencia> listarPorLaboratorio(int labId) throws SQLException {
+        try (Connection conn = ConectaDBPostgres.getConexao();
+             Statement stmt = conn.createStatement()) {
+            ArrayList<Frequencia> lista = new ArrayList<>();
+            String sql = "SELECT f.*, b.nome as nome_bolsista FROM frequencia f " +
+                         "JOIN bolsista b ON f.bolsista_id = b.id " +
+                         "WHERE b.laboratorio_id = " + labId + " AND f.ativo = true ORDER BY f.data DESC";
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                lista.add(extrairFrequencia(rs));
+            }
+            return lista;
+        }
+    }
+
     public ArrayList<Frequencia> listarTodas() throws SQLException {
         try (Connection conn = ConectaDBPostgres.getConexao();
              Statement stmt = conn.createStatement()) {
             ArrayList<Frequencia> lista = new ArrayList<>();
             String sql = "SELECT f.*, b.nome as nome_bolsista FROM frequencia f " +
-                         "JOIN bolsista b ON f.bolsista_id = b.id ORDER BY f.data DESC";
+                         "JOIN bolsista b ON f.bolsista_id = b.id " +
+                         "WHERE f.ativo = true ORDER BY f.data DESC";
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 lista.add(extrairFrequencia(rs));
@@ -87,7 +95,8 @@ public class FrequenciaDAO {
     public boolean excluir(int id) throws SQLException {
         try (Connection conn = ConectaDBPostgres.getConexao();
              Statement stmt = conn.createStatement()) {
-            stmt.execute("DELETE FROM frequencia WHERE id = " + id);
+            // soft delete: set active to false
+            stmt.execute("UPDATE frequencia SET ativo = false WHERE id = " + id);
             return true;
         }
     }
@@ -100,6 +109,7 @@ public class FrequenciaDAO {
         f.setData(rs.getDate("data").toLocalDate());
         f.setHorasTrabalhadas(rs.getDouble("horas_trabalhadas"));
         f.setDescricao(rs.getString("descricao"));
+        f.setAtivo(rs.getBoolean("ativo"));
         return f;
     }
 }

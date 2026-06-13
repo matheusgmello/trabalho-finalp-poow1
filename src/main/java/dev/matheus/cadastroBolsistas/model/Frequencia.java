@@ -9,15 +9,17 @@ public class Frequencia {
     private LocalDate data;
     private double horasTrabalhadas;
     private String descricao;
+    private boolean ativo;
 
     public Frequencia() {}
 
-    public Frequencia(int id, int bolsistaId, LocalDate data, double horasTrabalhadas, String descricao) {
+    public Frequencia(int id, int bolsistaId, LocalDate data, double horasTrabalhadas, String descricao, boolean ativo) {
         this.id = id;
         this.bolsistaId = bolsistaId;
         this.data = data;
         this.horasTrabalhadas = horasTrabalhadas;
         this.descricao = descricao;
+        this.ativo = ativo;
     }
 
     public int getId() { return id; }
@@ -37,4 +39,7 @@ public class Frequencia {
 
     public String getDescricao() { return descricao; }
     public void setDescricao(String descricao) { this.descricao = descricao; }
+
+    public boolean isAtivo() { return ativo; }
+    public void setAtivo(boolean ativo) { this.ativo = ativo; }
 }

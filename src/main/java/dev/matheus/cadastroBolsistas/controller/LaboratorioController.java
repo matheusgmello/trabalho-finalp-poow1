@@ -2,8 +2,11 @@ package dev.matheus.cadastroBolsistas.controller;
 
 import dev.matheus.cadastroBolsistas.model.Bolsista;
 import dev.matheus.cadastroBolsistas.model.Laboratorio;
+import dev.matheus.cadastroBolsistas.model.Usuario;
 import dev.matheus.cadastroBolsistas.service.BolsistaService;
 import dev.matheus.cadastroBolsistas.service.LaboratorioService;
+import dev.matheus.cadastroBolsistas.service.ProfessorService;
+import dev.matheus.cadastroBolsistas.service.ProjetoService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 @Controller
@@ -25,16 +29,27 @@ public class LaboratorioController {
     @Autowired
     private BolsistaService bolsistaService;
 
+    @Autowired
+    private ProfessorService professorService;
+
+    @Autowired
+    private ProjetoService projetoService;
+
     @GetMapping
     public String handleGet(@RequestParam(required = false) String action,
                             @RequestParam(required = false) String id,
                             HttpSession session,
                             Model model) {
-        Bolsista usuarioLogado = (Bolsista) session.getAttribute("usuario");
+        Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
 
         if ("novo".equals(action)) {
             if (!usuarioLogado.isAdmin()) {
                 return "redirect:/laboratorio";
+            }
+            try {
+                model.addAttribute("professores", professorService.listarTodos());
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
             return "cadastro-laboratorio";
         }
@@ -47,6 +62,7 @@ public class LaboratorioController {
                 int labId = Integer.parseInt(id);
                 Laboratorio lab = laboratorioService.buscarPorId(labId);
                 model.addAttribute("laboratorio", lab);
+                model.addAttribute("professores", professorService.listarTodos());
                 return "cadastro-laboratorio";
             } catch (NumberFormatException e) {
                 model.addAttribute("erro", "ID do laboratorio invalido.");
@@ -75,9 +91,29 @@ public class LaboratorioController {
             try {
                 int labId = Integer.parseInt(id);
                 Laboratorio lab = laboratorioService.buscarPorId(labId);
+                if (lab == null) {
+                    return "redirect:/laboratorio";
+                }
+
+                // restringe visualizacao do bolsista ao seu proprio lab
+                if (usuarioLogado.isBolsista() && ((Bolsista) usuarioLogado).getLaboratorioId() != labId) {
+                    return "redirect:/laboratorio";
+                }
+
                 ArrayList<Bolsista> bolsistas = bolsistaService.buscarPorLaboratorio(labId);
+                
+                // para vincular bolsistas a projetos, precisamos da lista de bolsistas e projetos do lab.
+                // para cada bolsista, vamos obter os projetos vinculados a ele para renderizar na tela
+                for (Bolsista b : bolsistas) {
+                    model.addAttribute("projetosBolsista_" + b.getId(), projetoService.listarPorBolsista(b.getId()));
+                }
+
+                boolean podeGerenciar = usuarioLogado.isAdmin() || 
+                        (usuarioLogado.isProfessor() && lab.getCoordenadorId() == usuarioLogado.getId());
+
                 model.addAttribute("laboratorio", lab);
                 model.addAttribute("bolsistas", bolsistas);
+                model.addAttribute("podeGerenciar", podeGerenciar);
                 return "detalhes-laboratorio";
             } catch (Exception e) {
                 e.printStackTrace();
@@ -85,20 +121,19 @@ public class LaboratorioController {
             }
         }
 
-        return listarLaboratorios(model);
+        return listarLaboratorios(model, usuarioLogado);
     }
 
     @PostMapping
     public String salvar(@RequestParam(required = false) String id,
                          @RequestParam(required = false) String nome,
                          @RequestParam(required = false) String areaPesquisa,
-                         @RequestParam(required = false) String tituloProjeto,
                          @RequestParam(required = false) String status,
                          @RequestParam(required = false) String capacidade,
-                         @RequestParam(required = false) String coordenador,
+                         @RequestParam(required = false) String coordenadorId,
                          HttpSession session,
                          Model model) {
-        Bolsista usuarioLogado = (Bolsista) session.getAttribute("usuario");
+        Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
 
         if (!usuarioLogado.isAdmin()) {
             return "redirect:/laboratorio";
@@ -112,20 +147,29 @@ public class LaboratorioController {
             } catch (NumberFormatException e) {
                 model.addAttribute("erro", "ID do laboratorio invalido.");
                 model.addAttribute("laboratorio", lab);
+                carregarProfessores(model);
                 return "cadastro-laboratorio";
             }
         }
 
         lab.setNome(limpar(nome));
         lab.setAreaPesquisa(limpar(areaPesquisa));
-        lab.setTituloProjeto(limpar(tituloProjeto));
         lab.setStatus(limpar(status));
-        lab.setCoordenador(limpar(coordenador));
+        lab.setAtivo(true);
+
+        if (!estaVazio(coordenadorId)) {
+            try {
+                lab.setCoordenadorId(Integer.parseInt(coordenadorId));
+            } catch (NumberFormatException e) {
+                // coordenadorId nulo ou invalido
+            }
+        }
 
         String erroValidacao = validarLaboratorio(lab, capacidade);
         if (erroValidacao != null) {
             model.addAttribute("erro", erroValidacao);
             model.addAttribute("laboratorio", lab);
+            carregarProfessores(model);
             return "cadastro-laboratorio";
         }
 
@@ -138,24 +182,47 @@ public class LaboratorioController {
             } else {
                 model.addAttribute("erro", "Erro ao salvar laboratorio.");
                 model.addAttribute("laboratorio", lab);
+                carregarProfessores(model);
                 return "cadastro-laboratorio";
             }
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("erro", "Erro ao salvar laboratorio: " + e.getMessage());
             model.addAttribute("laboratorio", lab);
+            carregarProfessores(model);
             return "cadastro-laboratorio";
         }
     }
 
-    private String listarLaboratorios(Model model) {
+    private String listarLaboratorios(Model model, Usuario usuarioLogado) {
         try {
-            model.addAttribute("listaLaboratorios", laboratorioService.listarTodos());
+            ArrayList<Laboratorio> lista;
+            if (usuarioLogado.isAdmin()) {
+                lista = laboratorioService.listarTodos();
+            } else if (usuarioLogado.isProfessor()) {
+                lista = laboratorioService.listarPorCoordenador(usuarioLogado.getId());
+            } else { // bolsista
+                int labId = ((Bolsista) usuarioLogado).getLaboratorioId();
+                lista = new ArrayList<>();
+                Laboratorio lab = laboratorioService.buscarPorId(labId);
+                if (lab != null) {
+                    lista.add(lab);
+                }
+            }
+            model.addAttribute("listaLaboratorios", lista);
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("erro", "Erro ao listar laboratorios: " + e.getMessage());
         }
         return "laboratorios";
+    }
+
+    private void carregarProfessores(Model model) {
+        try {
+            model.addAttribute("professores", professorService.listarTodos());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private String validarLaboratorio(Laboratorio lab, String capacidadeStr) {
@@ -165,11 +232,8 @@ public class LaboratorioController {
         if (estaVazio(lab.getAreaPesquisa())) {
             return "A area de pesquisa e obrigatoria.";
         }
-        if (estaVazio(lab.getCoordenador())) {
+        if (lab.getCoordenadorId() <= 0) {
             return "O professor coordenador e obrigatorio.";
-        }
-        if (estaVazio(lab.getTituloProjeto()) || lab.getTituloProjeto().length() < 5) {
-            return "O titulo do projeto deve ter pelo menos 5 caracteres.";
         }
         if (!"Ativo".equals(lab.getStatus()) && !"Em Pausa".equals(lab.getStatus()) && !"Concluido".equals(lab.getStatus())) {
             return "Status do laboratorio invalido.";
