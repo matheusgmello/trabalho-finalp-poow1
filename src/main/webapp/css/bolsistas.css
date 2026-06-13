@@ -115,6 +115,11 @@ td {
     color: #666;
 }
 
+.badge-professor {
+    background: #e6f9ed;
+    color: #155724;
+}
+
 .action-link {
     text-decoration: none;
 }

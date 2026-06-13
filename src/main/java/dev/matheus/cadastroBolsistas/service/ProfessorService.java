@@ -22,6 +22,10 @@ public class ProfessorService {
         return dao.getProfessores();
     }
 
+    public ArrayList<Professor> buscarPorNome(String nome) throws SQLException {
+        return dao.getProfessoresPorNome(nome);
+    }
+
     public Professor buscarPorId(int id) throws SQLException {
         return dao.getProfessorPorId(id);
     }

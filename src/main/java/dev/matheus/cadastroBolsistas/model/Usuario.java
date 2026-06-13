@@ -12,10 +12,11 @@ public abstract class Usuario {
     private boolean ativo;
     private String tipoUsuario; // 'ADMIN', 'BOLSISTA', 'PROFESSOR'
     private String fotoUrl;
+    private String nomeLaboratorio; // nome do lab (para bolsistas) ou labs coordenados (para professores)
 
     public Usuario() {}
 
-    public Usuario(int id, String nome, String email, String senha, boolean ativo, String tipoUsuario, String fotoUrl) {
+    public Usuario(int id, String nome, String email, String senha, boolean ativo, String tipoUsuario, String fotoUrl, String nomeLaboratorio) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -23,6 +24,7 @@ public abstract class Usuario {
         this.ativo = ativo;
         this.tipoUsuario = tipoUsuario;
         this.fotoUrl = fotoUrl;
+        this.nomeLaboratorio = nomeLaboratorio;
     }
 
     public int getId() { return id; }
@@ -46,6 +48,9 @@ public abstract class Usuario {
     public String getFotoUrl() { return fotoUrl; }
     public void setFotoUrl(String fotoUrl) { this.fotoUrl = fotoUrl; }
 
+    public String getNomeLaboratorio() { return nomeLaboratorio; }
+    public void setNomeLaboratorio(String nomeLaboratorio) { this.nomeLaboratorio = nomeLaboratorio; }
+
     public boolean isAdmin() {
         return "ADMIN".equals(this.tipoUsuario);
     }
@@ -57,4 +62,11 @@ public abstract class Usuario {
     public boolean isProfessor() {
         return "PROFESSOR".equals(this.tipoUsuario);
     }
+
+    // Métodos dummy para campos específicos de Bolsista, evitando erros de propriedade no JSP EL ao lidar com Professores
+    public java.time.LocalDate getDataNascimento() { return null; }
+    public String getCurso() { return null; }
+    public String getMatricula() { return null; }
+    public int getLaboratorioId() { return 0; }
+    public String getFuncao() { return null; }
 }

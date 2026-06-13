@@ -46,6 +46,19 @@ public class ProfessorDAO {
         }
     }
 
+    public ArrayList<Professor> getProfessoresPorNome(String nome) throws SQLException {
+        try (Connection conn = ConectaDBPostgres.getConexao();
+             Statement stmt = conn.createStatement()) {
+            ArrayList<Professor> lista = new ArrayList<>();
+            String sql = "SELECT * FROM professor WHERE nome ILIKE '%" + nome + "%' AND ativo = true ORDER BY nome";
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                lista.add(extrairProfessor(rs));
+            }
+            return lista;
+        }
+    }
+
     public Professor getProfessorPorId(int id) throws SQLException {
         try (Connection conn = ConectaDBPostgres.getConexao();
              Statement stmt = conn.createStatement()) {

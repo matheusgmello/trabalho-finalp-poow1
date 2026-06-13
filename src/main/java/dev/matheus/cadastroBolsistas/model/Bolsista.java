@@ -13,7 +13,6 @@ public class Bolsista extends Usuario {
     private String cpf;
     private String telefone;
     private int laboratorioId;
-    private String nomeLaboratorio; // campo calculado preenchido pelo join no dao
     private String funcao; // papel/funcao do bolsista no laboratorio
 
     public Bolsista() {
@@ -24,14 +23,13 @@ public class Bolsista extends Usuario {
     public Bolsista(int id, String nome, String senha, LocalDate dataNascimento, String curso, String email,
                     String matricula, String cpf, String telefone, boolean ativo, int laboratorioId,
                     String nomeLaboratorio, String tipoUsuario, String fotoUrl, String funcao) {
-        super(id, nome, email, senha, ativo, tipoUsuario, fotoUrl);
+        super(id, nome, email, senha, ativo, tipoUsuario, fotoUrl, nomeLaboratorio);
         this.dataNascimento = dataNascimento;
         this.curso = curso;
         this.matricula = matricula;
         this.cpf = cpf;
         this.telefone = telefone;
         this.laboratorioId = laboratorioId;
-        this.nomeLaboratorio = nomeLaboratorio;
         this.funcao = funcao;
     }
 
@@ -52,9 +50,6 @@ public class Bolsista extends Usuario {
 
     public int getLaboratorioId() { return laboratorioId; }
     public void setLaboratorioId(int laboratorioId) { this.laboratorioId = laboratorioId; }
-
-    public String getNomeLaboratorio() { return nomeLaboratorio; }
-    public void setNomeLaboratorio(String nomeLaboratorio) { this.nomeLaboratorio = nomeLaboratorio; }
 
     public String getFuncao() { return funcao; }
     public void setFuncao(String funcao) { this.funcao = funcao; }

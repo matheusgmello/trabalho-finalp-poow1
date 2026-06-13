@@ -64,16 +64,16 @@
                                 <td>${not empty b.funcao ? b.funcao : '---'}</td>
                                 <td>${not empty b.nomeLaboratorio ? b.nomeLaboratorio : '---'}</td>
                                 <td>
-                                    <span class="badge ${b.admin ? 'badge-admin' : 'badge-bolsista'}">
+                                    <span class="badge ${b.admin ? 'badge-admin' : (b.professor ? 'badge-professor' : 'badge-bolsista')}">
                                         ${b.tipoUsuario}
                                     </span>
                                 </td>
                                 <td>
                                     <c:if test="${usuario.admin || usuario.professor || b.id == usuario.id}">
-                                        <a href="bolsista?action=editar&id=${b.id}" class="action-link action-link-edit"><i class="fas fa-edit"></i></a>
+                                        <a href="bolsista?action=editar&id=${b.id}&tipo=${b.tipoUsuario}" class="action-link action-link-edit"><i class="fas fa-edit"></i></a>
                                     </c:if>
                                     <c:if test="${(usuario.admin || usuario.professor) && b.id != usuario.id}">
-                                        <a href="bolsista?action=excluir&id=${b.id}" class="action-link action-link-delete" onclick="return confirm('Excluir este ${usuario.admin ? 'usuário' : 'bolsista'}?')"><i class="fas fa-trash"></i></a>
+                                        <a href="bolsista?action=excluir&id=${b.id}&tipo=${b.tipoUsuario}" class="action-link action-link-delete" onclick="return confirm('Excluir este ${usuario.admin ? 'usuário' : 'bolsista'}?')"><i class="fas fa-trash"></i></a>
                                     </c:if>
                                 </td>
                             </tr>
