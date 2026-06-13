@@ -40,8 +40,16 @@
                     <thead>
                         <tr>
                             <th>Nome</th>
-                            <th>Área de Pesquisa</th>
-                            <th>Coordenador</th>
+                            <c:choose>
+                                <c:when test="${usuario.bolsista}">
+                                    <th>Coordenador</th>
+                                    <th>Projetos</th>
+                                </c:when>
+                                <c:otherwise>
+                                    <th>Área de Pesquisa</th>
+                                    <th>Coordenador</th>
+                                </c:otherwise>
+                            </c:choose>
                             <th>Status</th>
                             <th>Ações</th>
                         </tr>
@@ -50,19 +58,48 @@
                         <c:forEach var="lab" items="${listaLaboratorios}">
                             <tr>
                                 <td><strong>${lab.nome}</strong></td>
-                                <td>${lab.areaPesquisa}</td>
-                                <td>${lab.coordenador}</td>
+                                <c:choose>
+                                    <c:when test="${usuario.bolsista}">
+                                        <td>${lab.coordenador}</td>
+                                        <td>
+                                            <c:forEach var="proj" items="${lab.projetos}" varStatus="loop">
+                                                <span class="badge-projeto-tag">${proj.nome}</span>
+                                            </c:forEach>
+                                            <c:if test="${empty lab.projetos}">
+                                                <span class="empty-text">Nenhum projeto</span>
+                                            </c:if>
+                                        </td>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <td>${lab.areaPesquisa}</td>
+                                        <td>${lab.coordenador}</td>
+                                    </c:otherwise>
+                                </c:choose>
                                 <td>
                                     <span class="badge status-${lab.status.toLowerCase().replace(' ', '-')}">
                                         ${lab.status}
                                     </span>
                                 </td>
                                 <td class="actions-cell">
-                                    <a href="laboratorio?action=detalhes&id=${lab.id}" class="btn-icon btn-details" title="Detalhes"><i class="fas fa-eye"></i></a>
-                                    <c:if test="${usuario.admin}">
-                                        <a href="laboratorio?action=editar&id=${lab.id}" class="btn-icon btn-edit" title="Editar"><i class="fas fa-edit"></i></a>
-                                        <a href="laboratorio?action=excluir&id=${lab.id}" class="btn-icon btn-delete" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este laboratório?')"><i class="fas fa-trash"></i></a>
-                                    </c:if>
+                                    <c:choose>
+                                        <c:when test="${usuario.bolsista}">
+                                            <c:choose>
+                                                <c:when test="${lab.id == usuario.laboratorioId}">
+                                                    <a href="laboratorio?action=detalhes&id=${lab.id}" class="btn-icon btn-details" title="Detalhes"><i class="fas fa-eye"></i></a>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="text-muted" title="Sem acesso a detalhes de laboratórios de outras equipes"><i class="fas fa-lock"></i></span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <a href="laboratorio?action=detalhes&id=${lab.id}" class="btn-icon btn-details" title="Detalhes"><i class="fas fa-eye"></i></a>
+                                            <c:if test="${usuario.admin}">
+                                                <a href="laboratorio?action=editar&id=${lab.id}" class="btn-icon btn-edit" title="Editar"><i class="fas fa-edit"></i></a>
+                                                <a href="laboratorio?action=excluir&id=${lab.id}" class="btn-icon btn-delete" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este laboratório?')"><i class="fas fa-trash"></i></a>
+                                            </c:if>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </td>
                             </tr>
                         </c:forEach>

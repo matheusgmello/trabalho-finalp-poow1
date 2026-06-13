@@ -202,13 +202,14 @@ public class LaboratorioController {
             } else if (usuarioLogado.isProfessor()) {
                 lista = laboratorioService.listarPorCoordenador(usuarioLogado.getId());
             } else { // bolsista
-                int labId = ((Bolsista) usuarioLogado).getLaboratorioId();
-                lista = new ArrayList<>();
-                Laboratorio lab = laboratorioService.buscarPorId(labId);
-                if (lab != null) {
-                    lista.add(lab);
-                }
+                lista = laboratorioService.listarTodos();
             }
+
+            // Carrega os projetos de cada laboratório para visualização
+            for (Laboratorio lab : lista) {
+                lab.setProjetos(projetoService.listarPorLaboratorio(lab.getId()));
+            }
+
             model.addAttribute("listaLaboratorios", lista);
         } catch (Exception e) {
             e.printStackTrace();
