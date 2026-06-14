@@ -83,7 +83,7 @@
                                         <c:if test="${isMember}">
                                             <c:set var="hasMembers" value="true" />
                                             <li>
-                                                <span><strong>${b.nome}</strong> (${not empty b.funcao ? b.funcao : 'Bolsista'})</span>
+                                                <span><strong>${b.nome}</strong> (${not empty b.cargo ? b.cargo.descricao : 'Bolsista'})</span>
                                                 <c:if test="${podeGerenciar}">
                                                     <a href="projeto/desvincular?bolsistaId=${b.id}&projetoId=${proj.id}&labId=${laboratorio.id}" 
                                                        class="unlink-member-btn"
@@ -165,9 +165,9 @@
                     <thead>
                         <tr>
                             <th>Nome</th>
-                            <th>Curso</th>
-                            <th>Função</th>
-                            <th>Projetos Atuantes</th>
+                             <th>Curso</th>
+                             <th>Cargo</th>
+                             <th>Projetos Atuantes</th>
                             <th>E-mail</th>
                             <th>Matrícula</th>
                         </tr>
@@ -177,7 +177,7 @@
                             <tr>
                                 <td><strong>${b.nome}</strong></td>
                                 <td>${b.curso}</td>
-                                <td><span class="badge badge-funcao">${not empty b.funcao ? b.funcao : 'Bolsista'}</span></td>
+                                 <td><span class="badge badge-cargo">${not empty b.cargo ? b.cargo.descricao : 'Bolsista'}</span></td>
                                 <td>
                                     <c:set var="bpKey3" value="projetosBolsista_${b.id}" />
                                     <c:forEach var="bp" items="${requestScope[bpKey3]}" varStatus="status">

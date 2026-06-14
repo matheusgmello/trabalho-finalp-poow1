@@ -23,13 +23,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const groupCurso = document.getElementById('group-curso');
     const groupMatricula = document.getElementById('group-matricula');
     const groupLaboratorio = document.getElementById('group-laboratorio');
-    const groupFuncao = document.getElementById('group-funcao');
+    const groupCargo = document.getElementById('group-cargo');
 
     const inputDataNasc = document.getElementById('dataNascimento');
     const inputCurso = document.getElementById('curso');
     const inputMatricula = document.getElementById('matricula');
     const selectLaboratorio = document.getElementById('laboratorioId');
-    const inputFuncao = document.getElementById('funcao');
+    const selectCargo = document.getElementById('cargo');
 
     function toggleFields() {
         if (!tipoUsuario) return;
@@ -39,30 +39,40 @@ document.addEventListener('DOMContentLoaded', function() {
             if (groupCurso) groupCurso.style.display = 'none';
             if (groupMatricula) groupMatricula.style.display = 'none';
             if (groupLaboratorio) groupLaboratorio.style.display = 'none';
-            if (groupFuncao) groupFuncao.style.display = 'none';
+            if (groupCargo) groupCargo.style.display = 'none';
 
             if (inputDataNasc) { inputDataNasc.disabled = true; inputDataNasc.required = false; }
             if (inputCurso) { inputCurso.disabled = true; inputCurso.required = false; }
             if (inputMatricula) { inputMatricula.disabled = true; inputMatricula.required = false; }
             if (selectLaboratorio) { selectLaboratorio.disabled = true; }
-            if (inputFuncao) { inputFuncao.disabled = true; }
+            if (selectCargo) { selectCargo.disabled = true; selectCargo.value = ''; }
         } else {
             if (groupDataNasc) groupDataNasc.style.display = '';
             if (groupCurso) groupCurso.style.display = '';
             if (groupMatricula) groupMatricula.style.display = '';
             if (groupLaboratorio) groupLaboratorio.style.display = '';
-            if (groupFuncao) groupFuncao.style.display = '';
 
             if (inputDataNasc) { inputDataNasc.disabled = false; inputDataNasc.required = true; }
             if (inputCurso) { inputCurso.disabled = false; inputCurso.required = true; }
             if (inputMatricula) { inputMatricula.disabled = false; inputMatricula.required = true; }
             if (selectLaboratorio) { selectLaboratorio.disabled = false; }
-            if (inputFuncao) { inputFuncao.disabled = false; }
+
+            // Cargo so pode ser escolhido se tiver laboratorio
+            if (selectLaboratorio && selectLaboratorio.value !== '') {
+                if (groupCargo) groupCargo.style.display = '';
+                if (selectCargo) { selectCargo.disabled = false; }
+            } else {
+                if (groupCargo) groupCargo.style.display = 'none';
+                if (selectCargo) { selectCargo.disabled = true; selectCargo.value = ''; }
+            }
         }
     }
 
     if (tipoUsuario) {
         tipoUsuario.addEventListener('change', toggleFields);
-        toggleFields();
     }
+    if (selectLaboratorio) {
+        selectLaboratorio.addEventListener('change', toggleFields);
+    }
+    toggleFields();
 });

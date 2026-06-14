@@ -50,7 +50,7 @@
                         <tr>
                             <th>Nome</th>
                             <th>Curso</th>
-                            <th>Função</th>
+                            <th>Cargo</th>
                             <th>Laboratório</th>
                             <th>Tipo</th>
                             <th>Ações</th>
@@ -61,7 +61,7 @@
                             <tr>
                                 <td><strong>${b.nome}</strong></td>
                                 <td>${b.curso}</td>
-                                <td>${not empty b.funcao ? b.funcao : '---'}</td>
+                                <td>${not empty b.cargo ? b.cargo.descricao : '---'}</td>
                                 <td>${not empty b.nomeLaboratorio ? b.nomeLaboratorio : '---'}</td>
                                 <td>
                                     <span class="badge ${b.admin ? 'badge-admin' : (b.professor ? 'badge-professor' : 'badge-bolsista')}">

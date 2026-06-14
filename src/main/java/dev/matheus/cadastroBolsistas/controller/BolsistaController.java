@@ -1,6 +1,7 @@
 package dev.matheus.cadastroBolsistas.controller;
 
 import dev.matheus.cadastroBolsistas.model.Bolsista;
+import dev.matheus.cadastroBolsistas.model.Cargo;
 import dev.matheus.cadastroBolsistas.model.Professor;
 import dev.matheus.cadastroBolsistas.model.Laboratorio;
 import dev.matheus.cadastroBolsistas.model.Usuario;
@@ -186,7 +187,7 @@ public class BolsistaController {
                          @RequestParam(required = false) String laboratorioId,
                          @RequestParam(required = false) String tipoUsuario,
                          @RequestParam(required = false) String fotoUrl,
-                         @RequestParam(required = false) String funcao,
+                         @RequestParam(required = false) String cargo,
                          @RequestParam(required = false) String bio,
                          HttpSession session,
                          Model model) {
@@ -271,7 +272,7 @@ public class BolsistaController {
         b.setAtivo(true);
         b.setTipoUsuario(!estaVazio(tipoUsuario) ? tipoUsuario : "BOLSISTA");
         b.setFotoUrl(limpar(fotoUrl));
-        b.setFuncao(limpar(funcao));
+        b.setCargo(Cargo.deString(limpar(cargo)));
         b.setBio(limpar(bio));
 
         String erroValidacao = validarBolsista(b, dataNascimento, laboratorioId, usuarioLogado);
@@ -306,6 +307,9 @@ public class BolsistaController {
                 e.printStackTrace();
             }
             b.setLaboratorioId(labId);
+        } else {
+            b.setLaboratorioId(0);
+            b.setCargo(null);
         }
 
         try {
@@ -331,7 +335,7 @@ public class BolsistaController {
         response.setContentType("text/csv");
         response.setHeader("Content-Disposition", "attachment; filename=usuarios.csv");
         try (PrintWriter writer = response.getWriter()) {
-            writer.println("ID,Nome,Email,Curso,Laboratorio,Status,Funcao,Tipo");
+            writer.println("ID,Nome,Email,Curso,Laboratorio,Status,Cargo,Tipo");
             ArrayList<Usuario> lista = new ArrayList<>();
             lista.addAll(bolsistaService.listarTodos());
             if (usuarioLogado.isAdmin()) {
@@ -360,10 +364,11 @@ public class BolsistaController {
             lista = filtrarUsuariosPorPermissao(lista, usuarioLogado);
             for (Usuario u : lista) {
                 String curso = u instanceof Bolsista ? ((Bolsista) u).getCurso() : "";
-                String funcao = u instanceof Bolsista ? ((Bolsista) u).getFuncao() : "";
+                Cargo cargoObj = u instanceof Bolsista ? ((Bolsista) u).getCargo() : null;
+                String cargoStr = cargoObj != null ? cargoObj.getDescricao() : "";
                 writer.println(u.getId() + "," + u.getNome() + "," + u.getEmail() + "," +
                         curso + "," + u.getNomeLaboratorio() + "," + (u.isAtivo() ? "Ativo" : "Inativo") + "," +
-                        funcao + "," + u.getTipoUsuario());
+                        cargoStr + "," + u.getTipoUsuario());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -377,6 +382,7 @@ public class BolsistaController {
             } else if (usuarioLogado.isProfessor()) {
                 model.addAttribute("laboratorios", laboratorioService.listarPorCoordenador(usuarioLogado.getId()));
             }
+            model.addAttribute("cargos", Cargo.values());
         } catch (Exception e) {
             e.printStackTrace();
         }

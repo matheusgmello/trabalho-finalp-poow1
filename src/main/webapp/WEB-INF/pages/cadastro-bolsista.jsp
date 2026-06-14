@@ -75,9 +75,14 @@
                             </c:forEach>
                         </select>
                     </div>
-                    <div class="form-group" id="group-funcao">
-                        <label>Função no Laboratório</label>
-                        <input type="text" name="funcao" id="funcao" value="${bolsista.funcao}" placeholder="Ex: Desenvolvedor, Pesquisador, etc.">
+                    <div class="form-group" id="group-cargo">
+                        <label>Cargo no Laboratório</label>
+                        <select name="cargo" id="cargo">
+                            <option value="">Selecione um cargo...</option>
+                            <c:forEach var="c" items="${cargos}">
+                                <option value="${c.name()}" ${bolsista.cargo == c ? 'selected' : ''}>${c.descricao}</option>
+                            </c:forEach>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>URL da Foto de Perfil</label>

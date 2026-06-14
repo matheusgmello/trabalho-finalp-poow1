@@ -100,7 +100,7 @@
                                             </div>
                                         </td>
                                         <td>${membro.email}</td>
-                                        <td><span class="membro-funcao">${not empty membro.funcao ? membro.funcao : 'Bolsista'}</span></td>
+                                        <td><span class="membro-cargo">${not empty membro.cargo ? membro.cargo.descricao : 'Bolsista'}</span></td>
                                     </tr>
                                 </c:forEach>
                                 <c:if test="${empty equipe}">

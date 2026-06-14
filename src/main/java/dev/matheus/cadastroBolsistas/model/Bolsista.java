@@ -13,7 +13,7 @@ public class Bolsista extends Usuario {
     private String cpf;
     private String telefone;
     private int laboratorioId;
-    private String funcao; // papel/funcao do bolsista no laboratorio
+    private Cargo cargo; // papel/cargo do bolsista no laboratorio
 
     public Bolsista() {
         super();
@@ -22,7 +22,7 @@ public class Bolsista extends Usuario {
 
     public Bolsista(int id, String nome, String senha, LocalDate dataNascimento, String curso, String email,
                     String matricula, String cpf, String telefone, boolean ativo, int laboratorioId,
-                    String nomeLaboratorio, String tipoUsuario, String fotoUrl, String funcao) {
+                    String nomeLaboratorio, String tipoUsuario, String fotoUrl, Cargo cargo) {
         super(id, nome, email, senha, ativo, tipoUsuario, fotoUrl, nomeLaboratorio);
         this.dataNascimento = dataNascimento;
         this.curso = curso;
@@ -30,7 +30,7 @@ public class Bolsista extends Usuario {
         this.cpf = cpf;
         this.telefone = telefone;
         this.laboratorioId = laboratorioId;
-        this.funcao = funcao;
+        this.cargo = cargo;
     }
 
     public LocalDate getDataNascimento() { return dataNascimento; }
@@ -51,6 +51,6 @@ public class Bolsista extends Usuario {
     public int getLaboratorioId() { return laboratorioId; }
     public void setLaboratorioId(int laboratorioId) { this.laboratorioId = laboratorioId; }
 
-    public String getFuncao() { return funcao; }
-    public void setFuncao(String funcao) { this.funcao = funcao; }
+    public Cargo getCargo() { return cargo; }
+    public void setCargo(Cargo cargo) { this.cargo = cargo; }
 }

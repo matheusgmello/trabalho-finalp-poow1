@@ -69,7 +69,7 @@ public abstract class Usuario {
     public String getCurso() { return null; }
     public String getMatricula() { return null; }
     public int getLaboratorioId() { return 0; }
-    public String getFuncao() { return null; }
+    public Cargo getCargo() { return null; }
 
     public String getBio() { return bio; }
     public void setBio(String bio) { this.bio = bio; }
