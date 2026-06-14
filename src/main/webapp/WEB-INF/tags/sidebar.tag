@@ -1,7 +1,43 @@
 <%@ tag language="java" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<div class="topbar">
+    <div class="topbar-left">
+        <span>[SYS: SISBOLSA]</span>
+        <div class="topbar-status">
+            <span class="status-dot"></span>
+            <span>LIVE</span>
+        </div>
+    </div>
+    <div class="topbar-right">
+        <span>[OP: ${usuario.nome != null ? usuario.nome.toUpperCase() : 'DESCONHECIDO'} // ROLE: ${usuario.tipoUsuario}]</span>
+    </div>
+</div>
+
 <div class="sidebar">
     <h2>SisBolsa</h2>
+    
+    <div class="user-profile-widget">
+        <c:choose>
+            <c:when test="${not empty usuario.fotoUrl}">
+                <img src="${usuario.fotoUrl}" alt="Avatar" class="profile-img">
+            </c:when>
+            <c:otherwise>
+                <div class="profile-placeholder"><i class="fas fa-user"></i></div>
+            </c:otherwise>
+        </c:choose>
+        <div class="profile-info">
+            <span class="profile-name">${usuario.nome}</span>
+            <span class="profile-role">
+                <c:choose>
+                    <c:when test="${usuario.admin}">ADMINISTRADOR</c:when>
+                    <c:when test="${usuario.professor}">PROFESSOR</c:when>
+                    <c:otherwise>${not empty usuario.cargo ? usuario.cargo.name() : 'BOLSISTA'}</c:otherwise>
+                </c:choose>
+            </span>
+        </div>
+    </div>
+    
     <ul>
         <li><a href="dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
         <c:if test="${usuario.admin || usuario.professor}">
@@ -14,3 +50,16 @@
     </ul>
     <a href="logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Sair</a>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const currentUrl = window.location.pathname;
+        const links = document.querySelectorAll(".sidebar ul li a");
+        links.forEach(link => {
+            const href = link.getAttribute("href");
+            if (currentUrl.endsWith(href) || currentUrl.includes("/" + href)) {
+                link.parentElement.classList.add("active");
+            }
+        });
+    });
+</script>

@@ -17,7 +17,7 @@
     <t:sidebar />
 
     <div class="main-content">
-        <header>
+        <header class="dashboard-header">
             <c:choose>
                 <c:when test="${usuario.bolsista}">
                     <h1>Área do Bolsista</h1>
