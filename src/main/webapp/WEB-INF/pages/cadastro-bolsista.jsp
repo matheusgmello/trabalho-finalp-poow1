@@ -83,6 +83,10 @@
                         <label>URL da Foto de Perfil</label>
                         <input type="text" name="fotoUrl" value="${bolsista.fotoUrl}" placeholder="https://exemplo.com/foto.jpg">
                     </div>
+                    <div class="form-group form-group-full">
+                        <label>Biografia / Sobre Mim (Rede Social)</label>
+                        <textarea name="bio" id="bio" rows="4" placeholder="Escreva um resumo sobre este usuário...">${bolsista.bio}</textarea>
+                    </div>
                     <div class="form-group">
                         <label>Senha <span class="asterisco">*</span></label>
                         <input type="password" name="senha" id="senha" value="${bolsista.senha}" required minlength="6" placeholder="Mínimo 6 caracteres">

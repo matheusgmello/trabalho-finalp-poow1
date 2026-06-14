@@ -91,7 +91,12 @@
                                                         <div class="avatar-placeholder"><i class="fas fa-user"></i></div>
                                                     </c:otherwise>
                                                 </c:choose>
-                                                <strong>${membro.nome} ${membro.id == usuario.id ? '(Você)' : ''}</strong>
+                                                <div class="user-info-wrapper">
+                                                    <strong class="user-name">${membro.nome} ${membro.id == usuario.id ? '(Você)' : ''}</strong>
+                                                    <c:if test="${not empty membro.bio}">
+                                                        <p class="user-bio-small" title="${membro.bio}">${membro.bio}</p>
+                                                    </c:if>
+                                                </div>
                                             </div>
                                         </td>
                                         <td>${membro.email}</td>

@@ -187,6 +187,7 @@ public class BolsistaController {
                          @RequestParam(required = false) String tipoUsuario,
                          @RequestParam(required = false) String fotoUrl,
                          @RequestParam(required = false) String funcao,
+                         @RequestParam(required = false) String bio,
                          HttpSession session,
                          Model model) {
 
@@ -223,6 +224,7 @@ public class BolsistaController {
             p.setSenha(limpar(senha));
             p.setAtivo(true);
             p.setFotoUrl(limpar(fotoUrl));
+            p.setBio(limpar(bio));
 
             String erroValidacao = validarProfessor(p, usuarioLogado);
             if (erroValidacao != null) {
@@ -270,6 +272,7 @@ public class BolsistaController {
         b.setTipoUsuario(!estaVazio(tipoUsuario) ? tipoUsuario : "BOLSISTA");
         b.setFotoUrl(limpar(fotoUrl));
         b.setFuncao(limpar(funcao));
+        b.setBio(limpar(bio));
 
         String erroValidacao = validarBolsista(b, dataNascimento, laboratorioId, usuarioLogado);
         if (erroValidacao != null) {

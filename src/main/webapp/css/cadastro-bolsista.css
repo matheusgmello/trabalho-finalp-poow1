@@ -76,3 +76,12 @@
     color: white;
     text-decoration: none;
 }
+
+.form-group textarea {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+}

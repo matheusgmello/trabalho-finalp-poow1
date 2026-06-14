@@ -135,3 +135,12 @@
 .btn-cancel:hover {
     background-color: #7f8c8d;
 }
+
+.form-group textarea {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+}

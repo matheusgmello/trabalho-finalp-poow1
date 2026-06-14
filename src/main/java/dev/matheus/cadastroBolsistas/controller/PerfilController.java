@@ -37,6 +37,7 @@ public class PerfilController {
                                   @RequestParam String senha,
                                   @RequestParam String confirmaSenha,
                                   @RequestParam(required = false) String fotoUrl,
+                                  @RequestParam(required = false) String bio,
                                   HttpSession session,
                                   Model model) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
@@ -46,6 +47,7 @@ public class PerfilController {
         senha = senha != null ? senha.trim() : "";
         confirmaSenha = confirmaSenha != null ? confirmaSenha.trim() : "";
         fotoUrl = fotoUrl != null ? fotoUrl.trim() : "";
+        bio = bio != null ? bio.trim() : "";
 
         if (nome.isEmpty() || email.isEmpty() || senha.isEmpty()) {
             model.addAttribute("erro", "Todos os campos obrigatórios devem ser preenchidos.");
@@ -74,6 +76,7 @@ public class PerfilController {
                 if (!fotoUrl.isEmpty()) {
                     prof.setFotoUrl(fotoUrl);
                 }
+                prof.setBio(bio);
                 professorService.atualizar(prof);
                 session.setAttribute("usuario", prof);
             } else {
@@ -84,6 +87,7 @@ public class PerfilController {
                 if (!fotoUrl.isEmpty()) {
                     bol.setFotoUrl(fotoUrl);
                 }
+                bol.setBio(bio);
                 bolsistaService.atualizar(bol);
                 session.setAttribute("usuario", bol);
             }

@@ -14,9 +14,10 @@ public class ProfessorDAO {
     public boolean inserir(Professor p) throws SQLException {
         try (Connection conn = ConectaDBPostgres.getConexao();
              Statement stmt = conn.createStatement()) {
-            String sql = "INSERT INTO professor (nome, email, senha, ativo, foto_url) " +
+            String sql = "INSERT INTO professor (nome, email, senha, ativo, foto_url, bio) " +
                          "VALUES ('" + p.getNome() + "', '" + p.getEmail() + "', '" + p.getSenha() + 
-                         "', " + p.isAtivo() + ", " + (p.getFotoUrl() != null ? "'" + p.getFotoUrl() + "'" : "NULL") + ")";
+                         "', " + p.isAtivo() + ", " + (p.getFotoUrl() != null ? "'" + p.getFotoUrl() + "'" : "NULL") + 
+                         ", " + (p.getBio() != null ? "'" + p.getBio().replace("'", "''") + "'" : "NULL") + ")";
             stmt.execute(sql);
             return true;
         }
@@ -78,7 +79,8 @@ public class ProfessorDAO {
                          "email = '" + p.getEmail() + "', " +
                          "senha = '" + p.getSenha() + "', " +
                          "ativo = " + p.isAtivo() + ", " +
-                         "foto_url = " + (p.getFotoUrl() != null ? "'" + p.getFotoUrl() + "'" : "NULL") + " " +
+                         "foto_url = " + (p.getFotoUrl() != null ? "'" + p.getFotoUrl() + "'" : "NULL") + ", " +
+                         "bio = " + (p.getBio() != null ? "'" + p.getBio().replace("'", "''") + "'" : "NULL") + " " +
                          "WHERE id = " + p.getId();
             stmt.execute(sql);
             return true;
@@ -102,6 +104,7 @@ public class ProfessorDAO {
         p.setSenha(rs.getString("senha"));
         p.setAtivo(rs.getBoolean("ativo"));
         p.setFotoUrl(rs.getString("foto_url"));
+        p.setBio(rs.getString("bio"));
         return p;
     }
 }

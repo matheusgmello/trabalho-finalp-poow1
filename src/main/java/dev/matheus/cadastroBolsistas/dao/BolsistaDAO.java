@@ -14,12 +14,13 @@ public class BolsistaDAO {
     public boolean inserir(Bolsista b) throws SQLException {
         try (Connection conn = ConectaDBPostgres.getConexao();
              Statement stmt = conn.createStatement()) {
-            String sql = "INSERT INTO bolsista (nome, data_nascimento, curso, email, matricula, cpf, telefone, senha, ativo, laboratorio_id, tipo_usuario, foto_url, funcao) " +
+            String sql = "INSERT INTO bolsista (nome, data_nascimento, curso, email, matricula, cpf, telefone, senha, ativo, laboratorio_id, tipo_usuario, foto_url, funcao, bio) " +
                          "VALUES ('" + b.getNome() + "', '" + b.getDataNascimento() + "', '" + b.getCurso() + "', '" +
                          b.getEmail() + "', '" + b.getMatricula() + "', '" + b.getCpf() + "', '" + b.getTelefone() + "', '" +
                          b.getSenha() + "', " + b.isAtivo() + ", " + (b.getLaboratorioId() > 0 ? b.getLaboratorioId() : "NULL") +
                          ", '" + b.getTipoUsuario() + "', " + (b.getFotoUrl() != null ? "'" + b.getFotoUrl() + "'" : "NULL") + 
-                         ", " + (b.getFuncao() != null ? "'" + b.getFuncao() + "'" : "NULL") + ")";
+                         ", " + (b.getFuncao() != null ? "'" + b.getFuncao() + "'" : "NULL") + 
+                         ", " + (b.getBio() != null ? "'" + b.getBio().replace("'", "''") + "'" : "NULL") + ")";
             stmt.execute(sql);
             return true;
         }
@@ -165,7 +166,8 @@ public class BolsistaDAO {
                          "laboratorio_id = " + (b.getLaboratorioId() > 0 ? b.getLaboratorioId() : "NULL") + ", " +
                          "tipo_usuario = '" + b.getTipoUsuario() + "', " +
                          "foto_url = " + (b.getFotoUrl() != null ? "'" + b.getFotoUrl() + "'" : "NULL") + ", " +
-                         "funcao = " + (b.getFuncao() != null ? "'" + b.getFuncao() + "'" : "NULL") + " " +
+                         "funcao = " + (b.getFuncao() != null ? "'" + b.getFuncao() + "'" : "NULL") + ", " +
+                         "bio = " + (b.getBio() != null ? "'" + b.getBio().replace("'", "''") + "'" : "NULL") + " " +
                          "WHERE id = " + b.getId();
             stmt.execute(sql);
             return true;
@@ -192,6 +194,7 @@ public class BolsistaDAO {
         b.setTipoUsuario(rs.getString("tipo_usuario"));
         b.setFotoUrl(rs.getString("foto_url"));
         b.setFuncao(rs.getString("funcao"));
+        b.setBio(rs.getString("bio"));
         return b;
     }
 }

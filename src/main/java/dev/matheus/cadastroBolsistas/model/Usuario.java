@@ -13,6 +13,7 @@ public abstract class Usuario {
     private String tipoUsuario; // 'ADMIN', 'BOLSISTA', 'PROFESSOR'
     private String fotoUrl;
     private String nomeLaboratorio; // nome do lab (para bolsistas) ou labs coordenados (para professores)
+    private String bio;
 
     public Usuario() {}
 
@@ -69,4 +70,7 @@ public abstract class Usuario {
     public String getMatricula() { return null; }
     public int getLaboratorioId() { return 0; }
     public String getFuncao() { return null; }
+
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
 }

@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS professor (
     email VARCHAR(255) UNIQUE NOT NULL,
     senha VARCHAR(255) NOT NULL,
     ativo BOOLEAN DEFAULT TRUE,
-    foto_url VARCHAR(255)
+    foto_url VARCHAR(255),
+    bio TEXT
 );
 
 CREATE TABLE IF NOT EXISTS laboratorio (
@@ -32,7 +33,8 @@ CREATE TABLE IF NOT EXISTS bolsista (
     laboratorio_id INTEGER REFERENCES laboratorio(id),
     tipo_usuario VARCHAR(20) DEFAULT 'BOLSISTA',
     foto_url VARCHAR(255),
-    funcao VARCHAR(255)
+    funcao VARCHAR(255),
+    bio TEXT
 );
 
 CREATE TABLE IF NOT EXISTS projeto (
