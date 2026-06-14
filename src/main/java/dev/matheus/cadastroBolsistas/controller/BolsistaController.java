@@ -54,6 +54,12 @@ public class BolsistaController {
                             Model model) throws IOException {
 
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
+        if (usuarioLogado == null) {
+            return "redirect:/login";
+        }
+        if (usuarioLogado.isBolsista()) {
+            return "redirect:/dashboard";
+        }
 
         if ("exportar".equals(action)) {
             exportarParaCSV(response, usuarioLogado);
@@ -185,6 +191,12 @@ public class BolsistaController {
                          Model model) {
 
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
+        if (usuarioLogado == null) {
+            return "redirect:/login";
+        }
+        if (usuarioLogado.isBolsista()) {
+            return "redirect:/dashboard";
+        }
 
         int userId = 0;
         if (!estaVazio(id)) {
