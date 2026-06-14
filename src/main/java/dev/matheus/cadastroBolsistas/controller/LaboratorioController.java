@@ -3,6 +3,7 @@ package dev.matheus.cadastroBolsistas.controller;
 import dev.matheus.cadastroBolsistas.model.Bolsista;
 import dev.matheus.cadastroBolsistas.model.Laboratorio;
 import dev.matheus.cadastroBolsistas.model.Usuario;
+import dev.matheus.cadastroBolsistas.model.Projeto;
 import dev.matheus.cadastroBolsistas.service.BolsistaService;
 import dev.matheus.cadastroBolsistas.service.LaboratorioService;
 import dev.matheus.cadastroBolsistas.service.ProfessorService;
@@ -38,6 +39,7 @@ public class LaboratorioController {
     @GetMapping
     public String handleGet(@RequestParam(required = false) String action,
                             @RequestParam(required = false) String id,
+                            @RequestParam(required = false) String editarProjetoId,
                             HttpSession session,
                             Model model) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
@@ -61,8 +63,23 @@ public class LaboratorioController {
             try {
                 int labId = Integer.parseInt(id);
                 Laboratorio lab = laboratorioService.buscarPorId(labId);
+                if (lab != null) {
+                    lab.setProjetos(projetoService.listarPorLaboratorio(labId));
+                }
                 model.addAttribute("laboratorio", lab);
                 model.addAttribute("professores", professorService.listarTodos());
+                
+                if (editarProjetoId != null && !editarProjetoId.trim().isEmpty()) {
+                    try {
+                        int projId = Integer.parseInt(editarProjetoId);
+                        Projeto proj = projetoService.buscarPorId(projId);
+                        if (proj != null && proj.getLaboratorioId() == labId) {
+                            model.addAttribute("projetoParaEditar", proj);
+                        }
+                    } catch (NumberFormatException e) {
+                        // ignore
+                    }
+                }
                 return "cadastro-laboratorio";
             } catch (NumberFormatException e) {
                 model.addAttribute("erro", "ID do laboratorio invalido.");

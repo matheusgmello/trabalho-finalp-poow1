@@ -67,6 +67,77 @@
                     </div>
                 </div>
             </form>
+
+            <c:if test="${laboratorio != null && laboratorio.id > 0}">
+                <div class="secao-projetos" id="secao-projetos">
+                    <h2><i class="fas fa-project-diagram"></i> Projetos Cadastrados no Laboratório</h2>
+                    
+                    <c:if test="${not empty param.erro}">
+                        <div class="error-msg">
+                            <i class="fas fa-exclamation-circle"></i> ${param.erro}
+                        </div>
+                    </c:if>
+
+                    <div class="projetos-grid">
+                        <c:forEach var="proj" items="${laboratorio.projetos}">
+                            <div class="projeto-card">
+                                <div class="projeto-info">
+                                    <h4>${proj.nome}</h4>
+                                    <p>${not empty proj.descricao ? proj.descricao : 'Sem descrição cadastrada.'}</p>
+                                </div>
+                                <div class="projeto-acoes">
+                                    <a href="laboratorio?action=editar&id=${laboratorio.id}&editarProjetoId=${proj.id}#secao-projetos" class="btn-mini btn-mini-edit">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </a>
+                                    <a href="projeto/desativar?id=${proj.id}&labId=${laboratorio.id}&origem=editar" class="btn-mini btn-mini-delete" onclick="return confirm('Deseja realmente desativar este projeto?')">
+                                        <i class="fas fa-trash"></i> Excluir
+                                    </a>
+                                </div>
+                            </div>
+                        </c:forEach>
+                        <c:if test="${empty laboratorio.projetos}">
+                            <div class="form-group-full" style="grid-column: span 2; text-align: center; color: #777; padding: 20px;">
+                                <p><i class="fas fa-folder-open"></i> Nenhum projeto cadastrado neste laboratório.</p>
+                            </div>
+                        </c:if>
+                    </div>
+
+                    <div class="form-projeto-box">
+                        <h3>
+                            <i class="fas ${projetoParaEditar != null ? 'fa-edit' : 'fa-plus-circle'}"></i> 
+                            ${projetoParaEditar != null ? 'Editar Projeto' : 'Adicionar Novo Projeto'}
+                        </h3>
+                        <form action="projeto/salvar" method="post">
+                            <input type="hidden" name="laboratorioId" value="${laboratorio.id}">
+                            <input type="hidden" name="origem" value="editar">
+                            <c:if test="${projetoParaEditar != null}">
+                                <input type="hidden" name="id" value="${projetoParaEditar.id}">
+                            </c:if>
+                            
+                            <div class="form-projeto-grid">
+                                <div class="form-group">
+                                    <label for="nomeProj">Nome do Projeto <span class="asterisco">*</span></label>
+                                    <input type="text" name="nome" id="nomeProj" value="${projetoParaEditar.nome}" required minlength="3" placeholder="Ex: Desenvolvimento App Mobile">
+                                </div>
+                                <div class="form-group">
+                                    <label for="descProj">Descrição do Projeto</label>
+                                    <textarea name="descricao" id="descProj" placeholder="Descreva os objetivos, tecnologias e escopo do projeto...">${projetoParaEditar.descricao}</textarea>
+                                </div>
+                                <div class="proj-actions">
+                                    <button type="submit" class="btn-proj-save">
+                                        <i class="fas fa-check"></i> ${projetoParaEditar != null ? 'Salvar Alterações' : 'Cadastrar Projeto'}
+                                    </button>
+                                    <c:if test="${projetoParaEditar != null}">
+                                        <a href="laboratorio?action=editar&id=${laboratorio.id}#secao-projetos" class="btn-proj-cancel">
+                                            Cancelar
+                                        </a>
+                                    </c:if>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </c:if>
         </div>
     </div>
 

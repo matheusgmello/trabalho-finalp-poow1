@@ -28,9 +28,11 @@ public class ProjetoController {
     private LaboratorioService laboratorioService;
 
     @PostMapping("/salvar")
-    public String salvar(@RequestParam String nome,
+    public String salvar(@RequestParam(required = false) Integer id,
+                         @RequestParam String nome,
                          @RequestParam String descricao,
                          @RequestParam int laboratorioId,
+                         @RequestParam(required = false) String origem,
                          HttpSession session,
                          Model model) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
@@ -40,26 +42,49 @@ public class ProjetoController {
         }
 
         try {
-            Projeto p = new Projeto();
+            Projeto p;
+            if (id != null && id > 0) {
+                p = projetoService.buscarPorId(id);
+                if (p == null || p.getLaboratorioId() != laboratorioId) {
+                    if ("editar".equals(origem)) {
+                        return "redirect:/laboratorio?action=editar&id=" + laboratorioId;
+                    }
+                    return "redirect:/laboratorio?action=detalhes&id=" + laboratorioId;
+                }
+            } else {
+                p = new Projeto();
+                p.setLaboratorioId(laboratorioId);
+                p.setAtivo(true);
+            }
             p.setNome(nome != null ? nome.trim() : "");
             p.setDescricao(descricao != null ? descricao.trim() : "");
-            p.setLaboratorioId(laboratorioId);
             
             if (p.getNome().isEmpty()) {
+                if ("editar".equals(origem)) {
+                    return "redirect:/laboratorio?action=editar&id=" + laboratorioId + "&erro=O nome do projeto nao pode ser vazio";
+                }
                 return "redirect:/laboratorio?action=detalhes&id=" + laboratorioId;
             }
 
-            projetoService.cadastrar(p);
+            if (p.getId() > 0) {
+                projetoService.atualizar(p);
+            } else {
+                projetoService.cadastrar(p);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
+        if ("editar".equals(origem)) {
+            return "redirect:/laboratorio?action=editar&id=" + laboratorioId;
+        }
         return "redirect:/laboratorio?action=detalhes&id=" + laboratorioId;
     }
 
     @GetMapping("/desativar")
     public String desativar(@RequestParam int id,
                             @RequestParam int labId,
+                            @RequestParam(required = false) String origem,
                             HttpSession session) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
 
@@ -73,6 +98,9 @@ public class ProjetoController {
             e.printStackTrace();
         }
 
+        if ("editar".equals(origem)) {
+            return "redirect:/laboratorio?action=editar&id=" + labId;
+        }
         return "redirect:/laboratorio?action=detalhes&id=" + labId;
     }
 
