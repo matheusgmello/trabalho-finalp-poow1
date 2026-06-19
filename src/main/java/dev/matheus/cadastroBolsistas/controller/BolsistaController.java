@@ -145,6 +145,17 @@ public class BolsistaController {
                 }
             }
 
+            if (tipo != null && !tipo.trim().isEmpty() && !"editar".equals(action) && !"excluir".equals(action)) {
+                String tipoFiltro = tipo.trim().toUpperCase();
+                ArrayList<Usuario> listaFiltrada = new ArrayList<>();
+                for (Usuario u : lista) {
+                    if (tipoFiltro.equals(u.getTipoUsuario())) {
+                        listaFiltrada.add(u);
+                    }
+                }
+                lista = listaFiltrada;
+            }
+
             // Popular o nomeLaboratorio para os professores com a lista de laboratórios coordenados por eles
             for (Usuario u : lista) {
                 if (u.isProfessor()) {

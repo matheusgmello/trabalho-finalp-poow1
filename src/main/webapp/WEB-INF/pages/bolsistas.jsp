@@ -44,6 +44,16 @@
                 <a href="bolsista" class="reset-button"><i class="fas fa-sync"></i></a>
             </div>
 
+            <c:if test="${usuario.admin}">
+                <div class="filter-pills">
+                    <span style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted); margin-right: 8px;">Filtrar por tipo:</span>
+                    <a href="bolsista" class="pill-btn ${empty param.tipo ? 'active' : ''}">Todos</a>
+                    <a href="bolsista?tipo=BOLSISTA" class="pill-btn ${param.tipo == 'BOLSISTA' ? 'active' : ''}">Bolsistas</a>
+                    <a href="bolsista?tipo=PROFESSOR" class="pill-btn ${param.tipo == 'PROFESSOR' ? 'active' : ''}">Professores</a>
+                    <a href="bolsista?tipo=ADMIN" class="pill-btn ${param.tipo == 'ADMIN' ? 'active' : ''}">Administradores</a>
+                </div>
+            </c:if>
+
             <div class="table-container">
                 <table>
                     <thead>
