@@ -20,10 +20,10 @@
     <div class="user-profile-widget">
         <c:choose>
             <c:when test="${not empty usuario.fotoUrl}">
-                <img src="${usuario.fotoUrl}" alt="Avatar" class="profile-img">
+                <img src="${usuario.fotoUrl}" alt="Avatar" class="profile-img" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid var(--primary-color);">
             </c:when>
             <c:otherwise>
-                <div class="profile-placeholder"><i class="fas fa-user"></i></div>
+                <div class="profile-placeholder" style="width: 40px; height: 40px; border-radius: 50%; background-color: #e2e8f0; color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;"><i class="fas fa-user"></i></div>
             </c:otherwise>
         </c:choose>
         <div class="profile-info">
@@ -44,6 +44,7 @@
             <li><a href="bolsista"><i class="fas fa-user-graduate"></i> ${usuario.admin ? 'Usuários' : 'Bolsistas'}</a></li>
         </c:if>
         <li><a href="laboratorio"><i class="fas fa-flask"></i> Laboratórios</a></li>
+        <li><a href="projeto"><i class="fas fa-project-diagram"></i> Projetos</a></li>
         <li><a href="frequencia"><i class="fas fa-calendar-check"></i> Frequência</a></li>
         <li><a href="relatorio"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
         <li><a href="perfil"><i class="fas fa-user-cog"></i> Editar Perfil</a></li>

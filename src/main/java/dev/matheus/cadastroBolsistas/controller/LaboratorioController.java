@@ -193,8 +193,12 @@ public class LaboratorioController {
         lab.setCapacidade(Integer.parseInt(capacidade));
 
         try {
+            boolean isNovo = (lab.getId() == 0);
             boolean sucesso = lab.getId() > 0 ? laboratorioService.atualizar(lab) : laboratorioService.cadastrar(lab);
             if (sucesso) {
+                if (isNovo) {
+                    return "redirect:/projeto?action=novo&labId=" + lab.getId() + "&msg=lab_sucesso";
+                }
                 return "redirect:/laboratorio";
             } else {
                 model.addAttribute("erro", "Erro ao salvar laboratorio.");

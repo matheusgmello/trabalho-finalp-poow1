@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${bolsista != null ? 'Editar' : 'Novo'} ${usuario.admin ? 'Usuário' : 'Bolsista'} - SisBolsa</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/cadastro-bolsista.css">
+    <link rel="stylesheet" href="css/style.css?v=2">
+    <link rel="stylesheet" href="css/cadastro-bolsista.css?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -84,14 +84,16 @@
                             </c:forEach>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>URL da Foto de Perfil</label>
-                        <input type="text" name="fotoUrl" value="${bolsista.fotoUrl}" placeholder="https://exemplo.com/foto.jpg">
-                    </div>
-                    <div class="form-group form-group-full">
-                        <label>Biografia / Sobre Mim (Rede Social)</label>
-                        <textarea name="bio" id="bio" rows="4" placeholder="Escreva um resumo sobre este usuário...">${bolsista.bio}</textarea>
-                    </div>
+                    <c:if test="${not empty bolsista}">
+                        <div class="form-group">
+                            <label>URL da Foto de Perfil</label>
+                            <input type="text" name="fotoUrl" value="${bolsista.fotoUrl}" placeholder="https://exemplo.com/foto.jpg">
+                        </div>
+                        <div class="form-group form-group-full">
+                            <label>Biografia / Sobre Mim (Rede Social)</label>
+                            <textarea name="bio" id="bio" rows="4" placeholder="Escreva um resumo sobre este usuário...">${bolsista.bio}</textarea>
+                        </div>
+                    </c:if>
                     <div class="form-group">
                         <label>Senha <span class="asterisco">*</span></label>
                         <input type="password" name="senha" id="senha" value="${bolsista.senha}" required minlength="6" placeholder="Mínimo 6 caracteres">

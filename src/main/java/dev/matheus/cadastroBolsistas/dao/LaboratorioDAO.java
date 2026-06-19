@@ -18,7 +18,12 @@ public class LaboratorioDAO {
                          "VALUES ('" + lab.getNome() + "', '" + lab.getAreaPesquisa() + "', '" +
                          lab.getStatus() + "', " + lab.getCapacidade() + ", " + 
                          (lab.getCoordenadorId() > 0 ? lab.getCoordenadorId() : "NULL") + ", " + lab.isAtivo() + ")";
-            stmt.execute(sql);
+            stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    lab.setId(rs.getInt(1));
+                }
+            }
             return true;
         }
     }
