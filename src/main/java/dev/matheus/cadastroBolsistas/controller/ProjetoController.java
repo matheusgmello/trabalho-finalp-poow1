@@ -44,6 +44,46 @@ public class ProjetoController {
             return "redirect:/login";
         }
 
+        if ("detalhes".equals(action)) {
+            if (id == null) {
+                return "redirect:/projeto";
+            }
+            try {
+                int projId = Integer.parseInt(id);
+                Projeto proj = projetoService.buscarPorId(projId);
+                if (proj == null) {
+                    return "redirect:/projeto";
+                }
+
+                Laboratorio lab = laboratorioService.buscarPorId(proj.getLaboratorioId());
+                if (lab != null) {
+                    proj.setNomeLaboratorio(lab.getNome());
+                    model.addAttribute("coordenador", lab.getCoordenador());
+                    model.addAttribute("coordenadorId", lab.getCoordenadorId());
+                }
+
+                if (usuarioLogado.isBolsista() && ((Bolsista) usuarioLogado).getLaboratorioId() != proj.getLaboratorioId()) {
+                    return "redirect:/projeto?erro=Sem permissao para visualizar detalhes deste projeto.";
+                }
+
+                ArrayList<Bolsista> membrosProjeto = bolsistaService.buscarPorProjeto(projId);
+                ArrayList<Bolsista> bolsistasLab = bolsistaService.buscarPorLaboratorio(proj.getLaboratorioId());
+
+                boolean podeGerenciar = usuarioLogado.isAdmin() || 
+                        (usuarioLogado.isProfessor() && lab != null && lab.getCoordenadorId() == usuarioLogado.getId());
+
+                model.addAttribute("projeto", proj);
+                model.addAttribute("laboratorio", lab);
+                model.addAttribute("membros", membrosProjeto);
+                model.addAttribute("bolsistasLab", bolsistasLab);
+                model.addAttribute("podeGerenciar", podeGerenciar);
+                return "detalhes-projeto";
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "redirect:/projeto";
+            }
+        }
+
         if ("novo".equals(action) || "editar".equals(action)) {
             if (usuarioLogado.isBolsista()) {
                 return "redirect:/projeto";
@@ -237,6 +277,7 @@ public class ProjetoController {
     public String vincularBolsista(@RequestParam int bolsistaId,
                                    @RequestParam int projetoId,
                                    @RequestParam int labId,
+                                   @RequestParam(required = false) String origem,
                                    HttpSession session) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
 
@@ -250,6 +291,9 @@ public class ProjetoController {
             e.printStackTrace();
         }
 
+        if ("detalhes-projeto".equals(origem)) {
+            return "redirect:/projeto?action=detalhes&id=" + projetoId;
+        }
         return "redirect:/laboratorio?action=detalhes&id=" + labId;
     }
 
@@ -257,6 +301,7 @@ public class ProjetoController {
     public String desvincularBolsista(@RequestParam int bolsistaId,
                                       @RequestParam int projetoId,
                                       @RequestParam int labId,
+                                      @RequestParam(required = false) String origem,
                                       HttpSession session) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
 
@@ -270,6 +315,9 @@ public class ProjetoController {
             e.printStackTrace();
         }
 
+        if ("detalhes-projeto".equals(origem)) {
+            return "redirect:/projeto?action=detalhes&id=" + projetoId;
+        }
         return "redirect:/laboratorio?action=detalhes&id=" + labId;
     }
 

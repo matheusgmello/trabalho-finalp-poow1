@@ -107,9 +107,7 @@
                             <th>Laboratório</th>
                             <th>Coordenador</th>
                             <th>Bolsistas Vinculados</th>
-                            <c:if test="${usuario.admin || usuario.professor}">
-                                <th>Ações</th>
-                            </c:if>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -162,11 +160,26 @@
                                         </c:if>
                                     </div>
                                 </td>
-                                <c:if test="${usuario.admin || usuario.professor}">
-                                    <td>
-                                        <div class="actions-cell">
-                                            <c:choose>
-                                                <c:when test="${podeGerenciar}">
+                                <td>
+                                    <div class="actions-cell">
+                                        <c:choose>
+                                            <c:when test="${usuario.bolsista}">
+                                                <c:choose>
+                                                    <c:when test="${usuario.laboratorioId == p.laboratorioId}">
+                                                        <a href="projeto?action=detalhes&id=${p.id}" class="action-link action-link-details" style="color: var(--text-muted); background-color: #f1f5f9; border: 1px solid var(--border-grid);" title="Detalhes do Projeto">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="text-muted" title="Sem acesso a detalhes de projetos de outras equipes"><i class="fas fa-lock"></i></span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <a href="projeto?action=detalhes&id=${p.id}" class="action-link action-link-details" style="color: var(--text-muted); background-color: #f1f5f9; border: 1px solid var(--border-grid); margin-right: 8px;" title="Detalhes do Projeto">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <c:if test="${podeGerenciar}">
                                                     <a href="projeto?action=editar&id=${p.id}" class="action-link action-link-edit" title="Editar Projeto">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
@@ -176,19 +189,16 @@
                                                        onclick="return confirm('Deseja realmente desativar este projeto? Todos os bolsistas serão desvinculados.')">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <span class="text-muted" title="Sem permissão para gerenciar projetos deste laboratório"><i class="fas fa-lock"></i></span>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </div>
-                                    </td>
-                                </c:if>
+                                                </c:if>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                </td>
                             </tr>
                         </c:forEach>
                         <c:if test="${empty listaProjetos}">
                             <tr>
-                                <td colspan="${(usuario.admin || usuario.professor) ? 6 : 5}" class="empty-state">
+                                <td colspan="6" class="empty-state">
                                     Nenhum projeto encontrado.
                                 </td>
                             </tr>
