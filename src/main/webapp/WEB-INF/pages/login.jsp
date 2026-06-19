@@ -47,9 +47,6 @@
             </div>
         </c:if>
 
-        <div class="link-cadastro-admin">
-            <a href="${pageContext.request.contextPath}/cadastro-admin"><i class="fas fa-user-shield"></i> Cadastrar administrador</a>
-        </div>
     </div>
 
 </body>
