@@ -73,10 +73,26 @@
             <div class="search-section">
                 <form action="projeto" method="get" class="search-form">
                     <input type="text" name="buscaNome" value="${param.buscaNome}" placeholder="Pesquisar projeto por nome ou descrição..." class="search-input">
-                    <button type="submit" class="search-button"><i class="fas fa-search"></i> Filtrar</button>
+                    <c:if test="${not empty param.labId}">
+                        <input type="hidden" name="labId" value="${param.labId}">
+                    </c:if>
+                    <button type="submit" class="search-button"><i class="fas fa-search"></i> Pesquisar</button>
                 </form>
-                <c:if test="${not empty param.buscaNome}">
-                    <a href="projeto" class="reset-button"><i class="fas fa-sync"></i> Limpar Filtro</a>
+                
+                <form action="projeto" method="get" class="search-form">
+                    <c:if test="${not empty param.buscaNome}">
+                        <input type="hidden" name="buscaNome" value="${param.buscaNome}">
+                    </c:if>
+                    <select name="labId" class="search-input" onchange="this.form.submit()">
+                        <option value="">Todos os Laboratórios</option>
+                        <c:forEach var="l" items="${todosLaboratorios}">
+                            <option value="${l.id}" ${param.labId == l.id ? 'selected' : ''}>${l.nome}</option>
+                        </c:forEach>
+                    </select>
+                </form>
+
+                <c:if test="${not empty param.buscaNome || not empty param.labId}">
+                    <a href="projeto" class="reset-button" title="Limpar todos os filtros"><i class="fas fa-sync"></i></a>
                 </c:if>
             </div>
 

@@ -91,6 +91,8 @@ public class ProjetoController {
         }
 
         try {
+            model.addAttribute("todosLaboratorios", laboratorioService.listarTodos());
+
             ArrayList<Projeto> lista = new ArrayList<>();
             if (buscaNome != null && !buscaNome.trim().isEmpty()) {
                 ArrayList<Projeto> todos = projetoService.listarTodos();
@@ -103,6 +105,21 @@ public class ProjetoController {
                 }
             } else {
                 lista = projetoService.listarTodos();
+            }
+
+            if (labId != null && !labId.trim().isEmpty()) {
+                try {
+                    int filterLabId = Integer.parseInt(labId);
+                    ArrayList<Projeto> listaFiltrada = new ArrayList<>();
+                    for (Projeto p : lista) {
+                        if (p.getLaboratorioId() == filterLabId) {
+                            listaFiltrada.add(p);
+                        }
+                    }
+                    lista = listaFiltrada;
+                } catch (NumberFormatException e) {
+                    // ignore
+                }
             }
 
             for (Projeto p : lista) {
