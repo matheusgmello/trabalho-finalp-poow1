@@ -15,7 +15,7 @@ public class ConectaDBPostgres {
         try {
             Class.forName("org.postgresql.Driver");
             Connection conn = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/cadastroBolsista",
+                    "jdbc:postgresql://localhost:5436/cadastroBolsista",
                     "postgres",
                     "1234");
             return conn;
