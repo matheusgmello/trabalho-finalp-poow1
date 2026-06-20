@@ -7,6 +7,7 @@ import dev.matheus.cadastroBolsistas.model.Usuario;
 import dev.matheus.cadastroBolsistas.service.BolsistaService;
 import dev.matheus.cadastroBolsistas.service.FrequenciaService;
 import dev.matheus.cadastroBolsistas.service.LaboratorioService;
+import dev.matheus.cadastroBolsistas.util.StringUtil;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,8 +23,7 @@ import java.util.ArrayList;
 
 /*
  * responsavel pelo crud de frequencia.
- * get: lista registros e carrega formulario de edicao (action=editar|excluir).
- * post: registra novo ou atualiza existente (id > 0).
+ * mapeado em rotas limpas do Spring MVC (/frequencia, /frequencia/editar, /frequencia/excluir).
  * admin pode registrar para qualquer bolsista, editar e excluir qualquer registro.
  * professor pode registrar e verificar a frequencia dos bolsistas do seu laboratorio.
  * bolsista comum so pode registrar e editar os proprios.
@@ -42,53 +42,66 @@ public class FrequenciaController {
     private LaboratorioService laboratorioService;
 
     @GetMapping
-    public String handleGet(@RequestParam(required = false) String action,
-                            @RequestParam(required = false) String id,
-                            HttpSession session,
-                            Model model) {
+    public String listar(HttpSession session, Model model) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
-
-        if ("editar".equals(action)) {
-            try {
-                int freqId = Integer.parseInt(id);
-                Frequencia f = frequenciaService.buscarPorId(freqId);
-                if (f == null) {
-                    model.addAttribute("erro", "Registro de frequencia nao encontrado.");
-                } else if (!podeGerenciarFrequencia(usuarioLogado, f)) {
-                    return "redirect:/frequencia";
-                } else {
-                    model.addAttribute("frequenciaEdicao", f);
-                }
-            } catch (NumberFormatException e) {
-                model.addAttribute("erro", "ID da frequencia invalido.");
-            } catch (SQLException e) {
-                e.printStackTrace();
-                model.addAttribute("erro", "Erro ao buscar frequencia.");
-            }
-            carregarPagina(model, usuarioLogado);
-            return "frequencia";
+        if (usuarioLogado == null) {
+            return "redirect:/login";
         }
-
-        if ("excluir".equals(action)) {
-            try {
-                int freqId = Integer.parseInt(id);
-                Frequencia f = frequenciaService.buscarPorId(freqId);
-                if (f != null && podeGerenciarFrequencia(usuarioLogado, f)) {
-                    frequenciaService.excluir(freqId);
-                } else {
-                    model.addAttribute("erro", "Sem permissao para excluir frequencia.");
-                }
-            } catch (NumberFormatException e) {
-                model.addAttribute("erro", "ID da frequencia invalido.");
-            } catch (SQLException e) {
-                e.printStackTrace();
-                model.addAttribute("erro", "Erro ao excluir frequencia.");
-            }
-            return "redirect:/frequencia";
-        }
-
         carregarPagina(model, usuarioLogado);
         return "frequencia";
+    }
+
+    @GetMapping("/editar")
+    public String formularioEditar(@RequestParam String id,
+                                   HttpSession session,
+                                   Model model) {
+        Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
+        if (usuarioLogado == null) {
+            return "redirect:/login";
+        }
+        try {
+            int freqId = Integer.parseInt(id);
+            Frequencia f = frequenciaService.buscarPorId(freqId);
+            if (f == null) {
+                model.addAttribute("erro", "Registro de frequencia nao encontrado.");
+            } else if (!podeGerenciarFrequencia(usuarioLogado, f)) {
+                return "redirect:/frequencia";
+            } else {
+                model.addAttribute("frequenciaEdicao", f);
+            }
+        } catch (NumberFormatException e) {
+            model.addAttribute("erro", "ID da frequencia invalido.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            model.addAttribute("erro", "Erro ao buscar frequencia.");
+        }
+        carregarPagina(model, usuarioLogado);
+        return "frequencia";
+    }
+
+    @GetMapping("/excluir")
+    public String excluir(@RequestParam String id,
+                          HttpSession session,
+                          Model model) {
+        Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
+        if (usuarioLogado == null) {
+            return "redirect:/login";
+        }
+        try {
+            int freqId = Integer.parseInt(id);
+            Frequencia f = frequenciaService.buscarPorId(freqId);
+            if (f != null && podeGerenciarFrequencia(usuarioLogado, f)) {
+                frequenciaService.excluir(freqId);
+            } else {
+                model.addAttribute("erro", "Sem permissao para excluir frequencia.");
+            }
+        } catch (NumberFormatException e) {
+            model.addAttribute("erro", "ID da frequencia invalido.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            model.addAttribute("erro", "Erro ao excluir frequencia.");
+        }
+        return "redirect:/frequencia";
     }
 
     @PostMapping
@@ -100,8 +113,11 @@ public class FrequenciaController {
                          HttpSession session,
                          Model model) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
+        if (usuarioLogado == null) {
+            return "redirect:/login";
+        }
 
-        String erroValidacao = validarFrequencia(data, horas, limpar(descricao));
+        String erroValidacao = validarFrequencia(data, horas, StringUtil.limpar(descricao));
         if (erroValidacao != null) {
             model.addAttribute("erro", erroValidacao);
             carregarPagina(model, usuarioLogado);
@@ -109,7 +125,7 @@ public class FrequenciaController {
         }
 
         int freqId = 0;
-        if (!estaVazio(id)) {
+        if (!StringUtil.estaVazio(id)) {
             try {
                 freqId = Integer.parseInt(id);
             } catch (NumberFormatException e) {
@@ -133,7 +149,7 @@ public class FrequenciaController {
                 }
                 existente.setData(LocalDate.parse(data));
                 existente.setHorasTrabalhadas(Double.parseDouble(horas));
-                existente.setDescricao(limpar(descricao));
+                existente.setDescricao(StringUtil.limpar(descricao));
 
                 if (frequenciaService.atualizar(existente)) {
                     return "redirect:/frequencia";
@@ -153,7 +169,7 @@ public class FrequenciaController {
         // fluxo de novo registro
         int idBolsista;
         if (usuarioLogado.isAdmin() || usuarioLogado.isProfessor()) {
-            if (estaVazio(bolsistaId)) {
+            if (StringUtil.estaVazio(bolsistaId)) {
                 model.addAttribute("erro", "Selecione o bolsista para registrar a frequencia.");
                 carregarPagina(model, usuarioLogado);
                 return "frequencia";
@@ -161,7 +177,7 @@ public class FrequenciaController {
             try {
                 idBolsista = Integer.parseInt(bolsistaId);
                 Bolsista b = bolsistaService.buscarPorId(idBolsista);
-                if (usuarioLogado.isProfessor() && !podeGerenciarBolsista(usuarioLogado, b)) {
+                if (usuarioLogado.isProfessor() && !bolsistaService.podeGerenciar(usuarioLogado, b)) {
                     model.addAttribute("erro", "Sem permissao para registrar frequencia para este bolsista.");
                     carregarPagina(model, usuarioLogado);
                     return "frequencia";
@@ -180,7 +196,7 @@ public class FrequenciaController {
         f.setBolsistaId(idBolsista);
         f.setData(LocalDate.parse(data));
         f.setHorasTrabalhadas(Double.parseDouble(horas));
-        f.setDescricao(limpar(descricao));
+        f.setDescricao(StringUtil.limpar(descricao));
 
         try {
             if (frequenciaService.registrar(f)) {
@@ -222,25 +238,13 @@ public class FrequenciaController {
     }
 
     private boolean podeGerenciarFrequencia(Usuario usuarioLogado, Frequencia f) {
+        if (usuarioLogado == null || f == null) return false;
         if (usuarioLogado.isAdmin()) return true;
         if (usuarioLogado.isBolsista() && f.getBolsistaId() == usuarioLogado.getId()) return true;
         if (usuarioLogado.isProfessor()) {
             try {
                 Bolsista b = bolsistaService.buscarPorId(f.getBolsistaId());
-                return podeGerenciarBolsista(usuarioLogado, b);
-            } catch (SQLException e) {
-                return false;
-            }
-        }
-        return false;
-    }
-
-    private boolean podeGerenciarBolsista(Usuario usuarioLogado, Bolsista b) {
-        if (usuarioLogado.isAdmin()) return true;
-        if (usuarioLogado.isProfessor() && b != null) {
-            try {
-                ArrayList<Laboratorio> labs = laboratorioService.listarPorCoordenador(usuarioLogado.getId());
-                return labs.stream().anyMatch(l -> l.getId() == b.getLaboratorioId());
+                return bolsistaService.podeGerenciar(usuarioLogado, b);
             } catch (SQLException e) {
                 return false;
             }
@@ -249,7 +253,7 @@ public class FrequenciaController {
     }
 
     private String validarFrequencia(String dataStr, String horasStr, String descricao) {
-        if (estaVazio(dataStr)) {
+        if (StringUtil.estaVazio(dataStr)) {
             return "A data da frequencia e obrigatoria.";
         }
         try {
@@ -260,7 +264,7 @@ public class FrequenciaController {
         } catch (Exception e) {
             return "A data da frequencia e invalida.";
         }
-        if (estaVazio(horasStr)) {
+        if (StringUtil.estaVazio(horasStr)) {
             return "A quantidade de horas e obrigatoria.";
         }
         try {
@@ -278,13 +282,5 @@ public class FrequenciaController {
             return "A descricao deve ter no maximo 500 caracteres.";
         }
         return null;
-    }
-
-    private String limpar(String valor) {
-        return valor != null ? valor.trim() : "";
-    }
-
-    private boolean estaVazio(String valor) {
-        return valor == null || valor.trim().isEmpty();
     }
 }

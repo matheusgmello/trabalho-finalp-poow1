@@ -1,12 +1,13 @@
 package dev.matheus.cadastroBolsistas.controller;
 
+import dev.matheus.cadastroBolsistas.model.Bolsista;
 import dev.matheus.cadastroBolsistas.model.Laboratorio;
 import dev.matheus.cadastroBolsistas.model.Projeto;
 import dev.matheus.cadastroBolsistas.model.Usuario;
+import dev.matheus.cadastroBolsistas.service.BolsistaService;
 import dev.matheus.cadastroBolsistas.service.LaboratorioService;
 import dev.matheus.cadastroBolsistas.service.ProjetoService;
-import dev.matheus.cadastroBolsistas.model.Bolsista;
-import dev.matheus.cadastroBolsistas.service.BolsistaService;
+import dev.matheus.cadastroBolsistas.util.StringUtil;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,101 +34,13 @@ public class ProjetoController {
     private BolsistaService bolsistaService;
 
     @GetMapping
-    public String handleGet(@RequestParam(required = false) String action,
-                            @RequestParam(required = false) String id,
-                            @RequestParam(required = false) String labId,
-                            @RequestParam(required = false) String buscaNome,
-                            HttpSession session,
-                            Model model) {
+    public String listar(@RequestParam(required = false) String buscaNome,
+                         @RequestParam(required = false) String labId,
+                         HttpSession session,
+                         Model model) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
         if (usuarioLogado == null) {
             return "redirect:/login";
-        }
-
-        if ("detalhes".equals(action)) {
-            if (id == null) {
-                return "redirect:/projeto";
-            }
-            try {
-                int projId = Integer.parseInt(id);
-                Projeto proj = projetoService.buscarPorId(projId);
-                if (proj == null) {
-                    return "redirect:/projeto";
-                }
-
-                Laboratorio lab = laboratorioService.buscarPorId(proj.getLaboratorioId());
-                if (lab != null) {
-                    proj.setNomeLaboratorio(lab.getNome());
-                    model.addAttribute("coordenador", lab.getCoordenador());
-                    model.addAttribute("coordenadorId", lab.getCoordenadorId());
-                }
-
-                if (usuarioLogado.isBolsista() && ((Bolsista) usuarioLogado).getLaboratorioId() != proj.getLaboratorioId()) {
-                    return "redirect:/projeto?erro=Sem permissao para visualizar detalhes deste projeto.";
-                }
-
-                ArrayList<Bolsista> membrosProjeto = bolsistaService.buscarPorProjeto(projId);
-                ArrayList<Bolsista> bolsistasLab = bolsistaService.buscarPorLaboratorio(proj.getLaboratorioId());
-
-                boolean podeGerenciar = usuarioLogado.isAdmin() || 
-                        (usuarioLogado.isProfessor() && lab != null && lab.getCoordenadorId() == usuarioLogado.getId());
-
-                model.addAttribute("projeto", proj);
-                model.addAttribute("laboratorio", lab);
-                model.addAttribute("membros", membrosProjeto);
-                model.addAttribute("bolsistasLab", bolsistasLab);
-                model.addAttribute("podeGerenciar", podeGerenciar);
-                return "detalhes-projeto";
-            } catch (Exception e) {
-                e.printStackTrace();
-                return "redirect:/projeto";
-            }
-        }
-
-        if ("novo".equals(action) || "editar".equals(action)) {
-            if (usuarioLogado.isBolsista()) {
-                return "redirect:/projeto";
-            }
-
-            Projeto proj = null;
-            if ("editar".equals(action) && id != null) {
-                try {
-                    int projId = Integer.parseInt(id);
-                    proj = projetoService.buscarPorId(projId);
-                    if (proj != null && !podeGerenciarLab(usuarioLogado, proj.getLaboratorioId())) {
-                        return "redirect:/projeto";
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (proj == null) {
-                proj = new Projeto();
-                proj.setAtivo(true);
-                if (labId != null) {
-                    try {
-                        proj.setLaboratorioId(Integer.parseInt(labId));
-                    } catch (NumberFormatException e) {
-                        // ignore
-                    }
-                }
-            }
-
-            try {
-                ArrayList<Laboratorio> labsDisponiveis = new ArrayList<>();
-                if (usuarioLogado.isAdmin()) {
-                    labsDisponiveis = laboratorioService.listarTodos();
-                } else if (usuarioLogado.isProfessor()) {
-                    labsDisponiveis = laboratorioService.listarPorCoordenador(usuarioLogado.getId());
-                }
-                model.addAttribute("laboratorios", labsDisponiveis);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-            model.addAttribute("projeto", proj);
-            return "cadastro-projeto";
         }
 
         try {
@@ -171,8 +84,7 @@ public class ProjetoController {
                 ArrayList<Bolsista> membros = bolsistaService.buscarPorProjeto(p.getId());
                 model.addAttribute("membros_" + p.getId(), membros);
                 
-                boolean podeGerenciar = usuarioLogado.isAdmin() || 
-                    (usuarioLogado.isProfessor() && lab != null && lab.getCoordenadorId() == usuarioLogado.getId());
+                boolean podeGerenciar = laboratorioService.podeGerenciar(usuarioLogado, p.getLaboratorioId());
                 model.addAttribute("podeGerenciar_" + p.getId(), podeGerenciar);
             }
 
@@ -184,6 +96,125 @@ public class ProjetoController {
         return "projetos";
     }
 
+    @GetMapping("/detalhes")
+    public String detalhes(@RequestParam String id,
+                           HttpSession session,
+                           Model model) {
+        Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
+        if (usuarioLogado == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            int projId = Integer.parseInt(id);
+            Projeto proj = projetoService.buscarPorId(projId);
+            if (proj == null) {
+                return "redirect:/projeto";
+            }
+
+            Laboratorio lab = laboratorioService.buscarPorId(proj.getLaboratorioId());
+            if (lab != null) {
+                proj.setNomeLaboratorio(lab.getNome());
+                model.addAttribute("coordenador", lab.getCoordenador());
+                model.addAttribute("coordenadorId", lab.getCoordenadorId());
+            }
+
+            if (usuarioLogado.isBolsista() && ((Bolsista) usuarioLogado).getLaboratorioId() != proj.getLaboratorioId()) {
+                return "redirect:/projeto?erro=Sem permissao para visualizar detalhes deste projeto.";
+            }
+
+            ArrayList<Bolsista> membrosProjeto = bolsistaService.buscarPorProjeto(projId);
+            ArrayList<Bolsista> bolsistasLab = bolsistaService.buscarPorLaboratorio(proj.getLaboratorioId());
+
+            boolean podeGerenciar = laboratorioService.podeGerenciar(usuarioLogado, proj.getLaboratorioId());
+
+            model.addAttribute("projeto", proj);
+            model.addAttribute("laboratorio", lab);
+            model.addAttribute("membros", membrosProjeto);
+            model.addAttribute("bolsistasLab", bolsistasLab);
+            model.addAttribute("podeGerenciar", podeGerenciar);
+            return "detalhes-projeto";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/projeto";
+        }
+    }
+
+    @GetMapping("/novo")
+    public String formularioNovo(@RequestParam(required = false) String labId,
+                                 HttpSession session,
+                                 Model model) {
+        Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
+        if (usuarioLogado == null) {
+            return "redirect:/login";
+        }
+        if (usuarioLogado.isBolsista()) {
+            return "redirect:/projeto";
+        }
+
+        Projeto proj = new Projeto();
+        proj.setAtivo(true);
+        if (labId != null) {
+            try {
+                proj.setLaboratorioId(Integer.parseInt(labId));
+            } catch (NumberFormatException e) {
+                // ignore
+            }
+        }
+
+        try {
+            ArrayList<Laboratorio> labsDisponiveis = new ArrayList<>();
+            if (usuarioLogado.isAdmin()) {
+                labsDisponiveis = laboratorioService.listarTodos();
+            } else if (usuarioLogado.isProfessor()) {
+                labsDisponiveis = laboratorioService.listarPorCoordenador(usuarioLogado.getId());
+            }
+            model.addAttribute("laboratorios", labsDisponiveis);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        model.addAttribute("projeto", proj);
+        return "cadastro-projeto";
+    }
+
+    @GetMapping("/editar")
+    public String formularioEditar(@RequestParam String id,
+                                   HttpSession session,
+                                   Model model) {
+        Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
+        if (usuarioLogado == null) {
+            return "redirect:/login";
+        }
+        if (usuarioLogado.isBolsista()) {
+            return "redirect:/projeto";
+        }
+
+        try {
+            int projId = Integer.parseInt(id);
+            Projeto proj = projetoService.buscarPorId(projId);
+            if (proj == null) {
+                return "redirect:/projeto";
+            }
+            if (!laboratorioService.podeGerenciar(usuarioLogado, proj.getLaboratorioId())) {
+                return "redirect:/projeto";
+            }
+
+            ArrayList<Laboratorio> labsDisponiveis = new ArrayList<>();
+            if (usuarioLogado.isAdmin()) {
+                labsDisponiveis = laboratorioService.listarTodos();
+            } else if (usuarioLogado.isProfessor()) {
+                labsDisponiveis = laboratorioService.listarPorCoordenador(usuarioLogado.getId());
+            }
+            model.addAttribute("laboratorios", labsDisponiveis);
+            model.addAttribute("projeto", proj);
+            return "cadastro-projeto";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/projeto";
+        }
+    }
+
     @PostMapping("/salvar")
     public String salvar(@RequestParam(required = false) Integer id,
                          @RequestParam String nome,
@@ -193,12 +224,15 @@ public class ProjetoController {
                          HttpSession session,
                          Model model) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
-
-        if (!podeGerenciarLab(usuarioLogado, laboratorioId)) {
-            return "redirect:/laboratorio";
+        if (usuarioLogado == null) {
+            return "redirect:/login";
         }
 
         try {
+            if (!laboratorioService.podeGerenciar(usuarioLogado, laboratorioId)) {
+                return "redirect:/laboratorio";
+            }
+
             Projeto p;
             if (id != null && id > 0) {
                 p = projetoService.buscarPorId(id);
@@ -207,9 +241,9 @@ public class ProjetoController {
                         return "redirect:/projeto";
                     }
                     if ("editar".equals(origem)) {
-                        return "redirect:/laboratorio?action=editar&id=" + laboratorioId;
+                        return "redirect:/laboratorio/editar?id=" + laboratorioId;
                     }
-                    return "redirect:/laboratorio?action=detalhes&id=" + laboratorioId;
+                    return "redirect:/laboratorio/detalhes?id=" + laboratorioId;
                 }
             } else {
                 p = new Projeto();
@@ -221,12 +255,12 @@ public class ProjetoController {
             
             if (p.getNome().isEmpty()) {
                 if ("projeto".equals(origem)) {
-                    return "redirect:/projeto?action=novo&erro=O nome do projeto nao pode ser vazio";
+                    return "redirect:/projeto/novo?erro=O nome do projeto nao pode ser vazio";
                 }
                 if ("editar".equals(origem)) {
-                    return "redirect:/laboratorio?action=editar&id=" + laboratorioId + "&erro=O nome do projeto nao pode ser vazio";
+                    return "redirect:/laboratorio/editar?id=" + laboratorioId + "&erro=O nome do projeto nao pode ser vazio";
                 }
-                return "redirect:/laboratorio?action=detalhes&id=" + laboratorioId;
+                return "redirect:/laboratorio/detalhes?id=" + laboratorioId;
             }
 
             if (p.getId() > 0) {
@@ -242,9 +276,9 @@ public class ProjetoController {
             return "redirect:/projeto";
         }
         if ("editar".equals(origem)) {
-            return "redirect:/laboratorio?action=editar&id=" + laboratorioId;
+            return "redirect:/laboratorio/editar?id=" + laboratorioId;
         }
-        return "redirect:/laboratorio?action=detalhes&id=" + laboratorioId;
+        return "redirect:/laboratorio/detalhes?id=" + laboratorioId;
     }
 
     @GetMapping("/desativar")
@@ -253,12 +287,14 @@ public class ProjetoController {
                             @RequestParam(required = false) String origem,
                             HttpSession session) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
-
-        if (!podeGerenciarLab(usuarioLogado, labId)) {
-            return "redirect:/laboratorio";
+        if (usuarioLogado == null) {
+            return "redirect:/login";
         }
 
         try {
+            if (!laboratorioService.podeGerenciar(usuarioLogado, labId)) {
+                return "redirect:/laboratorio";
+            }
             projetoService.excluir(id);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -268,9 +304,9 @@ public class ProjetoController {
             return "redirect:/projeto";
         }
         if ("editar".equals(origem)) {
-            return "redirect:/laboratorio?action=editar&id=" + labId;
+            return "redirect:/laboratorio/editar?id=" + labId;
         }
-        return "redirect:/laboratorio?action=detalhes&id=" + labId;
+        return "redirect:/laboratorio/detalhes?id=" + labId;
     }
 
     @PostMapping("/vincular")
@@ -280,21 +316,23 @@ public class ProjetoController {
                                    @RequestParam(required = false) String origem,
                                    HttpSession session) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
-
-        if (!podeGerenciarLab(usuarioLogado, labId)) {
-            return "redirect:/laboratorio";
+        if (usuarioLogado == null) {
+            return "redirect:/login";
         }
 
         try {
+            if (!laboratorioService.podeGerenciar(usuarioLogado, labId)) {
+                return "redirect:/laboratorio";
+            }
             projetoService.vincularBolsista(bolsistaId, projetoId);
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         if ("detalhes-projeto".equals(origem)) {
-            return "redirect:/projeto?action=detalhes&id=" + projetoId;
+            return "redirect:/projeto/detalhes?id=" + projetoId;
         }
-        return "redirect:/laboratorio?action=detalhes&id=" + labId;
+        return "redirect:/laboratorio/detalhes?id=" + labId;
     }
 
     @GetMapping("/desvincular")
@@ -304,33 +342,22 @@ public class ProjetoController {
                                       @RequestParam(required = false) String origem,
                                       HttpSession session) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
-
-        if (!podeGerenciarLab(usuarioLogado, labId)) {
-            return "redirect:/laboratorio";
+        if (usuarioLogado == null) {
+            return "redirect:/login";
         }
 
         try {
+            if (!laboratorioService.podeGerenciar(usuarioLogado, labId)) {
+                return "redirect:/laboratorio";
+            }
             projetoService.desvincularBolsista(bolsistaId, projetoId);
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         if ("detalhes-projeto".equals(origem)) {
-            return "redirect:/projeto?action=detalhes&id=" + projetoId;
+            return "redirect:/projeto/detalhes?id=" + projetoId;
         }
-        return "redirect:/laboratorio?action=detalhes&id=" + labId;
-    }
-
-    private boolean podeGerenciarLab(Usuario usuarioLogado, int labId) {
-        if (usuarioLogado.isAdmin()) return true;
-        if (usuarioLogado.isProfessor()) {
-            try {
-                ArrayList<Laboratorio> labs = laboratorioService.listarPorCoordenador(usuarioLogado.getId());
-                return labs.stream().anyMatch(l -> l.getId() == labId);
-            } catch (SQLException e) {
-                return false;
-            }
-        }
-        return false;
+        return "redirect:/laboratorio/detalhes?id=" + labId;
     }
 }

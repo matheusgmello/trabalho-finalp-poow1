@@ -18,14 +18,14 @@ public class ConectaDBPostgres {
                     "jdbc:postgresql://localhost:5436/cadastroBolsista",
                     "postgres",
                     "1234");
+            if (conn == null) {
+                throw new RuntimeException("Falha ao abrir conexao: conexao obtida e nula.");
+            }
             return conn;
         } catch (ClassNotFoundException ex) {
-            System.out.println("classe do driver nao encontrada");
-            ex.printStackTrace();
+            throw new RuntimeException("Classe do driver PostgreSQL nao encontrada ao conectar ao banco de dados.", ex);
         } catch (SQLException ex) {
-            System.out.println("erro ao abrir conexao com o banco");
-            ex.printStackTrace();
+            throw new RuntimeException("Erro ao abrir conexao com o banco de dados PostgreSQL na porta 5436.", ex);
         }
-        return null;
     }
 }

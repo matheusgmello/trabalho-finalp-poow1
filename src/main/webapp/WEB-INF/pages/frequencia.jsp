@@ -110,10 +110,10 @@
                                 <td>${f.descricao}</td>
                                 <td>
                                     <c:if test="${usuario.admin or usuario.professor or f.bolsistaId == usuario.id}">
-                                        <a href="frequencia?action=editar&id=${f.id}" class="action-edit"><i class="fas fa-pencil-alt"></i></a>
+                                        <a href="frequencia/editar?id=${f.id}" class="action-edit"><i class="fas fa-pencil-alt"></i></a>
                                     </c:if>
                                     <c:if test="${usuario.admin or usuario.professor}">
-                                        <a href="frequencia?action=excluir&id=${f.id}" class="action-delete" onclick="return confirm('Excluir registro?')"><i class="fas fa-trash"></i></a>
+                                        <a href="frequencia/excluir?id=${f.id}" class="action-delete" onclick="return confirm('Excluir registro?')"><i class="fas fa-trash"></i></a>
                                     </c:if>
                                 </td>
                             </tr>

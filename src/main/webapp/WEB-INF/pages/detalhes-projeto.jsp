@@ -78,7 +78,7 @@
                 <div class="info-item">
                     <span class="info-label">Laboratório Responsável</span>
                     <span class="info-value">
-                        <a href="laboratorio?action=detalhes&id=${projeto.laboratorioId}" style="text-decoration: none; color: var(--primary-color);">
+                        <a href="laboratorio/detalhes?id=${projeto.laboratorioId}" style="text-decoration: none; color: var(--primary-color);">
                             <i class="fas fa-flask"></i> ${projeto.nomeLaboratorio}
                         </a>
                     </span>

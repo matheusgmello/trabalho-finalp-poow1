@@ -42,7 +42,7 @@
                         <p>Registre suas horas trabalhadas e descreva suas atividades diárias.</p>
                     </a>
 
-                    <a href="laboratorio?action=detalhes&id=${usuario.laboratorioId}" class="card">
+                    <a href="laboratorio/detalhes?id=${usuario.laboratorioId}" class="card">
                         <i class="fas fa-flask"></i>
                         <h3>Meu Laboratório</h3>
                         <p>Veja detalhes da sua equipe, coordenador e projetos vinculados.</p>

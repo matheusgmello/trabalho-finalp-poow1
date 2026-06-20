@@ -3,6 +3,7 @@ package dev.matheus.cadastroBolsistas.service;
 import dev.matheus.cadastroBolsistas.dao.LaboratorioDAO;
 import dev.matheus.cadastroBolsistas.dao.ProjetoDAO;
 import dev.matheus.cadastroBolsistas.model.Laboratorio;
+import dev.matheus.cadastroBolsistas.model.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,16 @@ public class LaboratorioService {
 
     @Autowired
     private ProjetoDAO projetoDao;
+
+    public boolean podeGerenciar(Usuario usuarioLogado, int labId) throws SQLException {
+        if (usuarioLogado == null) return false;
+        if (usuarioLogado.isAdmin()) return true;
+        if (usuarioLogado.isProfessor()) {
+            Laboratorio lab = dao.getLaboratorioPorId(labId);
+            return lab != null && lab.getCoordenadorId() == usuarioLogado.getId();
+        }
+        return false;
+    }
 
     public boolean cadastrar(Laboratorio lab) throws SQLException {
         lab.setAtivo(true);

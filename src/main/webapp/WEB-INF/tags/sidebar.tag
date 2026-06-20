@@ -46,7 +46,9 @@
         <li><a href="laboratorio"><i class="fas fa-flask"></i> Laboratórios</a></li>
         <li><a href="projeto"><i class="fas fa-project-diagram"></i> Projetos</a></li>
         <li><a href="frequencia"><i class="fas fa-calendar-check"></i> Frequência</a></li>
-        <li><a href="relatorio"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+        <c:if test="${usuario.admin || usuario.professor}">
+            <li><a href="relatorio"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+        </c:if>
         <li><a href="perfil"><i class="fas fa-user-cog"></i> Editar Perfil</a></li>
     </ul>
     <a href="logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Sair</a>

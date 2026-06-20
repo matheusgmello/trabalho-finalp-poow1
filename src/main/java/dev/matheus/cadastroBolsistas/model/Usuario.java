@@ -64,13 +64,6 @@ public abstract class Usuario {
         return "PROFESSOR".equals(this.tipoUsuario);
     }
 
-    // Métodos dummy para campos específicos de Bolsista, evitando erros de propriedade no JSP EL ao lidar com Professores
-    public java.time.LocalDate getDataNascimento() { return null; }
-    public String getCurso() { return null; }
-    public String getMatricula() { return null; }
-    public int getLaboratorioId() { return 0; }
-    public Cargo getCargo() { return null; }
-
     public String getBio() { return bio; }
     public void setBio(String bio) { this.bio = bio; }
 }

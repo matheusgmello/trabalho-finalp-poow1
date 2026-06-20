@@ -20,11 +20,11 @@
         <div class="header-actions">
             <h1>Gerenciar ${usuario.admin ? 'Usuários' : 'Bolsistas'}</h1>
             <div class="header-buttons">
-                <a href="bolsista?action=exportar" class="btn-new btn-export">
+                <a href="bolsista/exportar" class="btn-new btn-export">
                     <i class="fas fa-file-csv"></i> Exportar CSV
                 </a>
                 <c:if test="${usuario.admin || usuario.professor}">
-                    <a href="bolsista?action=novo" class="btn-new btn-create">
+                    <a href="bolsista/novo" class="btn-new btn-create">
                         <i class="fas fa-plus"></i> Novo ${usuario.admin ? 'Usuário' : 'Bolsista'}
                     </a>
                 </c:if>
@@ -80,10 +80,10 @@
                                 </td>
                                 <td>
                                     <c:if test="${usuario.admin || usuario.professor || b.id == usuario.id}">
-                                        <a href="bolsista?action=editar&id=${b.id}&tipo=${b.tipoUsuario}" class="action-link action-link-edit"><i class="fas fa-edit"></i></a>
+                                        <a href="bolsista/editar?id=${b.id}&tipo=${b.tipoUsuario}" class="action-link action-link-edit"><i class="fas fa-edit"></i></a>
                                     </c:if>
                                     <c:if test="${(usuario.admin || usuario.professor) && b.id != usuario.id}">
-                                        <a href="bolsista?action=excluir&id=${b.id}&tipo=${b.tipoUsuario}" class="action-link action-link-delete" onclick="return confirm('Excluir este ${usuario.admin ? 'usuário' : 'bolsista'}?')"><i class="fas fa-trash"></i></a>
+                                        <a href="bolsista/excluir?id=${b.id}&tipo=${b.tipoUsuario}" class="action-link action-link-delete" onclick="return confirm('Excluir este ${usuario.admin ? 'usuário' : 'bolsista'}?')"><i class="fas fa-trash"></i></a>
                                     </c:if>
                                 </td>
                             </tr>

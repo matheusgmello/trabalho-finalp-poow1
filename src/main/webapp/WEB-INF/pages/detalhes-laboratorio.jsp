@@ -151,7 +151,7 @@
                                 <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">
                                     <i class="fas fa-users-viewfinder"></i> ${membersCount} integrante(s)
                                 </span>
-                                <a href="projeto?action=detalhes&id=${proj.id}" class="btn-view-project">
+                                <a href="projeto/detalhes?id=${proj.id}" class="btn-view-project">
                                     <i class="fas fa-external-link-alt"></i> Gerenciar Equipe
                                 </a>
                             </div>

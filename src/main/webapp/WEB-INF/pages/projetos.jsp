@@ -57,7 +57,7 @@
         <div class="header-actions">
             <h1>Gerenciar Projetos</h1>
             <c:if test="${usuario.admin || usuario.professor}">
-                <a href="projeto?action=novo" class="btn-new btn-new-proj">
+                <a href="projeto/novo" class="btn-new btn-new-proj">
                     <i class="fas fa-plus"></i> Cadastrar Novo Projeto
                 </a>
             </c:if>
@@ -137,7 +137,7 @@
                                             </span>
                                         </c:when>
                                         <c:otherwise>
-                                            <a href="laboratorio?action=detalhes&id=${p.laboratorioId}" class="badge status-concluido" title="Ver Detalhes do Laboratório">
+                                            <a href="laboratorio/detalhes?id=${p.laboratorioId}" class="badge status-concluido" title="Ver Detalhes do Laboratório">
                                                 <i class="fas fa-flask"></i> ${p.nomeLaboratorio}
                                             </a>
                                         </c:otherwise>
@@ -166,7 +166,7 @@
                                             <c:when test="${usuario.bolsista}">
                                                 <c:choose>
                                                     <c:when test="${usuario.laboratorioId == p.laboratorioId}">
-                                                        <a href="projeto?action=detalhes&id=${p.id}" class="action-link action-link-details" style="color: var(--text-muted); background-color: #f1f5f9; border: 1px solid var(--border-grid);" title="Detalhes do Projeto">
+                                                        <a href="projeto/detalhes?id=${p.id}" class="action-link action-link-details" style="color: var(--text-muted); background-color: #f1f5f9; border: 1px solid var(--border-grid);" title="Detalhes do Projeto">
                                                             <i class="fas fa-eye"></i>
                                                         </a>
                                                     </c:when>
@@ -176,11 +176,11 @@
                                                 </c:choose>
                                             </c:when>
                                             <c:otherwise>
-                                                <a href="projeto?action=detalhes&id=${p.id}" class="action-link action-link-details" style="color: var(--text-muted); background-color: #f1f5f9; border: 1px solid var(--border-grid); margin-right: 8px;" title="Detalhes do Projeto">
+                                                <a href="projeto/detalhes?id=${p.id}" class="action-link action-link-details" style="color: var(--text-muted); background-color: #f1f5f9; border: 1px solid var(--border-grid); margin-right: 8px;" title="Detalhes do Projeto">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
                                                 <c:if test="${podeGerenciar}">
-                                                    <a href="projeto?action=editar&id=${p.id}" class="action-link action-link-edit" title="Editar Projeto">
+                                                    <a href="projeto/editar?id=${p.id}" class="action-link action-link-edit" title="Editar Projeto">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
                                                     <a href="projeto/desativar?id=${p.id}&labId=${p.laboratorioId}&origem=projeto" 

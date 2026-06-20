@@ -86,7 +86,7 @@
                                     <p>${not empty proj.descricao ? proj.descricao : 'Sem descrição cadastrada.'}</p>
                                 </div>
                                 <div class="projeto-acoes">
-                                    <a href="laboratorio?action=editar&id=${laboratorio.id}&editarProjetoId=${proj.id}#secao-projetos" class="btn-mini btn-mini-edit">
+                                    <a href="laboratorio/editar?id=${laboratorio.id}&editarProjetoId=${proj.id}#secao-projetos" class="btn-mini btn-mini-edit">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
                                     <a href="projeto/desativar?id=${proj.id}&labId=${laboratorio.id}&origem=editar" class="btn-mini btn-mini-delete" onclick="return confirm('Deseja realmente desativar este projeto?')">
@@ -128,7 +128,7 @@
                                         <i class="fas fa-check"></i> ${projetoParaEditar != null ? 'Salvar Alterações' : 'Cadastrar Projeto'}
                                     </button>
                                     <c:if test="${projetoParaEditar != null}">
-                                        <a href="laboratorio?action=editar&id=${laboratorio.id}#secao-projetos" class="btn-proj-cancel">
+                                        <a href="laboratorio/editar?id=${laboratorio.id}#secao-projetos" class="btn-proj-cancel">
                                             Cancelar
                                         </a>
                                     </c:if>
