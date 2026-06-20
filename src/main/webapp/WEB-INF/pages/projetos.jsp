@@ -63,9 +63,15 @@
             </c:if>
         </div>
 
-        <c:if test="${not empty param.erro}">
-            <div class="error-msg">
-                <i class="fas fa-exclamation-circle"></i> ${param.erro}
+        <c:if test="${not empty sucesso or not empty param.sucesso}">
+            <div class="success-msg" style="margin-bottom: 20px; padding: 12px 20px; background-color: #d4edda; color: #155724; border-left: 5px solid #28a745; border-radius: 4px; font-size: 0.95rem; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-check-circle"></i> ${not empty sucesso ? sucesso : param.sucesso}
+            </div>
+        </c:if>
+        
+        <c:if test="${not empty erro or not empty param.erro}">
+            <div class="error-msg" style="margin-bottom: 20px; padding: 12px 20px; background-color: #f8d7da; color: #721c24; border-left: 5px solid #dc3545; border-radius: 4px; font-size: 0.95rem; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-exclamation-circle"></i> ${not empty erro ? erro : param.erro}
             </div>
         </c:if>
 

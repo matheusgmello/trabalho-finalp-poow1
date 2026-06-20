@@ -39,12 +39,12 @@ public class FrequenciaService {
         return dao.listarTodas();
     }
 
-    public ArrayList<Frequencia> listarTodasPaginado(int limit, int offset) throws SQLException {
-        return dao.listarTodasPaginado(limit, offset);
+    public ArrayList<Frequencia> buscarFrequencias(Integer bolsistaId, Integer limit, Integer offset) throws SQLException {
+        return dao.buscarFrequencias(bolsistaId, limit, offset);
     }
 
-    public int contarTodas() throws SQLException {
-        return dao.contarTodas();
+    public int contarFrequencias(Integer bolsistaId) throws SQLException {
+        return dao.contarFrequencias(bolsistaId);
     }
 
     public boolean excluir(int id) throws SQLException {

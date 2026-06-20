@@ -102,14 +102,27 @@ public class FrequenciaDAO {
         }
     }
 
-    public ArrayList<Frequencia> listarTodasPaginado(int limit, int offset) throws SQLException {
-        String sql = "SELECT f.*, b.nome as nome_bolsista FROM frequencia f " +
-                     "JOIN bolsista b ON f.bolsista_id = b.id " +
-                     "WHERE f.ativo = true ORDER BY f.data DESC LIMIT ? OFFSET ?";
+    public ArrayList<Frequencia> buscarFrequencias(Integer bolsistaId, Integer limit, Integer offset) throws SQLException {
+        StringBuilder sql = new StringBuilder("SELECT f.*, b.nome as nome_bolsista FROM frequencia f ");
+        sql.append("JOIN bolsista b ON f.bolsista_id = b.id ");
+        sql.append("WHERE f.ativo = true ");
+        if (bolsistaId != null && bolsistaId > 0) {
+            sql.append("AND f.bolsista_id = ? ");
+        }
+        sql.append("ORDER BY f.data DESC ");
+        if (limit != null && offset != null) {
+            sql.append("LIMIT ? OFFSET ? ");
+        }
         try (Connection conn = ConectaDBPostgres.getConexao();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, limit);
-            stmt.setInt(2, offset);
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            if (bolsistaId != null && bolsistaId > 0) {
+                stmt.setInt(idx++, bolsistaId);
+            }
+            if (limit != null && offset != null) {
+                stmt.setInt(idx++, limit);
+                stmt.setInt(idx++, offset);
+            }
             ArrayList<Frequencia> lista = new ArrayList<>();
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -120,13 +133,20 @@ public class FrequenciaDAO {
         }
     }
 
-    public int contarTodas() throws SQLException {
-        String sql = "SELECT COUNT(*) FROM frequencia WHERE ativo = true";
+    public int contarFrequencias(Integer bolsistaId) throws SQLException {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM frequencia WHERE ativo = true ");
+        if (bolsistaId != null && bolsistaId > 0) {
+            sql.append("AND bolsista_id = ? ");
+        }
         try (Connection conn = ConectaDBPostgres.getConexao();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-            if (rs.next()) {
-                return rs.getInt(1);
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            if (bolsistaId != null && bolsistaId > 0) {
+                stmt.setInt(1, bolsistaId);
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
             }
             return 0;
         }

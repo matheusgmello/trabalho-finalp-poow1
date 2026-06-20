@@ -254,12 +254,12 @@ public class ProjetoController {
         }
 
         if ("projeto".equals(origem)) {
-            return "redirect:/projeto";
+            return "redirect:/projeto?sucesso=Projeto+salvo+com+sucesso";
         }
         if ("editar".equals(origem)) {
-            return "redirect:/laboratorio/editar?id=" + laboratorioId;
+            return "redirect:/laboratorio/editar?id=" + laboratorioId + "&sucesso=Projeto+salvo+com+sucesso";
         }
-        return "redirect:/laboratorio/detalhes?id=" + laboratorioId;
+        return "redirect:/laboratorio/detalhes?id=" + laboratorioId + "&sucesso=Projeto+salvo+com+sucesso";
     }
 
     @GetMapping("/desativar")
@@ -274,20 +274,26 @@ public class ProjetoController {
 
         try {
             if (!laboratorioService.podeGerenciar(usuarioLogado, labId)) {
-                return "redirect:/laboratorio";
+                return "redirect:/laboratorio?erro=Sem+permissao+para+desativar+projetos";
             }
             projetoService.excluir(id);
+            if ("projeto".equals(origem)) {
+                return "redirect:/projeto?sucesso=Projeto+desativado+com+sucesso";
+            }
+            if ("editar".equals(origem)) {
+                return "redirect:/laboratorio/editar?id=" + labId + "&sucesso=Projeto+desativado+com+sucesso";
+            }
+            return "redirect:/laboratorio/detalhes?id=" + labId + "&sucesso=Projeto+desativado+com+sucesso";
         } catch (SQLException e) {
             e.printStackTrace();
+            if ("projeto".equals(origem)) {
+                return "redirect:/projeto?erro=Erro+ao+desativar+projeto";
+            }
+            if ("editar".equals(origem)) {
+                return "redirect:/laboratorio/editar?id=" + labId + "&erro=Erro+ao+desativar+projeto";
+            }
+            return "redirect:/laboratorio/detalhes?id=" + labId + "&erro=Erro+ao+desativar+projeto";
         }
-
-        if ("projeto".equals(origem)) {
-            return "redirect:/projeto";
-        }
-        if ("editar".equals(origem)) {
-            return "redirect:/laboratorio/editar?id=" + labId;
-        }
-        return "redirect:/laboratorio/detalhes?id=" + labId;
     }
 
     @PostMapping("/vincular")
@@ -303,17 +309,22 @@ public class ProjetoController {
 
         try {
             if (!laboratorioService.podeGerenciar(usuarioLogado, labId)) {
-                return "redirect:/laboratorio";
+                return "redirect:/laboratorio?erro=Sem+permissao+para+gerenciar+este+laboratorio";
             }
             projetoService.vincularBolsista(bolsistaId, projetoId);
+            String successMsg = "Bolsista+vinculado+com+sucesso";
+            if ("detalhes-projeto".equals(origem)) {
+                return "redirect:/projeto/detalhes?id=" + projetoId + "&sucesso=" + successMsg;
+            }
+            return "redirect:/laboratorio/detalhes?id=" + labId + "&sucesso=" + successMsg;
         } catch (SQLException e) {
             e.printStackTrace();
+            String errorMsg = "Erro+ao+vincular+bolsista";
+            if ("detalhes-projeto".equals(origem)) {
+                return "redirect:/projeto/detalhes?id=" + projetoId + "&erro=" + errorMsg;
+            }
+            return "redirect:/laboratorio/detalhes?id=" + labId + "&erro=" + errorMsg;
         }
-
-        if ("detalhes-projeto".equals(origem)) {
-            return "redirect:/projeto/detalhes?id=" + projetoId;
-        }
-        return "redirect:/laboratorio/detalhes?id=" + labId;
     }
 
     @GetMapping("/desvincular")
@@ -329,16 +340,21 @@ public class ProjetoController {
 
         try {
             if (!laboratorioService.podeGerenciar(usuarioLogado, labId)) {
-                return "redirect:/laboratorio";
+                return "redirect:/laboratorio?erro=Sem+permissao+para+gerenciar+este+laboratorio";
             }
             projetoService.desvincularBolsista(bolsistaId, projetoId);
+            String successMsg = "Bolsista+desvinculado+com+sucesso";
+            if ("detalhes-projeto".equals(origem)) {
+                return "redirect:/projeto/detalhes?id=" + projetoId + "&sucesso=" + successMsg;
+            }
+            return "redirect:/laboratorio/detalhes?id=" + labId + "&sucesso=" + successMsg;
         } catch (SQLException e) {
             e.printStackTrace();
+            String errorMsg = "Erro+ao+desvincular+bolsista";
+            if ("detalhes-projeto".equals(origem)) {
+                return "redirect:/projeto/detalhes?id=" + projetoId + "&erro=" + errorMsg;
+            }
+            return "redirect:/laboratorio/detalhes?id=" + labId + "&erro=" + errorMsg;
         }
-
-        if ("detalhes-projeto".equals(origem)) {
-            return "redirect:/projeto/detalhes?id=" + projetoId;
-        }
-        return "redirect:/laboratorio/detalhes?id=" + labId;
     }
 }

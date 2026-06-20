@@ -34,9 +34,15 @@
             </div>
         </c:if>
 
-        <c:if test="${not empty erro}">
-            <div class="error-msg">
-                <i class="fas fa-exclamation-circle"></i> ${erro}
+        <c:if test="${not empty sucesso or not empty param.sucesso}">
+            <div class="success-msg" style="margin-bottom: 20px; padding: 12px 20px; background-color: #d4edda; color: #155724; border-left: 5px solid #28a745; border-radius: 4px; font-size: 0.95rem; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-check-circle"></i> ${not empty sucesso ? sucesso : param.sucesso}
+            </div>
+        </c:if>
+        
+        <c:if test="${not empty erro or not empty param.erro}">
+            <div class="error-msg" style="margin-bottom: 20px; padding: 12px 20px; background-color: #f8d7da; color: #721c24; border-left: 5px solid #dc3545; border-radius: 4px; font-size: 0.95rem; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-exclamation-circle"></i> ${not empty erro ? erro : param.erro}
             </div>
         </c:if>
 
@@ -104,7 +110,28 @@
         </div>
 
         <div class="container">
-            <h2><i class="fas fa-history"></i> Histórico de Atividades</h2>
+            <div class="history-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <h2 style="margin: 0;"><i class="fas fa-history"></i> Histórico de Atividades</h2>
+                
+                <div class="history-actions" style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                    <c:if test="${usuario.admin or usuario.professor}">
+                        <form action="${pageContext.request.contextPath}/frequencia" method="get" class="filter-form" style="display: flex; gap: 10px; align-items: center;">
+                            <select name="bolsistaId" style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem;">
+                                <option value="">Todos os Bolsistas</option>
+                                <c:forEach var="b" items="${listaBolsistas}">
+                                    <option value="${b.id}" ${filtroBolsistaId == b.id ? 'selected' : ''}>${b.nome}</option>
+                                </c:forEach>
+                            </select>
+                            <button type="submit" class="submit-button" style="padding: 8px 15px; border-radius: 4px; font-size: 0.9rem; margin: 0;"><i class="fas fa-filter"></i> Filtrar</button>
+                        </form>
+                    </c:if>
+                    
+                    <a href="${pageContext.request.contextPath}/frequencia/exportar?bolsistaId=${filtroBolsistaId}" class="submit-button" style="padding: 8px 15px; border-radius: 4px; font-size: 0.9rem; margin: 0; background-color: #27ae60; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; color: white;">
+                        <i class="fas fa-file-csv"></i> Exportar CSV
+                    </a>
+                </div>
+            </div>
+
             <div class="table-container">
                 <table>
                     <thead>
@@ -125,7 +152,7 @@
                                 <td>${f.descricao}</td>
                                 <td>
                                     <c:if test="${usuario.admin or usuario.professor or f.bolsistaId == usuario.id}">
-                                        <a href="${pageContext.request.contextPath}/frequencia/editar?id=${f.id}" class="action-edit"><i class="fas fa-pencil-alt"></i></a>
+                                        <a href="${pageContext.request.contextPath}/frequencia/editar?id=${f.id}&bolsistaId=${filtroBolsistaId}" class="action-edit"><i class="fas fa-pencil-alt"></i></a>
                                     </c:if>
                                     <c:if test="${usuario.admin or usuario.professor}">
                                         <a href="${pageContext.request.contextPath}/frequencia/excluir?id=${f.id}" class="action-delete" onclick="return confirm('Excluir registro?')"><i class="fas fa-trash"></i></a>
@@ -143,11 +170,11 @@
             <c:if test="${usuario.admin and not empty totalPaginas and totalPaginas > 1}">
                 <div class="pagination" style="display: flex; justify-content: center; gap: 15px; margin-top: 20px; align-items: center;">
                     <c:if test="${paginaAtual > 1}">
-                        <a href="${pageContext.request.contextPath}/frequencia?pagina=${paginaAtual - 1}" class="btn-pagination" style="padding: 8px 16px; background-color: var(--primary-color); color: white; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-weight: bold; transition: background 0.2s;"><i class="fas fa-chevron-left"></i> Anterior</a>
+                        <a href="${pageContext.request.contextPath}/frequencia?pagina=${paginaAtual - 1}&bolsistaId=${filtroBolsistaId}" class="btn-pagination" style="padding: 8px 16px; background-color: var(--primary-color); color: white; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-weight: bold; transition: background 0.2s;"><i class="fas fa-chevron-left"></i> Anterior</a>
                     </c:if>
                     <span style="font-size: 0.9rem; color: #555;">Página <strong>${paginaAtual}</strong> de ${totalPaginas}</span>
                     <c:if test="${paginaAtual < totalPaginas}">
-                        <a href="${pageContext.request.contextPath}/frequencia?pagina=${paginaAtual + 1}" class="btn-pagination" style="padding: 8px 16px; background-color: var(--primary-color); color: white; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-weight: bold; transition: background 0.2s;">Próxima <i class="fas fa-chevron-right"></i></a>
+                        <a href="${pageContext.request.contextPath}/frequencia?pagina=${paginaAtual + 1}&bolsistaId=${filtroBolsistaId}" class="btn-pagination" style="padding: 8px 16px; background-color: var(--primary-color); color: white; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-weight: bold; transition: background 0.2s;">Próxima <i class="fas fa-chevron-right"></i></a>
                     </c:if>
                 </div>
             </c:if>

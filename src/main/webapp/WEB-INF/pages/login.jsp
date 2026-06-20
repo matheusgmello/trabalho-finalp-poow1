@@ -22,12 +22,12 @@
         <form action="${pageContext.request.contextPath}/login" method="post">
             <div class="form-group">
                 <label for="email">E-mail</label>
-                <input value="admin@sisbolsa.com" type="email" placeholder="seu@email.com" name="email" required>
+                <input type="email" placeholder="seu@email.com" name="email" required>
             </div>
 
             <div class="form-group">
                 <label for="senha">Senha</label>
-                <input value="teste123" type="password" placeholder="Sua senha" name="senha" required>
+                <input type="password" placeholder="Sua senha" name="senha" required>
             </div>
 
             <button type="submit" class="btn-login">

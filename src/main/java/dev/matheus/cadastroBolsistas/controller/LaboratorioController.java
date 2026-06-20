@@ -114,17 +114,17 @@ public class LaboratorioController {
             return "redirect:/login";
         }
         if (!usuarioLogado.isAdmin()) {
-            return "redirect:/laboratorio";
+            return "redirect:/laboratorio?erro=Sem+permissao+para+excluir+laboratorios";
         }
         try {
             laboratorioService.excluir(Integer.parseInt(id));
+            return "redirect:/laboratorio?sucesso=Laboratorio+excluido+com+sucesso";
         } catch (NumberFormatException e) {
-            model.addAttribute("erro", "ID do laboratorio invalido.");
+            return "redirect:/laboratorio?erro=ID+do+laboratorio+invalido";
         } catch (Exception e) {
             e.printStackTrace();
-            model.addAttribute("erro", "Erro ao excluir laboratorio.");
+            return "redirect:/laboratorio?erro=Erro+ao+excluir+laboratorio";
         }
-        return "redirect:/laboratorio";
     }
 
     @GetMapping("/detalhes")
@@ -226,7 +226,7 @@ public class LaboratorioController {
                 if (isNovo) {
                     return "redirect:/projeto/novo?labId=" + lab.getId() + "&msg=lab_sucesso";
                 }
-                return "redirect:/laboratorio";
+                return "redirect:/laboratorio?sucesso=Laboratorio+atualizado+com+sucesso";
             } else {
                 model.addAttribute("erro", "Erro ao salvar laboratorio.");
                 model.addAttribute("laboratorio", lab);

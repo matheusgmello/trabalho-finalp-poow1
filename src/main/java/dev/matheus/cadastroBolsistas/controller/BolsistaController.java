@@ -46,7 +46,8 @@ public class BolsistaController {
     private ProfessorService professorService;
 
     @GetMapping
-    public String listar(@RequestParam(required = false) String tipo,
+    public String listar(@RequestParam(defaultValue = "1") int pagina,
+                         @RequestParam(required = false) String tipo,
                          @RequestParam(required = false) String buscaNome,
                          @RequestParam(required = false) String buscaCurso,
                          HttpSession session,
@@ -106,7 +107,25 @@ public class BolsistaController {
             }
 
             lista = filtrarUsuariosPorPermissao(lista, usuarioLogado);
-            model.addAttribute("listabolsistas", lista);
+
+            int paginaAtual = pagina;
+            int tamanho = 10;
+            int totalRegistros = lista.size();
+            int totalPaginas = (int) Math.ceil(totalRegistros / (double) tamanho);
+            if (paginaAtual < 1) paginaAtual = 1;
+            if (paginaAtual > totalPaginas && totalPaginas > 0) paginaAtual = totalPaginas;
+
+            int de = (paginaAtual - 1) * tamanho;
+            int ate = Math.min(de + tamanho, totalRegistros);
+
+            ArrayList<Usuario> sublista = new ArrayList<>();
+            if (de < totalRegistros) {
+                sublista.addAll(lista.subList(de, ate));
+            }
+
+            model.addAttribute("listabolsistas", sublista);
+            model.addAttribute("paginaAtual", paginaAtual);
+            model.addAttribute("totalPaginas", totalPaginas > 0 ? totalPaginas : 1);
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("erro", "Erro ao listar usuários: " + e.getMessage());
@@ -203,24 +222,25 @@ public class BolsistaController {
             if ("PROFESSOR".equals(tipo)) {
                 if (usuarioLogado.isAdmin()) {
                     professorService.excluir(userId);
+                    return "redirect:/bolsista?sucesso=Professor+excluido+com+sucesso";
                 } else {
-                    model.addAttribute("erro", "Sem permissão para excluir.");
+                    return "redirect:/bolsista?erro=Sem+permissao+para+excluir";
                 }
             } else {
                 Bolsista b = bolsistaService.buscarPorId(userId);
                 if (b != null && (usuarioLogado.isAdmin() || (usuarioLogado.isProfessor() && bolsistaService.podeGerenciar(usuarioLogado, b)))) {
                     bolsistaService.excluir(userId);
+                    return "redirect:/bolsista?sucesso=Bolsista+excluido+com+sucesso";
                 } else {
-                    model.addAttribute("erro", "Sem permissão para excluir.");
+                    return "redirect:/bolsista?erro=Sem+permissao+para+excluir";
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            model.addAttribute("erro", "Erro ao excluir usuário.");
+            return "redirect:/bolsista?erro=Erro+ao+excluir+usuario";
         } catch (NumberFormatException e) {
-            model.addAttribute("erro", "ID do usuário inválido.");
+            return "redirect:/bolsista?erro=ID+do+usuario+invalido";
         }
-        return "redirect:/bolsista";
     }
 
     @PostMapping
@@ -378,7 +398,8 @@ public class BolsistaController {
 
             boolean sucesso = b.getId() > 0 ? bolsistaService.atualizar(b) : bolsistaService.inserir(b);
             if (sucesso) {
-                return "redirect:/bolsista";
+                String msg = b.getId() > 0 ? "Usuario+atualizado+com+sucesso" : "Usuario+salvo+com+sucesso";
+                return "redirect:/bolsista?sucesso=" + msg;
             } else {
                 model.addAttribute("erro", "Problemas ao salvar o bolsista.");
                 model.addAttribute("bolsista", b);
