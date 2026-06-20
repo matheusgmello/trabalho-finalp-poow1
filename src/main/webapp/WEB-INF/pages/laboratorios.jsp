@@ -56,6 +56,7 @@
                                     <th>Coordenador</th>
                                 </c:otherwise>
                             </c:choose>
+                            <th>Vagas / Ocupação</th>
                             <th>Status</th>
                             <th>Ações</th>
                         </tr>
@@ -81,6 +82,14 @@
                                         <td>${lab.coordenador}</td>
                                     </c:otherwise>
                                 </c:choose>
+                                <td>
+                                     <strong>${lab.totalBolsistas}</strong> / ${lab.capacidade}
+                                     <c:if test="${lab.capacidade > 0 && (lab.totalBolsistas / lab.capacidade) >= 0.85}">
+                                         <span class="badge status-em-pausa" style="background-color: #f39c12; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; margin-left: 5px;" title="Capacidade acima de 85%">
+                                             <i class="fas fa-exclamation-triangle"></i> Lotação
+                                         </span>
+                                     </c:if>
+                                 </td>
                                 <td>
                                     <span class="badge status-${lab.status.toLowerCase().replace(' ', '-')}">
                                         ${lab.status}
@@ -111,7 +120,7 @@
                         </c:forEach>
                         <c:if test="${empty listaLaboratorios}">
                             <tr>
-                                <td colspan="5" class="empty-state">
+                                <td colspan="6" class="empty-state">
                                     Nenhum laboratório encontrado.
                                 </td>
                             </tr>

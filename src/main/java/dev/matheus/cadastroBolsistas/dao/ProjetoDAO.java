@@ -5,6 +5,8 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 @Repository
 public class ProjetoDAO {
@@ -188,5 +190,26 @@ public class ProjetoDAO {
         p.setNomeLaboratorio(rs.getString("nome_laboratorio"));
         p.setAtivo(rs.getBoolean("ativo"));
         return p;
+    }
+
+    public Map<Integer, ArrayList<Projeto>> getProjetosDosBolsistasDoLaboratorio(int labId) throws SQLException {
+        String sql = "SELECT bp.bolsista_id, p.*, l.nome as nome_laboratorio FROM projeto p " +
+                     "INNER JOIN bolsista_projeto bp ON p.id = bp.projeto_id " +
+                     "INNER JOIN bolsista b ON bp.bolsista_id = b.id " +
+                     "LEFT JOIN laboratorio l ON p.laboratorio_id = l.id " +
+                     "WHERE b.laboratorio_id = ? AND p.ativo = true ORDER BY p.nome";
+        Map<Integer, ArrayList<Projeto>> mapa = new HashMap<>();
+        try (Connection conn = ConectaDBPostgres.getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, labId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int bolsistaId = rs.getInt("bolsista_id");
+                    Projeto p = extrairProjeto(rs);
+                    mapa.computeIfAbsent(bolsistaId, k -> new ArrayList<>()).add(p);
+                }
+            }
+        }
+        return mapa;
     }
 }

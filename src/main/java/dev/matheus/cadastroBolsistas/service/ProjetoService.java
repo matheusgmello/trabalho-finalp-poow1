@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 @Service
 public class ProjetoService {
@@ -57,5 +59,9 @@ public class ProjetoService {
 
     public ArrayList<Projeto> listarPorBolsista(int bolsistaId) throws SQLException {
         return dao.getProjetosPorBolsista(bolsistaId);
+    }
+
+    public Map<Integer, ArrayList<Projeto>> getProjetosDosBolsistasDoLaboratorio(int labId) throws SQLException {
+        return dao.getProjetosDosBolsistasDoLaboratorio(labId);
     }
 }

@@ -15,6 +15,7 @@ public class Laboratorio {
     private int coordenadorId;
     private String coordenador; // mantido para compatibilidade com as JSP (armazena o nome do coordenador)
     private boolean ativo;
+    private int totalBolsistas;
     private ArrayList<Projeto> projetos = new ArrayList<>();
 
     public Laboratorio() {}
@@ -57,4 +58,7 @@ public class Laboratorio {
 
     public ArrayList<Projeto> getProjetos() { return projetos; }
     public void setProjetos(ArrayList<Projeto> projetos) { this.projetos = projetos; }
+
+    public int getTotalBolsistas() { return totalBolsistas; }
+    public void setTotalBolsistas(int totalBolsistas) { this.totalBolsistas = totalBolsistas; }
 }

@@ -149,8 +149,11 @@ public class LaboratorioController {
 
             ArrayList<Bolsista> bolsistas = bolsistaService.buscarPorLaboratorio(labId);
             
+            // Mitigação de consultas N+1: busca todas as associações de projetos em uma única query
+            java.util.Map<Integer, ArrayList<Projeto>> mapaProjetos = projetoService.getProjetosDosBolsistasDoLaboratorio(labId);
             for (Bolsista b : bolsistas) {
-                model.addAttribute("projetosBolsista_" + b.getId(), projetoService.listarPorBolsista(b.getId()));
+                ArrayList<Projeto> projs = mapaProjetos.get(b.getId());
+                model.addAttribute("projetosBolsista_" + b.getId(), projs != null ? projs : new ArrayList<dev.matheus.cadastroBolsistas.model.Projeto>());
             }
 
             boolean podeGerenciar = laboratorioService.podeGerenciar(usuarioLogado, labId);
@@ -255,6 +258,7 @@ public class LaboratorioController {
 
             for (Laboratorio lab : lista) {
                 lab.setProjetos(projetoService.listarPorLaboratorio(lab.getId()));
+                lab.setTotalBolsistas(bolsistaService.buscarPorLaboratorio(lab.getId()).size());
             }
 
             model.addAttribute("listaLaboratorios", lista);
