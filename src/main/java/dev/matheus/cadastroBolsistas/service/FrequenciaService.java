@@ -39,6 +39,14 @@ public class FrequenciaService {
         return dao.listarTodas();
     }
 
+    public ArrayList<Frequencia> listarTodasPaginado(int limit, int offset) throws SQLException {
+        return dao.listarTodasPaginado(limit, offset);
+    }
+
+    public int contarTodas() throws SQLException {
+        return dao.contarTodas();
+    }
+
     public boolean excluir(int id) throws SQLException {
         return dao.excluir(id);
     }

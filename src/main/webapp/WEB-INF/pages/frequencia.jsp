@@ -19,6 +19,21 @@
     <div class="main-content">
         <h1><i class="fas fa-calendar-check"></i> Registro de Frequência</h1>
 
+        <c:if test="${usuario.bolsista}">
+            <div class="stats-grid" style="display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap;">
+                <div class="stat-card" style="flex: 1; min-width: 200px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 4px solid var(--primary-color);">
+                    <h3 style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Horas Trabalhadas no Mês</h3>
+                    <div class="value" style="font-size: 2rem; font-weight: bold; color: var(--primary-color);">${totalHorasMesCorrente} hrs</div>
+                    <p style="font-size: 0.8rem; color: #999; margin-top: 5px;"><i class="fas fa-calendar-alt"></i> Mês Corrente</p>
+                </div>
+                <div class="stat-card" style="flex: 1; min-width: 200px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 4px solid #2ecc71;">
+                    <h3 style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Total Acumulado de Horas</h3>
+                    <div class="value" style="font-size: 2rem; font-weight: bold; color: #2ecc71;">${totalHorasAcumulado} hrs</div>
+                    <p style="font-size: 0.8rem; color: #999; margin-top: 5px;"><i class="fas fa-history"></i> Histórico Geral</p>
+                </div>
+            </div>
+        </c:if>
+
         <c:if test="${not empty erro}">
             <div class="error-msg">
                 <i class="fas fa-exclamation-circle"></i> ${erro}
@@ -124,6 +139,18 @@
                     </tbody>
                 </table>
             </div>
+            
+            <c:if test="${usuario.admin and not empty totalPaginas and totalPaginas > 1}">
+                <div class="pagination" style="display: flex; justify-content: center; gap: 15px; margin-top: 20px; align-items: center;">
+                    <c:if test="${paginaAtual > 1}">
+                        <a href="frequencia?pagina=${paginaAtual - 1}" class="btn-pagination" style="padding: 8px 16px; background-color: var(--primary-color); color: white; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-weight: bold; transition: background 0.2s;"><i class="fas fa-chevron-left"></i> Anterior</a>
+                    </c:if>
+                    <span style="font-size: 0.9rem; color: #555;">Página <strong>${paginaAtual}</strong> de ${totalPaginas}</span>
+                    <c:if test="${paginaAtual < totalPaginas}">
+                        <a href="frequencia?pagina=${paginaAtual + 1}" class="btn-pagination" style="padding: 8px 16px; background-color: var(--primary-color); color: white; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-weight: bold; transition: background 0.2s;">Próxima <i class="fas fa-chevron-right"></i></a>
+                    </c:if>
+                </div>
+            </c:if>
         </div>
     </div>
 </body>

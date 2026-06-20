@@ -9,6 +9,7 @@ import dev.matheus.cadastroBolsistas.service.BolsistaService;
 import dev.matheus.cadastroBolsistas.service.ProfessorService;
 import dev.matheus.cadastroBolsistas.service.LaboratorioService;
 import dev.matheus.cadastroBolsistas.util.StringUtil;
+import dev.matheus.cadastroBolsistas.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -283,6 +284,15 @@ public class BolsistaController {
             }
 
             try {
+                if (p.getId() > 0 && StringUtil.estaVazio(p.getSenha())) {
+                    Professor profExistente = professorService.buscarPorId(p.getId());
+                    if (profExistente != null) {
+                        p.setSenha(profExistente.getSenha());
+                    }
+                } else {
+                    p.setSenha(SecurityUtil.hashSenha(p.getSenha()));
+                }
+
                 boolean sucesso = p.getId() > 0 ? professorService.atualizar(p) : professorService.inserir(p);
                 if (sucesso) {
                     return "redirect:/bolsista";
@@ -357,6 +367,15 @@ public class BolsistaController {
         }
 
         try {
+            if (b.getId() > 0 && StringUtil.estaVazio(b.getSenha())) {
+                Bolsista bolsExistente = bolsistaService.buscarPorId(b.getId());
+                if (bolsExistente != null) {
+                    b.setSenha(bolsExistente.getSenha());
+                }
+            } else {
+                b.setSenha(SecurityUtil.hashSenha(b.getSenha()));
+            }
+
             boolean sucesso = b.getId() > 0 ? bolsistaService.atualizar(b) : bolsistaService.inserir(b);
             if (sucesso) {
                 return "redirect:/bolsista";
@@ -489,8 +508,14 @@ public class BolsistaController {
         if (StringUtil.estaVazio(b.getMatricula())) {
             return "A matricula e obrigatoria.";
         }
-        if (StringUtil.estaVazio(b.getSenha()) || b.getSenha().length() < 6) {
-            return "A senha deve ter pelo menos 6 caracteres.";
+        if (b.getId() == 0) {
+            if (StringUtil.estaVazio(b.getSenha()) || b.getSenha().length() < 6) {
+                return "A senha deve ter pelo menos 6 caracteres.";
+            }
+        } else {
+            if (!StringUtil.estaVazio(b.getSenha()) && b.getSenha().length() < 6) {
+                return "A senha deve ter pelo menos 6 caracteres.";
+            }
         }
         if (!"ADMIN".equals(b.getTipoUsuario()) && !"BOLSISTA".equals(b.getTipoUsuario())) {
             return "Tipo de usuario invalido.";
@@ -517,8 +542,14 @@ public class BolsistaController {
         if (StringUtil.estaVazio(p.getEmail()) || !p.getEmail().matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
             return "Informe um e-mail válido.";
         }
-        if (StringUtil.estaVazio(p.getSenha()) || p.getSenha().length() < 6) {
-            return "A senha deve ter pelo menos 6 caracteres.";
+        if (p.getId() == 0) {
+            if (StringUtil.estaVazio(p.getSenha()) || p.getSenha().length() < 6) {
+                return "A senha deve ter pelo menos 6 caracteres.";
+            }
+        } else {
+            if (!StringUtil.estaVazio(p.getSenha()) && p.getSenha().length() < 6) {
+                return "A senha deve ter pelo menos 6 caracteres.";
+            }
         }
         if (!usuarioLogado.isAdmin()) {
             return "Apenas administradores podem definir outro professor.";

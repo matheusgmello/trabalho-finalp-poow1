@@ -23,6 +23,10 @@ public class ProjetoService {
         return dao.getProjetos();
     }
 
+    public ArrayList<Projeto> buscarProjetos(String buscaNome, Integer labId) throws SQLException {
+        return dao.buscarProjetos(buscaNome, labId);
+    }
+
     public ArrayList<Projeto> listarPorLaboratorio(int labId) throws SQLException {
         return dao.getProjetosPorLaboratorio(labId);
     }

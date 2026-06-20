@@ -10,7 +10,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 return false;
             }
-            if (senha.length < 6) {
+            const idVal = document.getElementsByName('id')[0] ? document.getElementsByName('id')[0].value : "";
+            const isEdicao = idVal && idVal !== "" && idVal !== "0";
+            if (!isEdicao && senha.length < 6) {
+                alert('A senha deve ter pelo menos 6 caracteres.');
+                e.preventDefault();
+                return false;
+            }
+            if (isEdicao && senha.length > 0 && senha.length < 6) {
                 alert('A senha deve ter pelo menos 6 caracteres.');
                 e.preventDefault();
                 return false;

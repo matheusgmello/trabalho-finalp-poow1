@@ -5,6 +5,7 @@ import dev.matheus.cadastroBolsistas.model.Professor;
 import dev.matheus.cadastroBolsistas.model.Usuario;
 import dev.matheus.cadastroBolsistas.service.BolsistaService;
 import dev.matheus.cadastroBolsistas.service.ProfessorService;
+import dev.matheus.cadastroBolsistas.util.SecurityUtil;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,6 +28,9 @@ public class PerfilController {
     @GetMapping
     public String perfilPage(HttpSession session, Model model) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
+        if (usuarioLogado == null) {
+            return "redirect:/login";
+        }
         model.addAttribute("usuario", usuarioLogado);
         return "perfil";
     }
@@ -34,37 +38,63 @@ public class PerfilController {
     @PostMapping
     public String atualizarPerfil(@RequestParam String nome,
                                   @RequestParam String email,
-                                  @RequestParam String senha,
-                                  @RequestParam String confirmaSenha,
+                                  @RequestParam(required = false) String senhaAtual,
+                                  @RequestParam(required = false) String senha,
+                                  @RequestParam(required = false) String confirmaSenha,
                                   @RequestParam(required = false) String fotoUrl,
                                   @RequestParam(required = false) String bio,
                                   HttpSession session,
                                   Model model) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
+        if (usuarioLogado == null) {
+            return "redirect:/login";
+        }
 
         nome = nome != null ? nome.trim() : "";
         email = email != null ? email.trim() : "";
+        senhaAtual = senhaAtual != null ? senhaAtual.trim() : "";
         senha = senha != null ? senha.trim() : "";
         confirmaSenha = confirmaSenha != null ? confirmaSenha.trim() : "";
         fotoUrl = fotoUrl != null ? fotoUrl.trim() : "";
         bio = bio != null ? bio.trim() : "";
 
-        if (nome.isEmpty() || email.isEmpty() || senha.isEmpty()) {
-            model.addAttribute("erro", "Todos os campos obrigatórios devem ser preenchidos.");
+        if (nome.isEmpty() || email.isEmpty()) {
+            model.addAttribute("erro", "Nome e e-mail são campos obrigatórios.");
             model.addAttribute("usuario", usuarioLogado);
             return "perfil";
         }
 
-        if (senha.length() < 6) {
-            model.addAttribute("erro", "A senha deve ter pelo menos 6 caracteres.");
-            model.addAttribute("usuario", usuarioLogado);
-            return "perfil";
-        }
+        boolean alterandoSenha = !senhaAtual.isEmpty() || !senha.isEmpty() || !confirmaSenha.isEmpty();
+        String senhaParaSalvar = usuarioLogado.getSenha(); // padrão: manter a mesma senha (que já está hasheada no banco/sessão)
 
-        if (!senha.equals(confirmaSenha)) {
-            model.addAttribute("erro", "As senhas não coincidem.");
-            model.addAttribute("usuario", usuarioLogado);
-            return "perfil";
+        if (alterandoSenha) {
+            if (senhaAtual.isEmpty() || senha.isEmpty() || confirmaSenha.isEmpty()) {
+                model.addAttribute("erro", "Para alterar a senha, preencha todos os campos de senha (atual, nova e confirmação).");
+                model.addAttribute("usuario", usuarioLogado);
+                return "perfil";
+            }
+            
+            // Validar senha atual hasheada com a que está no usuário logado
+            String senhaAtualHashed = SecurityUtil.hashSenha(senhaAtual);
+            if (!senhaAtualHashed.equals(usuarioLogado.getSenha())) {
+                model.addAttribute("erro", "A senha atual informada está incorreta.");
+                model.addAttribute("usuario", usuarioLogado);
+                return "perfil";
+            }
+
+            if (senha.length() < 6) {
+                model.addAttribute("erro", "A nova senha deve ter pelo menos 6 caracteres.");
+                model.addAttribute("usuario", usuarioLogado);
+                return "perfil";
+            }
+
+            if (!senha.equals(confirmaSenha)) {
+                model.addAttribute("erro", "A nova senha e a confirmação não coincidem.");
+                model.addAttribute("usuario", usuarioLogado);
+                return "perfil";
+            }
+
+            senhaParaSalvar = SecurityUtil.hashSenha(senha);
         }
 
         try {
@@ -72,22 +102,20 @@ public class PerfilController {
                 Professor prof = professorService.buscarPorId(usuarioLogado.getId());
                 prof.setNome(nome);
                 prof.setEmail(email);
-                prof.setSenha(senha);
-                if (!fotoUrl.isEmpty()) {
-                    prof.setFotoUrl(fotoUrl);
-                }
-                prof.setBio(bio);
+                prof.setSenha(senhaParaSalvar);
+                prof.setFotoUrl(fotoUrl.isEmpty() ? null : fotoUrl);
+                prof.setBio(bio.isEmpty() ? null : bio);
+                
                 professorService.atualizar(prof);
                 session.setAttribute("usuario", prof);
             } else {
                 Bolsista bol = bolsistaService.buscarPorId(usuarioLogado.getId());
                 bol.setNome(nome);
                 bol.setEmail(email);
-                bol.setSenha(senha);
-                if (!fotoUrl.isEmpty()) {
-                    bol.setFotoUrl(fotoUrl);
-                }
-                bol.setBio(bio);
+                bol.setSenha(senhaParaSalvar);
+                bol.setFotoUrl(fotoUrl.isEmpty() ? null : fotoUrl);
+                bol.setBio(bio.isEmpty() ? null : bio);
+                
                 bolsistaService.atualizar(bol);
                 session.setAttribute("usuario", bol);
             }

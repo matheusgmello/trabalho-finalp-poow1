@@ -95,8 +95,8 @@
                         </div>
                     </c:if>
                     <div class="form-group">
-                        <label>Senha <span class="asterisco">*</span></label>
-                        <input type="password" name="senha" id="senha" value="${bolsista.senha}" required minlength="6" placeholder="Mínimo 6 caracteres">
+                        <label>Senha <c:if test="${bolsista == null}"><span class="asterisco">*</span></c:if></label>
+                        <input type="password" name="senha" id="senha" ${bolsista == null ? 'required' : ''} minlength="6" placeholder="${bolsista == null ? 'Mínimo 6 caracteres' : 'Deixe em branco para não alterar'}">
                     </div>
                     <div class="actions">
                         <button type="submit" class="btn btn-submit"><i class="fas fa-save"></i> Salvar</button>

@@ -12,34 +12,41 @@ public class ProfessorDAO {
     public ProfessorDAO() {}
 
     public boolean inserir(Professor p) throws SQLException {
+        String sql = "INSERT INTO professor (nome, email, senha, ativo, foto_url, bio) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConectaDBPostgres.getConexao();
-             Statement stmt = conn.createStatement()) {
-            String sql = "INSERT INTO professor (nome, email, senha, ativo, foto_url, bio) " +
-                         "VALUES ('" + p.getNome() + "', '" + p.getEmail() + "', '" + p.getSenha() + 
-                         "', " + p.isAtivo() + ", " + (p.getFotoUrl() != null ? "'" + p.getFotoUrl() + "'" : "NULL") + 
-                         ", " + (p.getBio() != null ? "'" + p.getBio().replace("'", "''") + "'" : "NULL") + ")";
-            stmt.execute(sql);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, p.getNome());
+            stmt.setString(2, p.getEmail());
+            stmt.setString(3, p.getSenha());
+            stmt.setBoolean(4, p.isAtivo());
+            stmt.setString(5, p.getFotoUrl());
+            stmt.setString(6, p.getBio());
+            stmt.executeUpdate();
             return true;
         }
     }
 
     public Professor autenticar(String email, String senha) throws SQLException {
+        String sql = "SELECT * FROM professor WHERE email = ? AND senha = ? AND ativo = true";
         try (Connection conn = ConectaDBPostgres.getConexao();
-             Statement stmt = conn.createStatement()) {
-            String sql = "SELECT * FROM professor WHERE email = '" + email + "' AND senha = '" + senha + "' AND ativo = true";
-            ResultSet rs = stmt.executeQuery(sql);
-            if (rs.next()) {
-                return extrairProfessor(rs);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            stmt.setString(2, senha);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return extrairProfessor(rs);
+                }
             }
             return null;
         }
     }
 
     public ArrayList<Professor> getProfessores() throws SQLException {
+        String sql = "SELECT * FROM professor WHERE ativo = true ORDER BY nome";
         try (Connection conn = ConectaDBPostgres.getConexao();
-             Statement stmt = conn.createStatement()) {
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
             ArrayList<Professor> lista = new ArrayList<>();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM professor WHERE ativo = true ORDER BY nome");
             while (rs.next()) {
                 lista.add(extrairProfessor(rs));
             }
@@ -48,50 +55,56 @@ public class ProfessorDAO {
     }
 
     public ArrayList<Professor> getProfessoresPorNome(String nome) throws SQLException {
+        String sql = "SELECT * FROM professor WHERE nome ILIKE ? AND ativo = true ORDER BY nome";
         try (Connection conn = ConectaDBPostgres.getConexao();
-             Statement stmt = conn.createStatement()) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + nome + "%");
             ArrayList<Professor> lista = new ArrayList<>();
-            String sql = "SELECT * FROM professor WHERE nome ILIKE '%" + nome + "%' AND ativo = true ORDER BY nome";
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                lista.add(extrairProfessor(rs));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(extrairProfessor(rs));
+                }
             }
             return lista;
         }
     }
 
     public Professor getProfessorPorId(int id) throws SQLException {
+        String sql = "SELECT * FROM professor WHERE id = ?";
         try (Connection conn = ConectaDBPostgres.getConexao();
-             Statement stmt = conn.createStatement()) {
-            ResultSet rs = stmt.executeQuery("SELECT * FROM professor WHERE id = " + id);
-            if (rs.next()) {
-                return extrairProfessor(rs);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return extrairProfessor(rs);
+                }
             }
             return null;
         }
     }
 
     public boolean atualizar(Professor p) throws SQLException {
+        String sql = "UPDATE professor SET nome = ?, email = ?, senha = ?, ativo = ?, foto_url = ?, bio = ? WHERE id = ?";
         try (Connection conn = ConectaDBPostgres.getConexao();
-             Statement stmt = conn.createStatement()) {
-            String sql = "UPDATE professor SET " +
-                         "nome = '" + p.getNome() + "', " +
-                         "email = '" + p.getEmail() + "', " +
-                         "senha = '" + p.getSenha() + "', " +
-                         "ativo = " + p.isAtivo() + ", " +
-                         "foto_url = " + (p.getFotoUrl() != null ? "'" + p.getFotoUrl() + "'" : "NULL") + ", " +
-                         "bio = " + (p.getBio() != null ? "'" + p.getBio().replace("'", "''") + "'" : "NULL") + " " +
-                         "WHERE id = " + p.getId();
-            stmt.execute(sql);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, p.getNome());
+            stmt.setString(2, p.getEmail());
+            stmt.setString(3, p.getSenha());
+            stmt.setBoolean(4, p.isAtivo());
+            stmt.setString(5, p.getFotoUrl());
+            stmt.setString(6, p.getBio());
+            stmt.setInt(7, p.getId());
+            stmt.executeUpdate();
             return true;
         }
     }
 
     public boolean excluir(int id) throws SQLException {
+        String sql = "UPDATE professor SET ativo = false WHERE id = ?";
         try (Connection conn = ConectaDBPostgres.getConexao();
-             Statement stmt = conn.createStatement()) {
-            // soft delete: set active to false
-            stmt.execute("UPDATE professor SET ativo = false WHERE id = " + id);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
             return true;
         }
     }

@@ -81,6 +81,117 @@
                 </table>
             </div>
         </div>
+
+        <div class="report-sections" style="margin-top: 25px;">
+            <div class="report-card">
+                <h2><i class="fas fa-clock"></i> Horas Registradas no Mês Corrente</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bolsista</th>
+                            <th class="cell-right">Total de Horas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="item" items="${horasBolsistas}">
+                            <tr>
+                                <td>${item.nome}</td>
+                                <td class="cell-right"><span class="count-badge" style="background-color: var(--primary-color);">${item.totalHoras} hrs</span></td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty horasBolsistas}">
+                            <tr>
+                                <td colspan="2" class="empty-state" style="text-align: center; color: #666; padding: 15px;">Nenhuma hora lançada no mês corrente.</td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="report-card">
+                <h2><i class="fas fa-project-diagram"></i> Projetos Ativos por Laboratório</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Laboratório</th>
+                            <th class="cell-right">Projetos Ativos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="item" items="${projetosPorLab}">
+                            <tr>
+                                <td>${item.nome}</td>
+                                <td class="cell-right"><span class="count-badge count-badge-warning">${item.totalProjetos}</span></td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty projetosPorLab}">
+                            <tr>
+                                <td colspan="2" class="empty-state" style="text-align: center; color: #666; padding: 15px;">Nenhum projeto ativo cadastrado.</td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="report-sections" style="margin-top: 25px;">
+            <div class="report-card">
+                <h2><i class="fas fa-briefcase"></i> Bolsistas por Cargo</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cargo</th>
+                            <th class="cell-right">Total de Bolsistas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="item" items="${bolsistasPorCargo}">
+                            <tr>
+                                <td>${item.cargo}</td>
+                                <td class="cell-right"><span class="count-badge" style="background-color: #9b59b6; color: white;">${item.totalBolsistas}</span></td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty bolsistasPorCargo}">
+                            <tr>
+                                <td colspan="2" class="empty-state" style="text-align: center; color: #666; padding: 15px;">Nenhum bolsista associado a cargo.</td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="report-card">
+                <h2><i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i> Alerta de Vagas (Ocupação >= 85%)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Laboratório</th>
+                            <th>Ocupação</th>
+                            <th class="cell-right">Bolsistas / Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="item" items="${labsLimite}">
+                            <tr>
+                                <td><strong>${item.nome}</strong></td>
+                                <td>
+                                    <span class="badge badge-danger" style="background-color: #e74c3c; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem;">
+                                        <c:formatNumber value="${item.percentualOcupacao}" maxFractionDigits="1"/>%
+                                    </span>
+                                </td>
+                                <td class="cell-right"><strong>${item.totalBolsistas}</strong> / ${item.capacidade}</td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty labsLimite}">
+                            <tr>
+                                <td colspan="3" class="empty-state" style="text-align: center; color: #2ecc71; padding: 15px; font-weight: bold;">
+                                    <i class="fas fa-check-circle"></i> Todos os laboratórios estão operando com folga (&lt; 85% de ocupação).
+                                </td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </div>
     </div>
 
 </body>

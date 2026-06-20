@@ -42,17 +42,18 @@ public class FrequenciaController {
     private LaboratorioService laboratorioService;
 
     @GetMapping
-    public String listar(HttpSession session, Model model) {
+    public String listar(@RequestParam(defaultValue = "1") int pagina, HttpSession session, Model model) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
         if (usuarioLogado == null) {
             return "redirect:/login";
         }
-        carregarPagina(model, usuarioLogado);
+        carregarPagina(model, usuarioLogado, pagina);
         return "frequencia";
     }
 
     @GetMapping("/editar")
     public String formularioEditar(@RequestParam String id,
+                                   @RequestParam(defaultValue = "1") int pagina,
                                    HttpSession session,
                                    Model model) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
@@ -75,7 +76,7 @@ public class FrequenciaController {
             e.printStackTrace();
             model.addAttribute("erro", "Erro ao buscar frequencia.");
         }
-        carregarPagina(model, usuarioLogado);
+        carregarPagina(model, usuarioLogado, pagina);
         return "frequencia";
     }
 
@@ -120,7 +121,7 @@ public class FrequenciaController {
         String erroValidacao = validarFrequencia(data, horas, StringUtil.limpar(descricao));
         if (erroValidacao != null) {
             model.addAttribute("erro", erroValidacao);
-            carregarPagina(model, usuarioLogado);
+            carregarPagina(model, usuarioLogado, 1);
             return "frequencia";
         }
 
@@ -130,7 +131,7 @@ public class FrequenciaController {
                 freqId = Integer.parseInt(id);
             } catch (NumberFormatException e) {
                 model.addAttribute("erro", "ID da frequencia invalido.");
-                carregarPagina(model, usuarioLogado);
+                carregarPagina(model, usuarioLogado, 1);
                 return "frequencia";
             }
         }
@@ -141,7 +142,7 @@ public class FrequenciaController {
                 Frequencia existente = frequenciaService.buscarPorId(freqId);
                 if (existente == null) {
                     model.addAttribute("erro", "Registro de frequencia nao encontrado.");
-                    carregarPagina(model, usuarioLogado);
+                    carregarPagina(model, usuarioLogado, 1);
                     return "frequencia";
                 }
                 if (!podeGerenciarFrequencia(usuarioLogado, existente)) {
@@ -155,13 +156,13 @@ public class FrequenciaController {
                     return "redirect:/frequencia";
                 } else {
                     model.addAttribute("erro", "Erro ao atualizar frequencia.");
-                    carregarPagina(model, usuarioLogado);
+                    carregarPagina(model, usuarioLogado, 1);
                     return "frequencia";
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
                 model.addAttribute("erro", "Erro ao atualizar frequencia.");
-                carregarPagina(model, usuarioLogado);
+                carregarPagina(model, usuarioLogado, 1);
                 return "frequencia";
             }
         }
@@ -171,7 +172,7 @@ public class FrequenciaController {
         if (usuarioLogado.isAdmin() || usuarioLogado.isProfessor()) {
             if (StringUtil.estaVazio(bolsistaId)) {
                 model.addAttribute("erro", "Selecione o bolsista para registrar a frequencia.");
-                carregarPagina(model, usuarioLogado);
+                carregarPagina(model, usuarioLogado, 1);
                 return "frequencia";
             }
             try {
@@ -179,12 +180,12 @@ public class FrequenciaController {
                 Bolsista b = bolsistaService.buscarPorId(idBolsista);
                 if (usuarioLogado.isProfessor() && !bolsistaService.podeGerenciar(usuarioLogado, b)) {
                     model.addAttribute("erro", "Sem permissao para registrar frequencia para este bolsista.");
-                    carregarPagina(model, usuarioLogado);
+                    carregarPagina(model, usuarioLogado, 1);
                     return "frequencia";
                 }
             } catch (Exception e) {
                 model.addAttribute("erro", "Bolsista invalido.");
-                carregarPagina(model, usuarioLogado);
+                carregarPagina(model, usuarioLogado, 1);
                 return "frequencia";
             }
         } else {
@@ -203,22 +204,29 @@ public class FrequenciaController {
                 return "redirect:/frequencia";
             } else {
                 model.addAttribute("erro", "Erro ao registrar frequencia.");
-                carregarPagina(model, usuarioLogado);
+                carregarPagina(model, usuarioLogado, 1);
                 return "frequencia";
             }
         } catch (SQLException e) {
             e.printStackTrace();
             model.addAttribute("erro", "Erro ao registrar frequencia.");
-            carregarPagina(model, usuarioLogado);
+            carregarPagina(model, usuarioLogado, 1);
             return "frequencia";
         }
     }
 
-    private void carregarPagina(Model model, Usuario usuarioLogado) {
+    private void carregarPagina(Model model, Usuario usuarioLogado, int pagina) {
         try {
+            int tamanho = 10;
+            int offset = (pagina - 1) * tamanho;
             if (usuarioLogado.isAdmin()) {
-                model.addAttribute("listaFrequencia", frequenciaService.listarTodas());
+                int totalRegistros = frequenciaService.contarTodas();
+                int totalPaginas = (int) Math.ceil(totalRegistros / (double) tamanho);
+
+                model.addAttribute("listaFrequencia", frequenciaService.listarTodasPaginado(tamanho, offset));
                 model.addAttribute("listaBolsistas", bolsistaService.listarTodos());
+                model.addAttribute("paginaAtual", pagina);
+                model.addAttribute("totalPaginas", totalPaginas > 0 ? totalPaginas : 1);
             } else if (usuarioLogado.isProfessor()) {
                 ArrayList<Laboratorio> labsCoordenados = laboratorioService.listarPorCoordenador(usuarioLogado.getId());
                 ArrayList<Frequencia> listaFreq = new ArrayList<>();
@@ -230,7 +238,24 @@ public class FrequenciaController {
                 model.addAttribute("listaFrequencia", listaFreq);
                 model.addAttribute("listaBolsistas", listaBolsistas);
             } else {
-                model.addAttribute("listaFrequencia", frequenciaService.listarPorBolsista(usuarioLogado.getId()));
+                ArrayList<Frequencia> listaFreq = frequenciaService.listarPorBolsista(usuarioLogado.getId());
+                model.addAttribute("listaFrequencia", listaFreq);
+
+                double totalHorasAcumulado = 0.0;
+                double totalHorasMesCorrente = 0.0;
+                LocalDate hoje = LocalDate.now();
+
+                for (Frequencia f : listaFreq) {
+                    totalHorasAcumulado += f.getHorasTrabalhadas();
+                    if (f.getData() != null 
+                        && f.getData().getMonth() == hoje.getMonth() 
+                        && f.getData().getYear() == hoje.getYear()) {
+                        totalHorasMesCorrente += f.getHorasTrabalhadas();
+                    }
+                }
+
+                model.addAttribute("totalHorasAcumulado", totalHorasAcumulado);
+                model.addAttribute("totalHorasMesCorrente", totalHorasMesCorrente);
             }
         } catch (SQLException e) {
             e.printStackTrace();

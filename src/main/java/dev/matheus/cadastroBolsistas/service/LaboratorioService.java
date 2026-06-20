@@ -64,4 +64,8 @@ public class LaboratorioService {
         int ocupados = dao.contarBolsistasNoLaboratorio(labId);
         return ocupados < lab.getCapacidade();
     }
+
+    public int contarBolsistasNoLaboratorio(int labId) throws SQLException {
+        return dao.contarBolsistasNoLaboratorio(labId);
+    }
 }

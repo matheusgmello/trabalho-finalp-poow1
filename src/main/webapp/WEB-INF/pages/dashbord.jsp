@@ -11,6 +11,25 @@
     <link rel="stylesheet" href="css/style.css?v=2">
     <link rel="stylesheet" href="css/dashboard.css?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .card-stat {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            background-color: rgba(74, 144, 226, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .btn-detalhes-link {
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .btn-detalhes-link:hover {
+            color: var(--primary-dark) !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -21,6 +40,9 @@
             <c:choose>
                 <c:when test="${usuario.bolsista}">
                     <h1>Área do Bolsista</h1>
+                </c:when>
+                <c:when test="${usuario.professor}">
+                    <h1>Área do Professor</h1>
                 </c:when>
                 <c:otherwise>
                     <h1>Painel de Controle</h1>
@@ -33,7 +55,7 @@
 
         <c:choose>
             <c:when test="${usuario.bolsista}">
-                <!-- Atalhos Rápidos -->
+                <!-- Atalhos Rápidos Bolsista -->
                 <h2><i class="fas fa-rocket"></i> Atalhos Rápidos</h2>
                 <div class="cards-container bolsista-shortcuts">
                     <a href="frequencia" class="card">
@@ -48,10 +70,10 @@
                         <p>Veja detalhes da sua equipe, coordenador e projetos vinculados.</p>
                     </a>
 
-                    <a href="laboratorio" class="card">
-                        <i class="fas fa-list-alt"></i>
-                        <h3>Visualizar Laboratórios</h3>
-                        <p>Consulte a listagem de todos os laboratórios e seus projetos.</p>
+                    <a href="projeto" class="card">
+                        <i class="fas fa-project-diagram"></i>
+                        <h3>Visualizar Projetos</h3>
+                        <p>Consulte a listagem de todos os projetos ativos no sistema.</p>
                     </a>
 
                     <a href="perfil" class="card">
@@ -111,29 +133,153 @@
                                     </tr>
                                 </c:if>
                             </tbody>
+                         </table>
+                    </div>
+                </div>
+
+                <!-- Meus Projetos Vinculados -->
+                <div class="equipe-container" style="margin-top: 30px;">
+                    <h2><i class="fas fa-project-diagram"></i> Meus Projetos Vinculados</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Projeto</th>
+                                    <th>Descrição</th>
+                                    <th>Laboratório</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:forEach var="proj" items="${meusProjetos}">
+                                    <tr>
+                                        <td><strong>${proj.nome}</strong></td>
+                                        <td>${proj.descricao}</td>
+                                        <td>${proj.nomeLaboratorio}</td>
+                                        <td>
+                                            <a href="projeto/detalhes?id=${proj.id}" class="btn-detalhes-link" style="color: var(--primary-color); font-weight: bold;"><i class="fas fa-info-circle"></i> Detalhes</a>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                                <c:if test="${empty meusProjetos}">
+                                    <tr>
+                                        <td colspan="4" class="empty-state">
+                                            Você não está vinculado a nenhum projeto no momento.
+                                        </td>
+                                    </tr>
+                                </c:if>
+                            </tbody>
                         </table>
                     </div>
                 </div>
             </c:when>
-            <c:otherwise>
-                <!-- Painel Administrativo -->
+
+            <c:when test="${usuario.professor}">
+                <!-- Atalhos Rápidos Professor -->
+                <h2><i class="fas fa-rocket"></i> Atalhos Rápidos</h2>
                 <div class="cards-container">
                     <a href="bolsista" class="card">
                         <i class="fas fa-user-graduate"></i>
-                        <h3>Gerenciar ${usuario.admin ? 'Usuários' : 'Bolsistas'}</h3>
-                        <p>Cadastre, visualize e pesquise ${usuario.admin ? 'usuários' : 'bolsistas acadêmicos'} no sistema.</p>
+                        <h3>Gerenciar Bolsistas</h3>
+                        <p>Gerencie os bolsistas vinculados aos laboratórios sob sua coordenação.</p>
+                    </a>
+
+                    <a href="laboratorio" class="card">
+                        <i class="fas fa-flask"></i>
+                        <h3>Meus Laboratórios</h3>
+                        <p>Visualize os laboratórios que você coordena e seus respectivos projetos.</p>
+                    </a>
+
+                    <a href="frequencia" class="card">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h3>Frequências da Equipe</h3>
+                        <p>Acompanhe e valide a folha de frequências dos bolsistas sob sua supervisão.</p>
+                    </a>
+
+                    <a href="perfil" class="card">
+                        <i class="fas fa-user-cog"></i>
+                        <h3>Editar Perfil</h3>
+                        <p>Gerencie suas informações cadastrais, biografia e foto de perfil.</p>
+                    </a>
+                </div>
+
+                <!-- Meus Laboratórios Coordenados -->
+                <div class="equipe-container" style="margin-top: 30px;">
+                    <h2><i class="fas fa-university"></i> Meus Laboratórios Coordenados (Total de Bolsistas: ${totalBolsistasCoordenados})</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Laboratório</th>
+                                    <th>Área de Pesquisa</th>
+                                    <th>Status</th>
+                                    <th>Capacidade Ocupada</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:forEach var="lab" items="${meusLaboratorios}">
+                                    <tr>
+                                        <td><strong>${lab.nome}</strong></td>
+                                        <td>${lab.areaPesquisa}</td>
+                                        <td><span class="badge ${lab.status == 'ATIVO' ? 'badge-success' : 'badge-danger'}">${lab.status}</span></td>
+                                        <td>
+                                            <strong>${lab.capacidade}</strong> vagas totais
+                                        </td>
+                                        <td>
+                                            <a href="laboratorio/detalhes?id=${lab.id}" class="btn-detalhes-link" style="color: var(--primary-color); font-weight: bold; margin-right: 15px;"><i class="fas fa-eye"></i> Detalhes</a>
+                                            <a href="laboratorio/editar?id=${lab.id}" class="btn-detalhes-link" style="color: #f39c12; font-weight: bold;"><i class="fas fa-edit"></i> Editar</a>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                                <c:if test="${empty meusLaboratorios}">
+                                    <tr>
+                                        <td colspan="5" class="empty-state">
+                                            Você não coordena nenhum laboratório ativo cadastrado.
+                                        </td>
+                                    </tr>
+                                </c:if>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </c:when>
+
+            <c:otherwise>
+                <!-- Painel Administrativo Admin -->
+                <h2><i class="fas fa-rocket"></i> Atalhos Rápidos</h2>
+                <div class="cards-container">
+                    <a href="bolsista" class="card">
+                        <i class="fas fa-user-graduate"></i>
+                        <h3>Gerenciar Usuários</h3>
+                        <p>Cadastre, edite e pesquise bolsistas, professores e administradores.</p>
+                        <div class="card-stat">${totalBolsistas} cadastrados</div>
                     </a>
 
                     <a href="laboratorio" class="card">
                         <i class="fas fa-flask"></i>
                         <h3>Laboratórios</h3>
-                        <p>Gerencie laboratórios, áreas de pesquisa e projetos vinculados.</p>
+                        <p>Gerencie os laboratórios de pesquisa, coordenadores e vagas.</p>
+                        <div class="card-stat">${totalLabs} cadastrados</div>
+                    </a>
+
+                    <a href="projeto" class="card">
+                        <i class="fas fa-project-diagram"></i>
+                        <h3>Projetos</h3>
+                        <p>Gerencie todos os projetos ativos e o vínculo de bolsistas.</p>
+                        <div class="card-stat">${totalProjetos} cadastrados</div>
+                    </a>
+
+                    <a href="frequencia" class="card">
+                        <i class="fas fa-calendar-check"></i>
+                        <h3>Frequências</h3>
+                        <p>Visualize e gerencie a folha de horas e atividades de todos os bolsistas.</p>
                     </a>
 
                     <a href="relatorio" class="card">
                         <i class="fas fa-chart-line"></i>
                         <h3>Relatórios</h3>
-                        <p>Visualize estatísticas e relatórios de bolsas vigentes.</p>
+                        <p>Visualize estatísticas e relatórios avançados sobre a plataforma.</p>
                     </a>
                 </div>
             </c:otherwise>

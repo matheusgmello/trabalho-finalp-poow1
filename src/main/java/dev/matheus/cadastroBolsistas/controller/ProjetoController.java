@@ -46,34 +46,15 @@ public class ProjetoController {
         try {
             model.addAttribute("todosLaboratorios", laboratorioService.listarTodos());
 
-            ArrayList<Projeto> lista = new ArrayList<>();
-            if (buscaNome != null && !buscaNome.trim().isEmpty()) {
-                ArrayList<Projeto> todos = projetoService.listarTodos();
-                String query = buscaNome.toLowerCase().trim();
-                for (Projeto p : todos) {
-                    if (p.getNome().toLowerCase().contains(query) || 
-                        (p.getDescricao() != null && p.getDescricao().toLowerCase().contains(query))) {
-                        lista.add(p);
-                    }
-                }
-            } else {
-                lista = projetoService.listarTodos();
-            }
-
+            Integer filterLabId = null;
             if (labId != null && !labId.trim().isEmpty()) {
                 try {
-                    int filterLabId = Integer.parseInt(labId);
-                    ArrayList<Projeto> listaFiltrada = new ArrayList<>();
-                    for (Projeto p : lista) {
-                        if (p.getLaboratorioId() == filterLabId) {
-                            listaFiltrada.add(p);
-                        }
-                    }
-                    lista = listaFiltrada;
+                    filterLabId = Integer.parseInt(labId);
                 } catch (NumberFormatException e) {
                     // ignore
                 }
             }
+            ArrayList<Projeto> lista = projetoService.buscarProjetos(buscaNome, filterLabId);
 
             for (Projeto p : lista) {
                 Laboratorio lab = laboratorioService.buscarPorId(p.getLaboratorioId());

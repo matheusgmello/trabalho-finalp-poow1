@@ -43,7 +43,14 @@
         <c:if test="${usuario.admin || usuario.professor}">
             <li><a href="bolsista"><i class="fas fa-user-graduate"></i> ${usuario.admin ? 'Usuários' : 'Bolsistas'}</a></li>
         </c:if>
-        <li><a href="laboratorio"><i class="fas fa-flask"></i> Laboratórios</a></li>
+        <c:choose>
+            <c:when test="${usuario.admin || usuario.professor}">
+                <li><a href="laboratorio"><i class="fas fa-flask"></i> Laboratórios</a></li>
+            </c:when>
+            <c:when test="${usuario.bolsista && usuario.laboratorioId > 0}">
+                <li><a href="laboratorio/detalhes?id=${usuario.laboratorioId}"><i class="fas fa-flask"></i> Meu Laboratório</a></li>
+            </c:when>
+        </c:choose>
         <li><a href="projeto"><i class="fas fa-project-diagram"></i> Projetos</a></li>
         <li><a href="frequencia"><i class="fas fa-calendar-check"></i> Frequência</a></li>
         <c:if test="${usuario.admin || usuario.professor}">

@@ -69,14 +69,24 @@
                         <textarea name="bio" id="bio" rows="4" placeholder="Escreva um resumo sobre você, suas habilidades, hobbies e interesses...">${usuario.bio}</textarea>
                     </div>
 
-                    <div class="form-group">
-                        <label>Nova Senha <span class="asterisco">*</span></label>
-                        <input type="password" name="senha" id="senha" value="${usuario.senha}" required minlength="6" placeholder="Mínimo 6 caracteres">
+                    <div class="form-group form-group-full" style="border-top: 1px solid #ddd; margin-top: 15px; padding-top: 15px;">
+                        <h3 style="margin-bottom: 5px; font-size: 1.1rem; color: #333;">Alterar Senha</h3>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">Preencha os campos abaixo apenas se desejar alterar sua senha.</p>
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label>Senha Atual</label>
+                        <input type="password" name="senhaAtual" id="senhaAtual" placeholder="Digite sua senha atual para autorizar a alteração">
                     </div>
 
                     <div class="form-group">
-                        <label>Confirmar Nova Senha <span class="asterisco">*</span></label>
-                        <input type="password" name="confirmaSenha" id="confirmaSenha" value="${usuario.senha}" required minlength="6" placeholder="Confirme a senha">
+                        <label>Nova Senha</label>
+                        <input type="password" name="senha" id="senha" minlength="6" placeholder="Mínimo 6 caracteres">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Confirmar Nova Senha</label>
+                        <input type="password" name="confirmaSenha" id="confirmaSenha" minlength="6" placeholder="Confirme a nova senha">
                     </div>
 
                     <div class="actions">

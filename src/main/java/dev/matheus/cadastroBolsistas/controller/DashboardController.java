@@ -5,6 +5,7 @@ import dev.matheus.cadastroBolsistas.model.Laboratorio;
 import dev.matheus.cadastroBolsistas.model.Usuario;
 import dev.matheus.cadastroBolsistas.service.BolsistaService;
 import dev.matheus.cadastroBolsistas.service.LaboratorioService;
+import dev.matheus.cadastroBolsistas.service.ProjetoService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,9 @@ public class DashboardController {
 
     @Autowired
     private LaboratorioService laboratorioService;
+
+    @Autowired
+    private ProjetoService projetoService;
 
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
@@ -40,9 +44,22 @@ public class DashboardController {
                     ArrayList<Bolsista> equipe = bolsistaService.buscarPorLaboratorio(labId);
                     model.addAttribute("equipe", equipe);
                 }
+                // Adiciona os projetos do bolsista ao model
+                model.addAttribute("meusProjetos", projetoService.listarPorBolsista(bolsista.getId()));
+            } else if (usuarioLogado.isProfessor()) {
+                // Professor: Carregar laboratórios e bolsistas coordenados
+                ArrayList<Laboratorio> meusLabs = laboratorioService.listarPorCoordenador(usuarioLogado.getId());
+                int totalBolsistasCoordenados = 0;
+                for (Laboratorio l : meusLabs) {
+                    totalBolsistasCoordenados += laboratorioService.contarBolsistasNoLaboratorio(l.getId());
+                }
+                model.addAttribute("meusLaboratorios", meusLabs);
+                model.addAttribute("totalBolsistasCoordenados", totalBolsistasCoordenados);
             } else {
+                // Admin: Carregar dados agregados gerais do sistema
                 model.addAttribute("totalBolsistas", bolsistaService.listarTodos().size());
                 model.addAttribute("totalLabs", laboratorioService.listarTodos().size());
+                model.addAttribute("totalProjetos", projetoService.listarTodos().size());
             }
         } catch (Exception e) {
             e.printStackTrace();

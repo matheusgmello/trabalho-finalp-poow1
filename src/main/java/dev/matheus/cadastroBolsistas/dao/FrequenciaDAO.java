@@ -12,79 +12,89 @@ public class FrequenciaDAO {
     public FrequenciaDAO() {}
 
     public boolean inserir(Frequencia f) throws SQLException {
+        String sql = "INSERT INTO frequencia (bolsista_id, data, horas_trabalhadas, descricao, ativo) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = ConectaDBPostgres.getConexao();
-             Statement stmt = conn.createStatement()) {
-            String sql = "INSERT INTO frequencia (bolsista_id, data, horas_trabalhadas, descricao, ativo) " +
-                         "VALUES (" + f.getBolsistaId() + ", '" + f.getData() + "', " +
-                         f.getHorasTrabalhadas() + ", '" + f.getDescricao() + "', " + f.isAtivo() + ")";
-            stmt.execute(sql);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, f.getBolsistaId());
+            stmt.setDate(2, f.getData() != null ? Date.valueOf(f.getData()) : null);
+            stmt.setDouble(3, f.getHorasTrabalhadas());
+            stmt.setString(4, f.getDescricao());
+            stmt.setBoolean(5, f.isAtivo());
+            stmt.executeUpdate();
             return true;
         }
     }
 
     public Frequencia buscarPorId(int id) throws SQLException {
+        String sql = "SELECT f.*, b.nome as nome_bolsista FROM frequencia f " +
+                     "JOIN bolsista b ON f.bolsista_id = b.id WHERE f.id = ? AND f.ativo = true";
         try (Connection conn = ConectaDBPostgres.getConexao();
-             Statement stmt = conn.createStatement()) {
-            String sql = "SELECT f.*, b.nome as nome_bolsista FROM frequencia f " +
-                         "JOIN bolsista b ON f.bolsista_id = b.id WHERE f.id = " + id + " AND f.ativo = true";
-            ResultSet rs = stmt.executeQuery(sql);
-            if (rs.next()) {
-                return extrairFrequencia(rs);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return extrairFrequencia(rs);
+                }
             }
             return null;
         }
     }
 
     public boolean atualizar(Frequencia f) throws SQLException {
+        String sql = "UPDATE frequencia SET data = ?, horas_trabalhadas = ?, descricao = ? WHERE id = ?";
         try (Connection conn = ConectaDBPostgres.getConexao();
-             Statement stmt = conn.createStatement()) {
-            String sql = "UPDATE frequencia SET data = '" + f.getData() + "', " +
-                         "horas_trabalhadas = " + f.getHorasTrabalhadas() + ", " +
-                         "descricao = '" + f.getDescricao() + "' " +
-                         "WHERE id = " + f.getId();
-            stmt.execute(sql);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDate(1, f.getData() != null ? Date.valueOf(f.getData()) : null);
+            stmt.setDouble(2, f.getHorasTrabalhadas());
+            stmt.setString(3, f.getDescricao());
+            stmt.setInt(4, f.getId());
+            stmt.executeUpdate();
             return true;
         }
     }
 
     public ArrayList<Frequencia> listarPorBolsista(int bolsistaId) throws SQLException {
+        String sql = "SELECT f.*, b.nome as nome_bolsista FROM frequencia f " +
+                     "JOIN bolsista b ON f.bolsista_id = b.id " +
+                     "WHERE f.bolsista_id = ? AND f.ativo = true ORDER BY f.data DESC";
         try (Connection conn = ConectaDBPostgres.getConexao();
-             Statement stmt = conn.createStatement()) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, bolsistaId);
             ArrayList<Frequencia> lista = new ArrayList<>();
-            String sql = "SELECT f.*, b.nome as nome_bolsista FROM frequencia f " +
-                         "JOIN bolsista b ON f.bolsista_id = b.id " +
-                         "WHERE f.bolsista_id = " + bolsistaId + " AND f.ativo = true ORDER BY f.data DESC";
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                lista.add(extrairFrequencia(rs));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(extrairFrequencia(rs));
+                }
             }
             return lista;
         }
     }
 
     public ArrayList<Frequencia> listarPorLaboratorio(int labId) throws SQLException {
+        String sql = "SELECT f.*, b.nome as nome_bolsista FROM frequencia f " +
+                     "JOIN bolsista b ON f.bolsista_id = b.id " +
+                     "WHERE b.laboratorio_id = ? AND f.ativo = true ORDER BY f.data DESC";
         try (Connection conn = ConectaDBPostgres.getConexao();
-             Statement stmt = conn.createStatement()) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, labId);
             ArrayList<Frequencia> lista = new ArrayList<>();
-            String sql = "SELECT f.*, b.nome as nome_bolsista FROM frequencia f " +
-                         "JOIN bolsista b ON f.bolsista_id = b.id " +
-                         "WHERE b.laboratorio_id = " + labId + " AND f.ativo = true ORDER BY f.data DESC";
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                lista.add(extrairFrequencia(rs));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(extrairFrequencia(rs));
+                }
             }
             return lista;
         }
     }
 
     public ArrayList<Frequencia> listarTodas() throws SQLException {
+        String sql = "SELECT f.*, b.nome as nome_bolsista FROM frequencia f " +
+                     "JOIN bolsista b ON f.bolsista_id = b.id " +
+                     "WHERE f.ativo = true ORDER BY f.data DESC";
         try (Connection conn = ConectaDBPostgres.getConexao();
-             Statement stmt = conn.createStatement()) {
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
             ArrayList<Frequencia> lista = new ArrayList<>();
-            String sql = "SELECT f.*, b.nome as nome_bolsista FROM frequencia f " +
-                         "JOIN bolsista b ON f.bolsista_id = b.id " +
-                         "WHERE f.ativo = true ORDER BY f.data DESC";
-            ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 lista.add(extrairFrequencia(rs));
             }
@@ -92,11 +102,42 @@ public class FrequenciaDAO {
         }
     }
 
-    public boolean excluir(int id) throws SQLException {
+    public ArrayList<Frequencia> listarTodasPaginado(int limit, int offset) throws SQLException {
+        String sql = "SELECT f.*, b.nome as nome_bolsista FROM frequencia f " +
+                     "JOIN bolsista b ON f.bolsista_id = b.id " +
+                     "WHERE f.ativo = true ORDER BY f.data DESC LIMIT ? OFFSET ?";
         try (Connection conn = ConectaDBPostgres.getConexao();
-             Statement stmt = conn.createStatement()) {
-            // soft delete: set active to false
-            stmt.execute("UPDATE frequencia SET ativo = false WHERE id = " + id);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, limit);
+            stmt.setInt(2, offset);
+            ArrayList<Frequencia> lista = new ArrayList<>();
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(extrairFrequencia(rs));
+                }
+            }
+            return lista;
+        }
+    }
+
+    public int contarTodas() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM frequencia WHERE ativo = true";
+        try (Connection conn = ConectaDBPostgres.getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+    }
+
+    public boolean excluir(int id) throws SQLException {
+        String sql = "UPDATE frequencia SET ativo = false WHERE id = ?";
+        try (Connection conn = ConectaDBPostgres.getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
             return true;
         }
     }

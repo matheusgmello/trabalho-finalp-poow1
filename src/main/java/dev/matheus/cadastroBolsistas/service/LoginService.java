@@ -17,13 +17,14 @@ public class LoginService {
 
     public Usuario autenticar(String email, String senha) {
         try {
+            String senhaHash = dev.matheus.cadastroBolsistas.util.SecurityUtil.hashSenha(senha);
             // primeiro tenta autenticar como bolsista (ou admin)
-            Usuario u = bolsistaDao.autenticar(email, senha);
+            Usuario u = bolsistaDao.autenticar(email, senhaHash);
             if (u != null) {
                 return u;
             }
             // se nao encontrar, tenta autenticar como professor
-            return professorDao.autenticar(email, senha);
+            return professorDao.autenticar(email, senhaHash);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
