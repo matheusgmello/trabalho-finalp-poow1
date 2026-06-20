@@ -82,8 +82,8 @@
                         <c:forEach var="b" items="${listabolsistas}">
                             <tr>
                                 <td><strong>${b.nome}</strong></td>
-                                <td>${b.curso}</td>
-                                <td>${not empty b.cargo ? b.cargo.descricao : '---'}</td>
+                                <td>${b.tipoUsuario == 'BOLSISTA' or b.tipoUsuario == 'ADMIN' ? b.curso : '---'}</td>
+                                <td>${(b.tipoUsuario == 'BOLSISTA' or b.tipoUsuario == 'ADMIN') and not empty b.cargo ? b.cargo.descricao : '---'}</td>
                                 <td>${not empty b.nomeLaboratorio ? b.nomeLaboratorio : '---'}</td>
                                 <td>
                                     <span class="badge ${b.admin ? 'badge-admin' : (b.professor ? 'badge-professor' : 'badge-bolsista')}">

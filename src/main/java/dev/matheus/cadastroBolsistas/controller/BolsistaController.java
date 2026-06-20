@@ -46,7 +46,7 @@ public class BolsistaController {
     private ProfessorService professorService;
 
     @GetMapping
-    public String listar(@RequestParam(defaultValue = "1") int pagina,
+    public String listar(@RequestParam(value = "pagina", defaultValue = "1") Integer pagina,
                          @RequestParam(required = false) String tipo,
                          @RequestParam(required = false) String buscaNome,
                          @RequestParam(required = false) String buscaCurso,
@@ -61,6 +61,7 @@ public class BolsistaController {
         }
 
         try {
+            int paginaAtual = (pagina != null) ? pagina : 1;
             ArrayList<Usuario> lista = new ArrayList<>();
             if (buscaNome != null && !buscaNome.isEmpty()) {
                 lista.addAll(bolsistaService.buscarPorNome(buscaNome));
@@ -108,7 +109,7 @@ public class BolsistaController {
 
             lista = filtrarUsuariosPorPermissao(lista, usuarioLogado);
 
-            int paginaAtual = pagina;
+
             int tamanho = 10;
             int totalRegistros = lista.size();
             int totalPaginas = (int) Math.ceil(totalRegistros / (double) tamanho);
