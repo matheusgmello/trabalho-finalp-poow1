@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${projeto.id > 0 ? 'Editar' : 'Novo'} Projeto - SisBolsa</title>
-    <link rel="stylesheet" href="css/style.css?v=2">
-    <link rel="stylesheet" href="css/cadastro-laboratorio.css?v=2">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=2">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/cadastro-laboratorio.css?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -41,7 +41,7 @@
                 </div>
             </c:if>
 
-            <form action="projeto/salvar" method="post" id="formProjeto">
+            <form action="${pageContext.request.contextPath}/projeto/salvar" method="post" id="formProjeto">
                 <input type="hidden" name="origem" value="projeto">
                 <c:if test="${projeto.id > 0}">
                     <input type="hidden" name="id" value="${projeto.id}">
@@ -72,7 +72,7 @@
                         <button type="submit" class="btn btn-submit">
                             <i class="fas fa-save"></i> ${projeto.id > 0 ? 'Salvar Alterações' : 'Salvar Projeto'}
                         </button>
-                        <a href="projeto" class="btn btn-cancel">Cancelar</a>
+                        <a href="${pageContext.request.contextPath}/projeto" class="btn btn-cancel">Cancelar</a>
                     </div>
                 </div>
             </form>

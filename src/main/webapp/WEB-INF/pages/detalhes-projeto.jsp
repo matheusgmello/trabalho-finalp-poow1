@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalhes do Projeto - SisBolsa</title>
-    <link rel="stylesheet" href="css/style.css?v=2">
-    <link rel="stylesheet" href="css/detalhes-laboratorio.css?v=2">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=2">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/detalhes-laboratorio.css?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .project-details-grid {
@@ -71,14 +71,14 @@
         <div class="container">
             <div class="lab-header">
                 <h1><i class="fas fa-project-diagram"></i> Projeto: ${projeto.nome}</h1>
-                <a href="projeto" class="btn-back"><i class="fas fa-arrow-left"></i> Voltar</a>
+                <a href="${pageContext.request.contextPath}/projeto" class="btn-back"><i class="fas fa-arrow-left"></i> Voltar</a>
             </div>
 
             <div class="lab-info-grid">
                 <div class="info-item">
                     <span class="info-label">Laboratório Responsável</span>
                     <span class="info-value">
-                        <a href="laboratorio/detalhes?id=${projeto.laboratorioId}" style="text-decoration: none; color: var(--primary-color);">
+                        <a href="${pageContext.request.contextPath}/laboratorio/detalhes?id=${projeto.laboratorioId}" style="text-decoration: none; color: var(--primary-color);">
                             <i class="fas fa-flask"></i> ${projeto.nomeLaboratorio}
                         </a>
                     </span>
@@ -124,7 +124,7 @@
                                         <td>${m.email}</td>
                                         <c:if test="${podeGerenciar}">
                                             <td>
-                                                <a href="projeto/desvincular?bolsistaId=${m.id}&projetoId=${projeto.id}&labId=${projeto.laboratorioId}&origem=detalhes-projeto" 
+                                                <a href="${pageContext.request.contextPath}/projeto/desvincular?bolsistaId=${m.id}&projetoId=${projeto.id}&labId=${projeto.laboratorioId}&origem=detalhes-projeto" 
                                                    class="badge-unlink"
                                                    title="Remover bolsista deste projeto"
                                                    onclick="return confirm('Remover ${m.nome} do projeto?')">
@@ -156,7 +156,7 @@
                             Selecione um bolsista ativo do laboratório **${projeto.nomeLaboratorio}** para integrá-lo a este projeto.
                         </p>
                         
-                        <form action="projeto/vincular" method="post">
+                        <form action="${pageContext.request.contextPath}/projeto/vincular" method="post">
                             <input type="hidden" name="projetoId" value="${projeto.id}">
                             <input type="hidden" name="labId" value="${projeto.laboratorioId}">
                             <input type="hidden" name="origem" value="detalhes-projeto">

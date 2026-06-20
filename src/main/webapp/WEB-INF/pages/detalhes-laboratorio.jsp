@@ -9,8 +9,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalhes do Laboratório - SisBolsa</title>
-    <link rel="stylesheet" href="css/style.css?v=2">
-    <link rel="stylesheet" href="css/detalhes-laboratorio.css?v=2">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=2">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/detalhes-laboratorio.css?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -21,7 +21,7 @@
         <div class="container">
             <div class="lab-header">
                 <h1><i class="fas fa-flask"></i> ${laboratorio.nome}</h1>
-                <a href="laboratorio" class="btn-back"><i class="fas fa-arrow-left"></i> Voltar</a>
+                <a href="${pageContext.request.contextPath}/laboratorio" class="btn-back"><i class="fas fa-arrow-left"></i> Voltar</a>
             </div>
 
             <!-- Abas de Navegação -->
@@ -110,7 +110,7 @@
                                 <div class="project-card-header">
                                     <h3>${proj.nome}</h3>
                                     <c:if test="${podeGerenciar}">
-                                        <a href="projeto/desativar?id=${proj.id}&labId=${laboratorio.id}" 
+                                        <a href="${pageContext.request.contextPath}/projeto/desativar?id=${proj.id}&labId=${laboratorio.id}" 
                                            class="btn-deactivate-project" 
                                            title="Desativar projeto"
                                            onclick="return confirm('Deseja desativar este projeto?')">
@@ -151,7 +151,7 @@
                                 <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">
                                     <i class="fas fa-users-viewfinder"></i> ${membersCount} integrante(s)
                                 </span>
-                                <a href="projeto/detalhes?id=${proj.id}" class="btn-view-project">
+                                <a href="${pageContext.request.contextPath}/projeto/detalhes?id=${proj.id}" class="btn-view-project">
                                     <i class="fas fa-external-link-alt"></i> Gerenciar Equipe
                                 </a>
                             </div>
@@ -170,7 +170,7 @@
                 <c:if test="${podeGerenciar}">
                     <div class="add-project-box">
                         <h3><i class="fas fa-plus-circle"></i> Adicionar Novo Projeto</h3>
-                        <form action="projeto/salvar" method="post" class="add-project-form">
+                        <form action="${pageContext.request.contextPath}/projeto/salvar" method="post" class="add-project-form">
                             <input type="hidden" name="laboratorioId" value="${laboratorio.id}">
                             <div class="form-group">
                                 <label for="nomeProjeto">Título do Projeto</label>

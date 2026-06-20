@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${laboratorio != null ? 'Editar' : 'Novo'} Laboratório - SisBolsa</title>
-    <link rel="stylesheet" href="css/style.css?v=2">
-    <link rel="stylesheet" href="css/cadastro-laboratorio.css?v=2">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=2">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/cadastro-laboratorio.css?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -28,7 +28,7 @@
                 </div>
             </c:if>
 
-            <form action="laboratorio" method="post" id="formLab">
+            <form action="${pageContext.request.contextPath}/laboratorio" method="post" id="formLab">
                 <input type="hidden" name="id" value="${laboratorio.id}">
                 <div class="form-grid">
                     <div class="form-group form-group-full">
@@ -63,7 +63,7 @@
                     </div>
                     <div class="actions">
                         <button type="submit" class="btn btn-submit"><i class="fas fa-save"></i> Salvar Laboratório</button>
-                        <a href="laboratorio" class="btn btn-cancel">Cancelar</a>
+                        <a href="${pageContext.request.contextPath}/laboratorio" class="btn btn-cancel">Cancelar</a>
                     </div>
                 </div>
             </form>
@@ -86,10 +86,10 @@
                                     <p>${not empty proj.descricao ? proj.descricao : 'Sem descrição cadastrada.'}</p>
                                 </div>
                                 <div class="projeto-acoes">
-                                    <a href="laboratorio/editar?id=${laboratorio.id}&editarProjetoId=${proj.id}#secao-projetos" class="btn-mini btn-mini-edit">
+                                    <a href="${pageContext.request.contextPath}/laboratorio/editar?id=${laboratorio.id}&editarProjetoId=${proj.id}#secao-projetos" class="btn-mini btn-mini-edit">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
-                                    <a href="projeto/desativar?id=${proj.id}&labId=${laboratorio.id}&origem=editar" class="btn-mini btn-mini-delete" onclick="return confirm('Deseja realmente desativar este projeto?')">
+                                    <a href="${pageContext.request.contextPath}/projeto/desativar?id=${proj.id}&labId=${laboratorio.id}&origem=editar" class="btn-mini btn-mini-delete" onclick="return confirm('Deseja realmente desativar este projeto?')">
                                         <i class="fas fa-trash"></i> Excluir
                                     </a>
                                 </div>
@@ -107,7 +107,7 @@
                             <i class="fas ${projetoParaEditar != null ? 'fa-edit' : 'fa-plus-circle'}"></i> 
                             ${projetoParaEditar != null ? 'Editar Projeto' : 'Adicionar Novo Projeto'}
                         </h3>
-                        <form action="projeto/salvar" method="post">
+                        <form action="${pageContext.request.contextPath}/projeto/salvar" method="post">
                             <input type="hidden" name="laboratorioId" value="${laboratorio.id}">
                             <input type="hidden" name="origem" value="editar">
                             <c:if test="${projetoParaEditar != null}">
@@ -128,7 +128,7 @@
                                         <i class="fas fa-check"></i> ${projetoParaEditar != null ? 'Salvar Alterações' : 'Cadastrar Projeto'}
                                     </button>
                                     <c:if test="${projetoParaEditar != null}">
-                                        <a href="laboratorio/editar?id=${laboratorio.id}#secao-projetos" class="btn-proj-cancel">
+                                        <a href="${pageContext.request.contextPath}/laboratorio/editar?id=${laboratorio.id}#secao-projetos" class="btn-proj-cancel">
                                             Cancelar
                                         </a>
                                     </c:if>
@@ -141,6 +141,6 @@
         </div>
     </div>
 
-    <script src="js/validacao-laboratorio.js"></script>
+    <script src="${pageContext.request.contextPath}/js/validacao-laboratorio.js"></script>
 </body>
 </html>

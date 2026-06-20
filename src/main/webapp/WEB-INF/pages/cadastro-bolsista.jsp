@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${bolsista != null ? 'Editar' : 'Novo'} ${usuario.admin ? 'Usuário' : 'Bolsista'} - SisBolsa</title>
-    <link rel="stylesheet" href="css/style.css?v=2">
-    <link rel="stylesheet" href="css/cadastro-bolsista.css?v=2">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=2">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/cadastro-bolsista.css?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -28,7 +28,7 @@
                 </div>
             </c:if>
 
-            <form action="bolsista" method="post" id="formBolsista">
+            <form action="${pageContext.request.contextPath}/bolsista" method="post" id="formBolsista">
                 <input type="hidden" name="id" value="${bolsista.id}">
                 <div class="form-grid">
                     <div class="form-group form-group-full">
@@ -100,12 +100,12 @@
                     </div>
                     <div class="actions">
                         <button type="submit" class="btn btn-submit"><i class="fas fa-save"></i> Salvar</button>
-                        <a href="bolsista" class="btn btn-cancel">Cancelar</a>
+                        <a href="${pageContext.request.contextPath}/bolsista" class="btn btn-cancel">Cancelar</a>
                     </div>
                 </div>
             </form>
         </div>
     </div>
-    <script src="js/validacao-bolsista.js"></script>
+    <script src="${pageContext.request.contextPath}/js/validacao-bolsista.js"></script>
 </body>
 </html>

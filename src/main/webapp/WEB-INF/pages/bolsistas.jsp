@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciar ${usuario.admin ? 'Usuários' : 'Bolsistas'} - SisBolsa</title>
-    <link rel="stylesheet" href="css/style.css?v=2">
-    <link rel="stylesheet" href="css/bolsistas.css?v=2">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=2">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/bolsistas.css?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -20,11 +20,11 @@
         <div class="header-actions">
             <h1>Gerenciar ${usuario.admin ? 'Usuários' : 'Bolsistas'}</h1>
             <div class="header-buttons">
-                <a href="bolsista/exportar" class="btn-new btn-export">
+                <a href="${pageContext.request.contextPath}/bolsista/exportar" class="btn-new btn-export">
                     <i class="fas fa-file-csv"></i> Exportar CSV
                 </a>
                 <c:if test="${usuario.admin || usuario.professor}">
-                    <a href="bolsista/novo" class="btn-new btn-create">
+                    <a href="${pageContext.request.contextPath}/bolsista/novo" class="btn-new btn-create">
                         <i class="fas fa-plus"></i> Novo ${usuario.admin ? 'Usuário' : 'Bolsista'}
                     </a>
                 </c:if>
@@ -33,24 +33,24 @@
 
         <div class="container">
             <div class="search-section">
-                <form action="bolsista" method="get" class="search-form">
+                <form action="${pageContext.request.contextPath}/bolsista" method="get" class="search-form">
                     <input type="text" name="buscaNome" placeholder="Pesquisar por nome..." class="search-input">
                     <button type="submit" class="search-button"><i class="fas fa-search"></i></button>
                 </form>
-                <form action="bolsista" method="get" class="search-form">
+                <form action="${pageContext.request.contextPath}/bolsista" method="get" class="search-form">
                     <input type="text" name="buscaCurso" placeholder="Pesquisar por curso..." class="search-input">
                     <button type="submit" class="search-button"><i class="fas fa-filter"></i></button>
                 </form>
-                <a href="bolsista" class="reset-button"><i class="fas fa-sync"></i></a>
+                <a href="${pageContext.request.contextPath}/bolsista" class="reset-button"><i class="fas fa-sync"></i></a>
             </div>
 
             <c:if test="${usuario.admin}">
                 <div class="filter-pills">
                     <span style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted); margin-right: 8px;">Filtrar por tipo:</span>
-                    <a href="bolsista" class="pill-btn ${empty param.tipo ? 'active' : ''}">Todos</a>
-                    <a href="bolsista?tipo=BOLSISTA" class="pill-btn ${param.tipo == 'BOLSISTA' ? 'active' : ''}">Bolsistas</a>
-                    <a href="bolsista?tipo=PROFESSOR" class="pill-btn ${param.tipo == 'PROFESSOR' ? 'active' : ''}">Professores</a>
-                    <a href="bolsista?tipo=ADMIN" class="pill-btn ${param.tipo == 'ADMIN' ? 'active' : ''}">Administradores</a>
+                    <a href="${pageContext.request.contextPath}/bolsista" class="pill-btn ${empty param.tipo ? 'active' : ''}">Todos</a>
+                    <a href="${pageContext.request.contextPath}/bolsista?tipo=BOLSISTA" class="pill-btn ${param.tipo == 'BOLSISTA' ? 'active' : ''}">Bolsistas</a>
+                    <a href="${pageContext.request.contextPath}/bolsista?tipo=PROFESSOR" class="pill-btn ${param.tipo == 'PROFESSOR' ? 'active' : ''}">Professores</a>
+                    <a href="${pageContext.request.contextPath}/bolsista?tipo=ADMIN" class="pill-btn ${param.tipo == 'ADMIN' ? 'active' : ''}">Administradores</a>
                 </div>
             </c:if>
 
@@ -80,10 +80,10 @@
                                 </td>
                                 <td>
                                     <c:if test="${usuario.admin || usuario.professor || b.id == usuario.id}">
-                                        <a href="bolsista/editar?id=${b.id}&tipo=${b.tipoUsuario}" class="action-link action-link-edit"><i class="fas fa-edit"></i></a>
+                                        <a href="${pageContext.request.contextPath}/bolsista/editar?id=${b.id}&tipo=${b.tipoUsuario}" class="action-link action-link-edit"><i class="fas fa-edit"></i></a>
                                     </c:if>
                                     <c:if test="${(usuario.admin || usuario.professor) && b.id != usuario.id}">
-                                        <a href="bolsista/excluir?id=${b.id}&tipo=${b.tipoUsuario}" class="action-link action-link-delete" onclick="return confirm('Excluir este ${usuario.admin ? 'usuário' : 'bolsista'}?')"><i class="fas fa-trash"></i></a>
+                                        <a href="${pageContext.request.contextPath}/bolsista/excluir?id=${b.id}&tipo=${b.tipoUsuario}" class="action-link action-link-delete" onclick="return confirm('Excluir este ${usuario.admin ? 'usuário' : 'bolsista'}?')"><i class="fas fa-trash"></i></a>
                                     </c:if>
                                 </td>
                             </tr>

@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Cadastro de Bolsistas</title>
-    <link rel="stylesheet" href="css/style.css?v=2">
-    <link rel="stylesheet" href="css/dashboard.css?v=2">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=2">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .card-stat {
@@ -58,25 +58,25 @@
                 <!-- Atalhos Rápidos Bolsista -->
                 <h2><i class="fas fa-rocket"></i> Atalhos Rápidos</h2>
                 <div class="cards-container bolsista-shortcuts">
-                    <a href="frequencia" class="card">
+                    <a href="${pageContext.request.contextPath}/frequencia" class="card">
                         <i class="fas fa-calendar-check"></i>
                         <h3>Lançar Frequência</h3>
                         <p>Registre suas horas trabalhadas e descreva suas atividades diárias.</p>
                     </a>
 
-                    <a href="laboratorio/detalhes?id=${usuario.laboratorioId}" class="card">
+                    <a href="${pageContext.request.contextPath}/laboratorio/detalhes?id=${usuario.laboratorioId}" class="card">
                         <i class="fas fa-flask"></i>
                         <h3>Meu Laboratório</h3>
                         <p>Veja detalhes da sua equipe, coordenador e projetos vinculados.</p>
                     </a>
 
-                    <a href="projeto" class="card">
+                    <a href="${pageContext.request.contextPath}/projeto" class="card">
                         <i class="fas fa-project-diagram"></i>
                         <h3>Visualizar Projetos</h3>
                         <p>Consulte a listagem de todos os projetos ativos no sistema.</p>
                     </a>
 
-                    <a href="perfil" class="card">
+                    <a href="${pageContext.request.contextPath}/perfil" class="card">
                         <i class="fas fa-user-cog"></i>
                         <h3>Editar Perfil</h3>
                         <p>Gerencie suas informações cadastrais, senha e foto de perfil.</p>
@@ -157,7 +157,7 @@
                                         <td>${proj.descricao}</td>
                                         <td>${proj.nomeLaboratorio}</td>
                                         <td>
-                                            <a href="projeto/detalhes?id=${proj.id}" class="btn-detalhes-link" style="color: var(--primary-color); font-weight: bold;"><i class="fas fa-info-circle"></i> Detalhes</a>
+                                            <a href="${pageContext.request.contextPath}/projeto/detalhes?id=${proj.id}" class="btn-detalhes-link" style="color: var(--primary-color); font-weight: bold;"><i class="fas fa-info-circle"></i> Detalhes</a>
                                         </td>
                                     </tr>
                                 </c:forEach>
@@ -178,25 +178,25 @@
                 <!-- Atalhos Rápidos Professor -->
                 <h2><i class="fas fa-rocket"></i> Atalhos Rápidos</h2>
                 <div class="cards-container">
-                    <a href="bolsista" class="card">
+                    <a href="${pageContext.request.contextPath}/bolsista" class="card">
                         <i class="fas fa-user-graduate"></i>
                         <h3>Gerenciar Bolsistas</h3>
                         <p>Gerencie os bolsistas vinculados aos laboratórios sob sua coordenação.</p>
                     </a>
 
-                    <a href="laboratorio" class="card">
+                    <a href="${pageContext.request.contextPath}/laboratorio" class="card">
                         <i class="fas fa-flask"></i>
                         <h3>Meus Laboratórios</h3>
                         <p>Visualize os laboratórios que você coordena e seus respectivos projetos.</p>
                     </a>
 
-                    <a href="frequencia" class="card">
+                    <a href="${pageContext.request.contextPath}/frequencia" class="card">
                         <i class="fas fa-calendar-alt"></i>
                         <h3>Frequências da Equipe</h3>
                         <p>Acompanhe e valide a folha de frequências dos bolsistas sob sua supervisão.</p>
                     </a>
 
-                    <a href="perfil" class="card">
+                    <a href="${pageContext.request.contextPath}/perfil" class="card">
                         <i class="fas fa-user-cog"></i>
                         <h3>Editar Perfil</h3>
                         <p>Gerencie suas informações cadastrais, biografia e foto de perfil.</p>
@@ -227,8 +227,8 @@
                                             <strong>${lab.capacidade}</strong> vagas totais
                                         </td>
                                         <td>
-                                            <a href="laboratorio/detalhes?id=${lab.id}" class="btn-detalhes-link" style="color: var(--primary-color); font-weight: bold; margin-right: 15px;"><i class="fas fa-eye"></i> Detalhes</a>
-                                            <a href="laboratorio/editar?id=${lab.id}" class="btn-detalhes-link" style="color: #f39c12; font-weight: bold;"><i class="fas fa-edit"></i> Editar</a>
+                                            <a href="${pageContext.request.contextPath}/laboratorio/detalhes?id=${lab.id}" class="btn-detalhes-link" style="color: var(--primary-color); font-weight: bold; margin-right: 15px;"><i class="fas fa-eye"></i> Detalhes</a>
+                                            <a href="${pageContext.request.contextPath}/laboratorio/editar?id=${lab.id}" class="btn-detalhes-link" style="color: #f39c12; font-weight: bold;"><i class="fas fa-edit"></i> Editar</a>
                                         </td>
                                     </tr>
                                 </c:forEach>
@@ -249,34 +249,34 @@
                 <!-- Painel Administrativo Admin -->
                 <h2><i class="fas fa-rocket"></i> Atalhos Rápidos</h2>
                 <div class="cards-container">
-                    <a href="bolsista" class="card">
+                    <a href="${pageContext.request.contextPath}/bolsista" class="card">
                         <i class="fas fa-user-graduate"></i>
                         <h3>Gerenciar Usuários</h3>
                         <p>Cadastre, edite e pesquise bolsistas, professores e administradores.</p>
                         <div class="card-stat">${totalBolsistas} cadastrados</div>
                     </a>
 
-                    <a href="laboratorio" class="card">
+                    <a href="${pageContext.request.contextPath}/laboratorio" class="card">
                         <i class="fas fa-flask"></i>
                         <h3>Laboratórios</h3>
                         <p>Gerencie os laboratórios de pesquisa, coordenadores e vagas.</p>
                         <div class="card-stat">${totalLabs} cadastrados</div>
                     </a>
 
-                    <a href="projeto" class="card">
+                    <a href="${pageContext.request.contextPath}/projeto" class="card">
                         <i class="fas fa-project-diagram"></i>
                         <h3>Projetos</h3>
                         <p>Gerencie todos os projetos ativos e o vínculo de bolsistas.</p>
                         <div class="card-stat">${totalProjetos} cadastrados</div>
                     </a>
 
-                    <a href="frequencia" class="card">
+                    <a href="${pageContext.request.contextPath}/frequencia" class="card">
                         <i class="fas fa-calendar-check"></i>
                         <h3>Frequências</h3>
                         <p>Visualize e gerencie a folha de horas e atividades de todos os bolsistas.</p>
                     </a>
 
-                    <a href="relatorio" class="card">
+                    <a href="${pageContext.request.contextPath}/relatorio" class="card">
                         <i class="fas fa-chart-line"></i>
                         <h3>Relatórios</h3>
                         <p>Visualize estatísticas e relatórios avançados sobre a plataforma.</p>

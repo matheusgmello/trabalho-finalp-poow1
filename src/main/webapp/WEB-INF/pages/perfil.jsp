@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Perfil - SisBolsa</title>
-    <link rel="stylesheet" href="css/style.css?v=2">
-    <link rel="stylesheet" href="css/perfil.css?v=2">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=2">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/perfil.css?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -47,7 +47,7 @@
                 </div>
             </c:if>
 
-            <form action="perfil" method="post" id="formPerfil">
+            <form action="${pageContext.request.contextPath}/perfil" method="post" id="formPerfil">
                 <div class="form-grid">
                     <div class="form-group form-group-full">
                         <label>Nome Completo <span class="asterisco">*</span></label>
@@ -91,7 +91,7 @@
 
                     <div class="actions">
                         <button type="submit" class="btn btn-submit"><i class="fas fa-save"></i> Salvar Alterações</button>
-                        <a href="dashboard" class="btn btn-cancel">Voltar</a>
+                        <a href="${pageContext.request.contextPath}/dashboard" class="btn btn-cancel">Voltar</a>
                     </div>
                 </div>
             </form>

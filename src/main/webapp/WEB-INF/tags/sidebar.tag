@@ -39,26 +39,26 @@
     </div>
     
     <ul>
-        <li><a href="dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="${pageContext.request.contextPath}/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
         <c:if test="${usuario.admin || usuario.professor}">
-            <li><a href="bolsista"><i class="fas fa-user-graduate"></i> ${usuario.admin ? 'Usuários' : 'Bolsistas'}</a></li>
+            <li><a href="${pageContext.request.contextPath}/bolsista"><i class="fas fa-user-graduate"></i> ${usuario.admin ? 'Usuários' : 'Bolsistas'}</a></li>
         </c:if>
         <c:choose>
             <c:when test="${usuario.admin || usuario.professor}">
-                <li><a href="laboratorio"><i class="fas fa-flask"></i> Laboratórios</a></li>
+                <li><a href="${pageContext.request.contextPath}/laboratorio"><i class="fas fa-flask"></i> Laboratórios</a></li>
             </c:when>
             <c:when test="${usuario.bolsista && usuario.laboratorioId > 0}">
-                <li><a href="laboratorio/detalhes?id=${usuario.laboratorioId}"><i class="fas fa-flask"></i> Meu Laboratório</a></li>
+                <li><a href="${pageContext.request.contextPath}/laboratorio/detalhes?id=${usuario.laboratorioId}"><i class="fas fa-flask"></i> Meu Laboratório</a></li>
             </c:when>
         </c:choose>
-        <li><a href="projeto"><i class="fas fa-project-diagram"></i> Projetos</a></li>
-        <li><a href="frequencia"><i class="fas fa-calendar-check"></i> Frequência</a></li>
+        <li><a href="${pageContext.request.contextPath}/projeto"><i class="fas fa-project-diagram"></i> Projetos</a></li>
+        <li><a href="${pageContext.request.contextPath}/frequencia"><i class="fas fa-calendar-check"></i> Frequência</a></li>
         <c:if test="${usuario.admin || usuario.professor}">
-            <li><a href="relatorio"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+            <li><a href="${pageContext.request.contextPath}/relatorio"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
         </c:if>
-        <li><a href="perfil"><i class="fas fa-user-cog"></i> Editar Perfil</a></li>
+        <li><a href="${pageContext.request.contextPath}/perfil"><i class="fas fa-user-cog"></i> Editar Perfil</a></li>
     </ul>
-    <a href="logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Sair</a>
+    <a href="${pageContext.request.contextPath}/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Sair</a>
 </div>
 
 <script>
@@ -67,7 +67,12 @@
         const links = document.querySelectorAll(".sidebar ul li a");
         links.forEach(link => {
             const href = link.getAttribute("href");
-            if (currentUrl.endsWith(href) || currentUrl.includes("/" + href)) {
+            const contextPath = "${pageContext.request.contextPath}";
+            let checkHref = href;
+            if (contextPath && href.startsWith(contextPath)) {
+                checkHref = href.substring(contextPath.length);
+            }
+            if (currentUrl.endsWith(checkHref) || currentUrl.includes(checkHref)) {
                 link.parentElement.classList.add("active");
             }
         });

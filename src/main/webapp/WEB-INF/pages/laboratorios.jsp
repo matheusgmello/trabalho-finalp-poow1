@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciar Laboratórios - SisBolsa</title>
-    <link rel="stylesheet" href="css/style.css?v=2">
-    <link rel="stylesheet" href="css/laboratorios.css?v=2">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=2">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/laboratorios.css?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -20,7 +20,7 @@
         <div class="header-actions">
             <h1>Gerenciar Laboratórios</h1>
             <c:if test="${usuario.admin}">
-                <a href="laboratorio/novo" class="btn-new">
+                <a href="${pageContext.request.contextPath}/laboratorio/novo" class="btn-new">
                     <i class="fas fa-plus"></i> Cadastrar Novo Laboratório
                 </a>
             </c:if>
@@ -85,7 +85,7 @@
                                         <c:when test="${usuario.bolsista}">
                                             <c:choose>
                                                 <c:when test="${lab.id == usuario.laboratorioId}">
-                                                    <a href="laboratorio/detalhes?id=${lab.id}" class="btn-icon btn-details" title="Detalhes"><i class="fas fa-eye"></i></a>
+                                                    <a href="${pageContext.request.contextPath}/laboratorio/detalhes?id=${lab.id}" class="btn-icon btn-details" title="Detalhes"><i class="fas fa-eye"></i></a>
                                                 </c:when>
                                                 <c:otherwise>
                                                     <span class="text-muted" title="Sem acesso a detalhes de laboratórios de outras equipes"><i class="fas fa-lock"></i></span>
@@ -93,10 +93,10 @@
                                             </c:choose>
                                         </c:when>
                                         <c:otherwise>
-                                            <a href="laboratorio/detalhes?id=${lab.id}" class="btn-icon btn-details" title="Detalhes"><i class="fas fa-eye"></i></a>
+                                            <a href="${pageContext.request.contextPath}/laboratorio/detalhes?id=${lab.id}" class="btn-icon btn-details" title="Detalhes"><i class="fas fa-eye"></i></a>
                                             <c:if test="${usuario.admin}">
-                                                <a href="laboratorio/editar?id=${lab.id}" class="btn-icon btn-edit" title="Editar"><i class="fas fa-edit"></i></a>
-                                                <a href="laboratorio/excluir?id=${lab.id}" class="btn-icon btn-delete" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este laboratório?')"><i class="fas fa-trash"></i></a>
+                                                <a href="${pageContext.request.contextPath}/laboratorio/editar?id=${lab.id}" class="btn-icon btn-edit" title="Editar"><i class="fas fa-edit"></i></a>
+                                                <a href="${pageContext.request.contextPath}/laboratorio/excluir?id=${lab.id}" class="btn-icon btn-delete" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este laboratório?')"><i class="fas fa-trash"></i></a>
                                             </c:if>
                                         </c:otherwise>
                                     </c:choose>
