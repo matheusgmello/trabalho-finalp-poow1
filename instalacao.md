@@ -1,44 +1,30 @@
 # Instalação e Execução do SisBolsa
 
-Este documento descreve como preparar o ambiente e executar o sistema SisBolsa pelo IntelliJ IDEA.
-
 ## Pré-requisitos
 
-Antes de executar o projeto, instale:
+| Ferramenta | Versão mínima | Observação |
+|---|---|---|
+| Java JDK | 21 | Necessário para compilar e rodar |
+| Maven | 3.9+ | Gerenciamento de dependências e build |
+| Docker + Docker Compose | Qualquer atual | Recomendado para o banco de dados |
+| IntelliJ IDEA | Qualquer | Opcional — o projeto roda via Maven também |
 
-- Java JDK
-- Maven
-- PostgreSQL (com pgAdmin) **ou** Docker e Docker Compose
-- WildFly
+> **PostgreSQL local** é uma alternativa ao Docker. Veja a Opção B abaixo.
 
-## 1. Abrir o projeto
+---
 
-Abra a pasta do projeto no IntelliJ IDEA e aguarde a IDE carregar as dependências do Maven.
+## 1. Clonar o repositório
+
+```bash
+git clone <url-do-repositorio>
+cd CadastroBolsistas
+```
+
+---
 
 ## 2. Configurar o banco de dados
 
-Escolha uma das opções abaixo:
-
-### Opção A — PostgreSQL local com pgAdmin (recomendado para laboratório)
-
-1. Abra o pgAdmin.
-2. Clique com botão direito em **Databases → Create → Database**.
-3. Informe o nome: `cadastroBolsista` (exatamente assim, com B maiúsculo).
-4. Clique em **Save**.
-5. Clique com botão direito no banco criado → **Query Tool**.
-6. Vá em **File → Open File**, navegue até a pasta do projeto e selecione `db/init.sql`.
-7. Clique em **Execute (F5)**.
-
-Configurações esperadas pelo sistema:
-
-```text
-Banco:   cadastroBolsista
-Usuário: postgres
-Senha:   1234
-Porta:   5432
-```
-
-### Opção B — Docker Compose
+### Opção A — Docker Compose (recomendado)
 
 Na raiz do projeto, execute:
 
@@ -46,69 +32,157 @@ Na raiz do projeto, execute:
 docker compose up -d
 ```
 
-O Docker sobe o PostgreSQL e executa o `db/init.sql` automaticamente.
+O Docker sobe o PostgreSQL na porta `5436` e executa o `db/init.sql` automaticamente,
+criando as tabelas e inserindo os dados iniciais.
 
-Para parar (mantém os dados):
+Comandos úteis:
 
 ```bash
+# Parar (mantém os dados)
 docker compose down
-```
 
-Para parar e apagar os dados:
-
-```bash
+# Parar e apagar todos os dados
 docker compose down -v
+
+# Ver logs do container
+docker compose logs -f
 ```
 
-## 3. Conferir a conexão com o banco
+Configurações usadas pelo container:
 
-A conexão está configurada em:
-
-```text
-src/main/java/dao/ConectaDBPostgres.java
 ```
-
-Configuração atual:
-
-```text
-jdbc:postgresql://localhost:5432/cadastroBolsista
+Banco:   cadastroBolsista
 Usuário: postgres
 Senha:   1234
+Porta:   5436
 ```
 
-Se as credenciais do seu PostgreSQL forem diferentes, atualize esse arquivo antes de rodar.
+---
 
-## 4. Rodar pelo IntelliJ IDEA
+### Opção B — PostgreSQL local (sem Docker)
 
+1. Abra o pgAdmin.
+2. Crie um banco de dados chamado exatamente `cadastroBolsista` (B maiúsculo).
+3. Abra o Query Tool no banco criado.
+4. Execute o arquivo `db/init.sql`.
+
+Após isso, ajuste a porta no arquivo de conexão:
+
+```
+src/main/java/dev/matheus/cadastroBolsistas/dao/ConectaDBPostgres.java
+```
+
+Altere a URL de `5436` para `5432` (porta padrão do PostgreSQL local):
+
+```java
+"jdbc:postgresql://localhost:5432/cadastroBolsista"
+```
+
+---
+
+## 3. Rodar a aplicação
+
+### Via Maven (recomendado para desenvolvimento)
+
+```bash
+mvn spring-boot:run
+```
+
+O Tomcat embarcado sobe na porta `8080`. Não é necessário instalar WildFly ou outro servidor.
+
+### Via build WAR + WildFly (opcional, para deploy)
+
+```bash
+# Gera o WAR em target/cadastroBolsistas.war
+mvn clean package
+```
+
+No IntelliJ IDEA:
 1. Vá em `Run > Edit Configurations`.
 2. Adicione uma configuração de servidor WildFly.
 3. Selecione o artefato `cadastroBolsistas:war exploded`.
-4. Inicie o servidor pela IDE.
+4. Inicie o servidor.
 
-O IntelliJ compilará e publicará o projeto automaticamente.
+---
+
+## 4. Rodar os testes
+
+```bash
+mvn test
+```
+
+A suíte possui 52 testes unitários e de controller (JUnit 5 + Mockito + MockMvc).
+Nenhum teste requer banco de dados ativo — todos os DAOs são mockados.
+
+---
 
 ## 5. Acessar o sistema
 
-```text
-http://localhost:8080/cadastroBolsistas
+```
+http://localhost:8080
 ```
 
-## 6. Primeiro acesso
+---
 
-O `db/init.sql` já cria um administrador de exemplo:
+## 6. Credenciais iniciais
 
-```text
+O `db/init.sql` cria os seguintes usuários para teste:
+
+### Administrador
+```
 E-mail: admin@sisbolsa.com
 Senha:  teste123
+Tipo:   ADMIN
 ```
 
-Caso queira criar um novo administrador do zero (banco vazio), acesse a tela de login e clique em **Cadastrar administrador**. O sistema permite até 3 administradores.
+### Professores coordenadores
+```
+turing@sisbolsa.com   / teste123  → Lab de Inteligência Artificial
+curie@sisbolsa.com    / teste123  → Lab de Química Orgânica
+asimov@sisbolsa.com   / teste123  → Lab de Robótica
+hopper@sisbolsa.com   / teste123  → Lab de Redes e Segurança
+franklin@sisbolsa.com / teste123  → Lab de Biotecnologia
+tesla@sisbolsa.com    / teste123  → Lab de Energias Renováveis
+```
 
-## 7. Como utilizar
+### Bolsistas (exemplos)
+```
+joao@teste.com     / teste123  → Lab de IA
+maria@teste.com    / teste123  → Lab de Química Orgânica
+carlos@teste.com   / teste123  → Lab de Robótica
+```
 
-Após entrar no sistema:
+> As senhas são armazenadas como hash SHA-256. O `init.sql` já contém os hashes
+> pré-calculados — não é necessário nenhuma migração manual.
 
-1. Acesse o menu **Laboratórios** — cadastre, edite, liste ou exclua laboratórios.
-2. Acesse o menu **Bolsistas** — cadastre, edite, liste ou exclua bolsistas e vincule-os a laboratórios.
-3. Acesse o menu **Frequência** — registre e edite horas trabalhadas.
-4. Acesse o menu **Relatórios** — visualize os dados processados pelo sistema.
+---
+
+## 7. Cadastrar novos administradores
+
+O sistema suporta no máximo 3 administradores. Para cadastrar um novo:
+
+1. Faça login com uma conta ADMIN existente.
+2. Acesse **Usuários** no menu lateral.
+3. Clique em **Novo Usuário** e selecione o tipo `ADMIN`.
+
+---
+
+## 8. Estrutura do banco
+
+O arquivo `db/init.sql` cria e popula as seguintes tabelas:
+
+| Tabela | Conteúdo inicial |
+|---|---|
+| `professor` | 6 professores coordenadores |
+| `laboratorio` | 6 laboratórios vinculados aos professores |
+| `projeto` | 6 projetos (um por laboratório) |
+| `bolsista` | 10 bolsistas + 1 administrador |
+| `bolsista_projeto` | Vínculos entre bolsistas e projetos |
+| `frequencia` | Registros de horas de exemplo para cada bolsista |
+
+Para reiniciar o banco do zero:
+
+```bash
+docker compose down -v
+docker compose up -d
+```

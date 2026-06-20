@@ -1,172 +1,202 @@
-# SisBolsa - Cadastro de Bolsistas e Laboratórios
+# SisBolsa — Gestão de Bolsistas e Laboratórios
 
-Sistema web desenvolvido para gerenciamento de bolsistas, laboratórios de pesquisa e registros de frequência. O projeto permite cadastrar usuários bolsistas, organizar bolsistas por laboratório, registrar horas trabalhadas e visualizar relatórios analíticos com base nas informações cadastradas.
-
-## Descrição do Sistema
-
-O SisBolsa é uma aplicação web para apoio à gestão de bolsistas em laboratórios acadêmicos. O sistema possui autenticação por login, controle de sessão, cadastro de administradores, cadastro de bolsistas, cadastro de laboratórios, registro e edição de frequência e geração de relatórios.
-
-Usuários administradores podem gerenciar bolsistas e laboratórios. Usuários bolsistas podem acessar o sistema, visualizar informações, registrar e editar sua própria frequência.
+Sistema web acadêmico para gerenciamento de bolsistas, laboratórios de pesquisa, projetos e registros de frequência. Desenvolvido com Spring MVC, JSP e JDBC direto sobre PostgreSQL.
 
 ## Preview do Projeto
 ![Preview](docs/images/previw.gif)
 
-## Arquitetura do Projeto
+---
 
-O projeto segue uma arquitetura em camadas baseada no padrão MVC.
+## Arquitetura
 
-- `model`: classes que representam as entidades do sistema.
-- `controller`: Servlets responsáveis por receber requisições HTTP e direcionar fluxos.
-- `service`: camada de regras de negócio.
-- `dao`: camada de acesso ao banco de dados usando JDBC.
-- `webapp`: páginas JSP, arquivos CSS, JavaScript e componentes visuais.
-- `db`: scripts SQL de criação e população inicial do banco.
+O projeto segue o padrão MVC em camadas com Spring MVC:
 
-Fluxo principal:
+```
+JSP → Controller → Service → DAO → PostgreSQL
+```
 
-1. O usuário acessa uma página JSP.
-2. A requisição é enviada para um Servlet.
-3. O Servlet chama uma classe Service.
-4. A Service chama uma classe DAO.
-5. A DAO executa comandos SQL no PostgreSQL.
-6. O resultado retorna para o Servlet.
-7. O Servlet encaminha os dados para a JSP.
+| Camada | Tecnologia | Responsabilidade |
+|---|---|---|
+| View | JSP + JSTL + CSS | Renderização das páginas |
+| Controller | Spring MVC `@Controller` | Recebe requisições HTTP, retorna view names |
+| Service | `@Service` | Regras de negócio e orquestração |
+| DAO | `@Repository` + JDBC direto | Acesso ao banco via `PreparedStatement` |
+| Config | `AuthInterceptor`, `WebConfig` | Proteção de rotas e recursos estáticos |
+
+**Stack:** Spring Boot 4.x · Java 21 · PostgreSQL · Maven · WAR · Jakarta EE
+
+---
+
+## Perfis de Usuário
+
+O sistema possui três perfis com permissões distintas:
+
+### ADMIN
+- Gerencia todos os usuários (bolsistas, professores e outros admins)
+- Cria, edita e exclui laboratórios e projetos de qualquer laboratório
+- Visualiza e edita frequências de qualquer bolsista
+- Acessa relatórios analíticos completos
+- Exporta dados em CSV
+- Limite de 3 administradores no sistema
+
+### PROFESSOR
+- Visualiza e gerencia apenas os laboratórios que coordena
+- Cadastra e edita bolsistas vinculados aos seus laboratórios
+- Visualiza e registra frequências dos bolsistas de seus laboratórios
+- Dashboard personalizado com seus laboratórios e bolsistas coordenados
+
+### BOLSISTA
+- Registra e edita apenas suas próprias frequências
+- Visualiza a equipe e os projetos do seu laboratório
+- Edita o próprio perfil (nome, e-mail, foto, bio, senha)
+- Acessa resumo pessoal de horas trabalhadas no mês
+
+---
 
 ## Funcionalidades
 
-### Cadastro de Administrador
-
-Na tela de login há o link **Cadastrar administrador**, disponível enquanto o sistema possuir menos de 3 administradores cadastrados. Ao acessar, é exibido um formulário para criar uma conta de administrador. Caso o limite de 3 administradores já tenha sido atingido, o acesso ao formulário é bloqueado automaticamente.
-
 ### Autenticação e Sessão
+- Login por e-mail e senha com hash SHA-256
+- Sessão gerenciada via `HttpSession`
+- `AuthInterceptor` protege todas as rotas exceto `/login` e recursos estáticos
+- Troca de senha exige confirmação da senha atual
 
-- Login por e-mail e senha.
-- Armazenamento do usuário autenticado na sessão.
-- Bloqueio de acesso às páginas internas quando não há usuário logado.
-- Diferenciação entre usuário `ADMIN` e usuário `BOLSISTA`.
+### Usuários (Bolsistas, Professores e Admins)
+- CRUD completo com soft delete (`ativo = false`)
+- Filtro por nome, curso e tipo de usuário
+- Paginação na listagem
+- Exportação em CSV
+- Campo de cargo para bolsistas: `DESENVOLVEDOR`, `PESQUISADOR`, `LIDER_TECNICO`, `DESIGNER`, `AUXILIAR`
+- Foto de perfil via URL e biografia
 
-### CRUD de Bolsistas
+### Laboratórios
+- CRUD com controle de capacidade máxima
+- Barra visual de ocupação (verde / amarelo / vermelho) por percentual de vagas preenchidas
+- Alerta visual quando ocupação ultrapassa 85%
+- Página de detalhes em 3 abas: **Visão Geral**, **Projetos** e **Equipe**
+- Professor só acessa e edita os laboratórios que coordena
 
-O sistema permite:
+### Projetos
+- Vinculados a um laboratório, gerenciados pelo coordenador ou admin
+- Página de detalhes para gerenciar membros (vincular/desvincular bolsistas)
+- Listagem geral com filtro por laboratório e busca por nome
 
-- Cadastrar bolsista.
-- Listar bolsistas.
-- Editar bolsista.
-- Excluir bolsista (apenas ADMIN).
-- Buscar bolsistas por nome.
-- Buscar bolsistas por curso.
-- Exportar lista de bolsistas em CSV.
+### Frequência
+- Bolsista registra horas trabalhadas com data e descrição
+- Admin e professor podem registrar para qualquer bolsista do seu escopo
+- Filtro por bolsista e paginação no histórico
+- Resumo pessoal: total de horas no mês e total acumulado
+- Exportação em CSV com filtro por papel do usuário
 
-Campos principais:
+### Relatórios (Admin)
+- Total de bolsistas, bolsistas ativos e laboratórios
+- Total de horas por bolsista no mês corrente
+- Projetos ativos por laboratório
+- Distribuição de bolsistas por cargo
+- Painel de ocupação: laboratórios próximos ou acima de 85% da capacidade
 
-- Nome
-- Data de nascimento
-- Curso
-- E-mail
-- Matrícula
-- CPF
-- Telefone
-- Senha
-- Laboratório
-- Status ativo
-- Foto
+### Perfil
+- Edição de nome, e-mail, foto e biografia
+- Troca de senha com validação da senha atual
 
-### CRUD de Laboratórios
+---
 
-O sistema permite:
+## Banco de Dados
 
-- Cadastrar laboratório.
-- Listar laboratórios.
-- Editar laboratório.
-- Excluir laboratório.
-- Visualizar detalhes do laboratório.
-- Listar bolsistas vinculados ao laboratório.
+### Tabelas
 
-Campos principais:
+| Tabela | Descrição |
+|---|---|
+| `professor` | Professores coordenadores de laboratórios |
+| `laboratorio` | Laboratórios de pesquisa |
+| `bolsista` | Bolsistas, admins e outros usuários |
+| `projeto` | Projetos vinculados a laboratórios |
+| `bolsista_projeto` | Relacionamento N:N entre bolsistas e projetos |
+| `frequencia` | Registros de horas trabalhadas |
 
-- Nome
-- Área de pesquisa
-- Título do projeto
-- Status (Ativo, Em Pausa, Concluído)
-- Capacidade máxima
-- Coordenador
+### Relacionamentos
+- Um professor pode coordenar vários laboratórios
+- Um laboratório tem um coordenador (professor)
+- Um bolsista pertence a zero ou um laboratório
+- Um laboratório possui vários projetos
+- Um bolsista pode participar de vários projetos (e vice-versa)
+- Um bolsista pode ter vários registros de frequência
 
-### Registro de Frequência
+O script `db/init.sql` cria todas as tabelas e insere dados iniciais com 6 professores, 6 laboratórios, 6 projetos, 11 bolsistas/admins e frequências de exemplo.
 
-O sistema permite que bolsistas registrem e editem suas horas trabalhadas.
+---
 
-- Bolsistas podem registrar novos registros e editar apenas os seus próprios.
-- Administradores podem visualizar todos os registros, editar qualquer registro e excluir registros.
+## Segurança
 
-Campos principais:
+- **Senhas:** armazenadas como hash SHA-256 (hex) via `util/SecurityUtil.java`
+- **SQL Injection:** todos os DAOs usam `PreparedStatement` com parâmetros `?`
+- **Controle de acesso:** verificado em cada endpoint via `AuthInterceptor` + lógica nos controllers e services
+- **Soft delete:** exclusões não removem registros do banco, apenas marcam `ativo = false`
 
-- Bolsista
-- Data
-- Horas trabalhadas
-- Descrição das atividades
+---
 
-### Relatórios
+## Testes
 
-O sistema possui uma tela de relatórios que processa as informações cadastradas e exibe:
-
-- Total de bolsistas.
-- Total de bolsistas ativos.
-- Total de laboratórios.
-- Quantidade de bolsistas por curso.
-- Quantidade de laboratórios por status.
-
-## Estrutura do Banco de Dados
-
-O banco de dados possui três tabelas principais:
-
-- `laboratorio`
-- `bolsista`
-- `frequencia`
-
-Relacionamentos:
-
-- Um laboratório pode possuir vários bolsistas.
-- Um bolsista pertence a zero ou um laboratório.
-- Um bolsista pode possuir vários registros de frequência.
-- Uma frequência pertence a um bolsista.
-
-## Modelo ER
-![Modelo ER](docs/images/diagrama-er.png)
-
-## Script do Banco de Dados
-
-O script principal está em:
-
-```text
-db/init.sql
+```bash
+mvn test
 ```
 
-Ele cria as tabelas `laboratorio`, `bolsista` e `frequencia`, e insere dados iniciais para teste, incluindo 6 laboratórios, 10 bolsistas e um usuário administrador.
+A suíte cobre 52 casos de teste sem dependência de banco de dados:
+
+| Classe | Testes | Cobertura |
+|---|---|---|
+| `SecurityUtilTest` | 5 | Hash SHA-256: determinismo, null-safety, tamanho |
+| `StringUtilTest` | 11 | `limpar()` e `estaVazio()` com todos os casos de borda |
+| `UsuarioTest` | 6 | `isAdmin()`, `isBolsista()`, `isProfessor()` |
+| `CargoTest` | 4 | `Cargo.deString()` com valores válidos, nulo e inválido |
+| `LoginServiceTest` | 4 | Autenticação via bolsista, fallback para professor, hash verificado |
+| `LaboratorioServiceTest` | 9 | `podeGerenciar()` e `temVaga()` por perfil e cenário |
+| `BolsistaServiceTest` | 8 | `podeGerenciar()` e `inserir()` com todos os perfis |
+| `LoginControllerTest` | 4 | GET/POST com MockMvc, redirect e sessão |
+
+---
+
+## Estrutura do Projeto
+
+```
+src/main/java/dev/matheus/cadastroBolsistas/
+  config/       ← AuthInterceptor e WebConfig
+  controller/   ← Controllers Spring MVC por entidade
+  service/      ← Regras de negócio
+  dao/          ← Acesso ao banco via JDBC
+  model/        ← Entidades: Usuario, Bolsista, Professor, Laboratorio, Projeto, Frequencia, Cargo
+  util/         ← SecurityUtil (SHA-256), StringUtil
+
+src/main/webapp/
+  WEB-INF/pages/   ← JSPs por tela
+  WEB-INF/tags/    ← sidebar.tag (componente reutilizável)
+  css/             ← Um arquivo CSS por página
+  js/              ← Validações client-side
+
+db/init.sql        ← Script de criação e dados iniciais
+```
+
+---
 
 ## Instalação e Execução
 
-As instruções completas para instalar e rodar o projeto estão no arquivo:
+As instruções completas estão em [instalacao.md](instalacao.md).
 
-[instalacao.md](instalacao.md)
+### Resumo rápido
 
-## Acesso inicial
+```bash
+# 1. Subir o banco
+docker compose up -d
 
-O script `db/init.sql` cria um usuário administrador para acesso inicial:
-
-```text
-E-mail: admin@sisbolsa.com
-Senha: teste123
-Tipo: ADMIN
+# 2. Rodar a aplicação
+mvn spring-boot:run
 ```
 
-Também é possível cadastrar novos administradores pela tela de login, até o limite de 3.
+Acesse: `http://localhost:8080`
 
-## Como Utilizar
+### Acesso inicial
 
-1. Acesse a tela de login.
-2. Entre com o usuário administrador ou cadastre um novo pelo link na tela de login.
-3. Use o menu lateral para navegar entre as áreas do sistema.
-4. Cadastre laboratórios.
-5. Cadastre bolsistas e vincule-os a laboratórios.
-6. Registre frequências.
-7. Acesse a tela de relatórios para visualizar os dados processados.
+```
+E-mail: admin@sisbolsa.com
+Senha:  teste123
+```
