@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@page isELIgnored="false" %>
 <!DOCTYPE html>
@@ -176,7 +177,7 @@
                                 <td><strong>${item.nome}</strong></td>
                                 <td>
                                     <span class="badge badge-danger" style="background-color: #e74c3c; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem;">
-                                        <c:formatNumber value="${item.percentualOcupacao}" maxFractionDigits="1"/>%
+                                        <fmt:formatNumber value="${item.percentualOcupacao}" maxFractionDigits="1"/>%
                                     </span>
                                 </td>
                                 <td class="cell-right"><strong>${item.totalBolsistas}</strong> / ${item.capacidade}</td>
