@@ -193,6 +193,10 @@ public class ProjetoDAO {
     }
 
     public Map<Integer, ArrayList<Projeto>> getProjetosDosBolsistasDoLaboratorio(int labId) throws SQLException {
+        /*
+         * busca todos os projetos ativos dos bolsistas do laboratorio em uma unica query
+         * para evitar o problema de n mais um consultas no banco de dados
+         */
         String sql = "SELECT bp.bolsista_id, p.*, l.nome as nome_laboratorio FROM projeto p " +
                      "INNER JOIN bolsista_projeto bp ON p.id = bp.projeto_id " +
                      "INNER JOIN bolsista b ON bp.bolsista_id = b.id " +

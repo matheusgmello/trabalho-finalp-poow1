@@ -142,14 +142,18 @@ public class LaboratorioController {
                 return "redirect:/laboratorio";
             }
 
-            // restringe visualizacao do bolsista ao seu proprio lab
+            /*
+             * restringe visualizacao do bolsista ao seu proprio laboratorio
+             */
             if (usuarioLogado.isBolsista() && ((Bolsista) usuarioLogado).getLaboratorioId() != labId) {
                 return "redirect:/laboratorio";
             }
 
             ArrayList<Bolsista> bolsistas = bolsistaService.buscarPorLaboratorio(labId);
             
-            // Mitigação de consultas N+1: busca todas as associações de projetos em uma única query
+            /*
+             * mitigacao de consultas n mais um busca todas as associacoes de projetos em lote
+             */
             java.util.Map<Integer, ArrayList<Projeto>> mapaProjetos = projetoService.getProjetosDosBolsistasDoLaboratorio(labId);
             for (Bolsista b : bolsistas) {
                 ArrayList<Projeto> projs = mapaProjetos.get(b.getId());
