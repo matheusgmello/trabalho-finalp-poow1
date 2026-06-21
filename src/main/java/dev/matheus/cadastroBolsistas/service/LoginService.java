@@ -3,6 +3,7 @@ package dev.matheus.cadastroBolsistas.service;
 import dev.matheus.cadastroBolsistas.dao.BolsistaDAO;
 import dev.matheus.cadastroBolsistas.dao.ProfessorDAO;
 import dev.matheus.cadastroBolsistas.model.Usuario;
+import dev.matheus.cadastroBolsistas.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,7 @@ public class LoginService {
 
     public Usuario autenticar(String email, String senha) {
         try {
-            String senhaHash = dev.matheus.cadastroBolsistas.util.SecurityUtil.hashSenha(senha);
+            String senhaHash = SecurityUtil.hashSenha(senha);
             /*
              * primeiro tenta autenticar o usuario como bolsista ou administrador
              */

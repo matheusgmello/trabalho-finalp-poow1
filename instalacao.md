@@ -111,7 +111,7 @@ No IntelliJ IDEA:
 mvn test
 ```
 
-A suíte possui 52 testes unitários e de controller (JUnit 5 + Mockito + MockMvc).
+A suíte possui 78 testes unitários e de controller (JUnit 5 + Mockito + MockMvc).
 Nenhum teste requer banco de dados ativo — todos os DAOs são mockados.
 
 ---
@@ -131,25 +131,23 @@ O `db/init.sql` cria os seguintes usuários para teste:
 ### Administrador
 ```
 E-mail: admin@sisbolsa.com
-Senha:  teste123
+Senha:  12345678
 Tipo:   ADMIN
 ```
 
 ### Professores coordenadores
 ```
-turing@sisbolsa.com   / teste123  → Lab de Inteligência Artificial
-curie@sisbolsa.com    / teste123  → Lab de Química Orgânica
-asimov@sisbolsa.com   / teste123  → Lab de Robótica
-hopper@sisbolsa.com   / teste123  → Lab de Redes e Segurança
-franklin@sisbolsa.com / teste123  → Lab de Biotecnologia
-tesla@sisbolsa.com    / teste123  → Lab de Energias Renováveis
+roberto.mendes@sisbolsa.com  / 12345678  → Lab de Desenvolvimento de Software
+carla.souza@sisbolsa.com     / 12345678  → Lab de Ciencias Biologicas
+felipe.andrade@sisbolsa.com  / 12345678  → Lab de Engenharia Mecatronica
 ```
 
 ### Bolsistas (exemplos)
 ```
-joao@teste.com     / teste123  → Lab de IA
-maria@teste.com    / teste123  → Lab de Química Orgânica
-carlos@teste.com   / teste123  → Lab de Robótica
+thiago.rocha@sisbolsa.com    / 12345678  → Lab de Desenvolvimento de Software
+camila.pires@sisbolsa.com    / 12345678  → Lab de Desenvolvimento de Software
+diego.almeida@sisbolsa.com   / 12345678  → Lab de Ciencias Biologicas
+bruno.carvalho@sisbolsa.com  / 12345678  → Lab de Engenharia Mecatronica
 ```
 
 > As senhas são armazenadas como hash SHA-256. O `init.sql` já contém os hashes
@@ -173,12 +171,12 @@ O arquivo `db/init.sql` cria e popula as seguintes tabelas:
 
 | Tabela | Conteúdo inicial |
 |---|---|
-| `professor` | 6 professores coordenadores |
-| `laboratorio` | 6 laboratórios vinculados aos professores |
-| `projeto` | 6 projetos (um por laboratório) |
-| `bolsista` | 10 bolsistas + 1 administrador |
+| `professor` | 3 professores coordenadores |
+| `laboratorio` | 3 laboratórios vinculados aos professores |
+| `projeto` | 6 projetos (2 por laboratório) |
+| `bolsista` | 7 bolsistas + 1 administrador |
 | `bolsista_projeto` | Vínculos entre bolsistas e projetos |
-| `frequencia` | Registros de horas de exemplo para cada bolsista |
+| `frequencia` | 28 registros de horas (4 por bolsista) |
 
 Para reiniciar o banco do zero:
 

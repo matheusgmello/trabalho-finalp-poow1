@@ -122,7 +122,7 @@ O sistema possui três perfis com permissões distintas:
 - Um bolsista pode participar de vários projetos (e vice-versa)
 - Um bolsista pode ter vários registros de frequência
 
-O script `db/init.sql` cria todas as tabelas e insere dados iniciais com 6 professores, 6 laboratórios, 6 projetos, 11 bolsistas/admins e frequências de exemplo.
+O script `db/init.sql` cria todas as tabelas e insere dados iniciais com 3 professores, 3 laboratórios, 6 projetos (2 por laboratório), 7 bolsistas, 1 admin e frequências de exemplo.
 
 ---
 
@@ -141,7 +141,7 @@ O script `db/init.sql` cria todas as tabelas e insere dados iniciais com 6 profe
 mvn test
 ```
 
-A suíte cobre 52 casos de teste sem dependência de banco de dados:
+A suíte cobre 78 casos de teste sem dependência de banco de dados:
 
 | Classe | Testes | Cobertura |
 |---|---|---|
@@ -153,6 +153,8 @@ A suíte cobre 52 casos de teste sem dependência de banco de dados:
 | `LaboratorioServiceTest` | 9 | `podeGerenciar()` e `temVaga()` por perfil e cenário |
 | `BolsistaServiceTest` | 8 | `podeGerenciar()` e `inserir()` com todos os perfis |
 | `LoginControllerTest` | 4 | GET/POST com MockMvc, redirect e sessão |
+| `ProfessorServiceTest` | 9 | CRUD completo via mock do DAO |
+| `PerfilControllerTest` | 17 | GET/POST com sessão, validações, troca de senha, null do banco |
 
 ---
 
@@ -198,5 +200,5 @@ Acesse: `http://localhost:8080`
 
 ```
 E-mail: admin@sisbolsa.com
-Senha:  teste123
+Senha:  12345678
 ```
