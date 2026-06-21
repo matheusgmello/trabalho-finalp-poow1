@@ -105,22 +105,32 @@ public class PerfilController {
         try {
             if (usuarioLogado.isProfessor()) {
                 Professor prof = professorService.buscarPorId(usuarioLogado.getId());
+                if (prof == null) {
+                    model.addAttribute("erro", "Perfil de professor nao encontrado no banco.");
+                    model.addAttribute("usuario", usuarioLogado);
+                    return "perfil";
+                }
                 prof.setNome(nome);
                 prof.setEmail(email);
                 prof.setSenha(senhaParaSalvar);
                 prof.setFotoUrl(fotoUrl.isEmpty() ? null : fotoUrl);
                 prof.setBio(bio.isEmpty() ? null : bio);
-                
+
                 professorService.atualizar(prof);
                 session.setAttribute("usuario", prof);
             } else {
                 Bolsista bol = bolsistaService.buscarPorId(usuarioLogado.getId());
+                if (bol == null) {
+                    model.addAttribute("erro", "Perfil de usuario nao encontrado no banco.");
+                    model.addAttribute("usuario", usuarioLogado);
+                    return "perfil";
+                }
                 bol.setNome(nome);
                 bol.setEmail(email);
                 bol.setSenha(senhaParaSalvar);
                 bol.setFotoUrl(fotoUrl.isEmpty() ? null : fotoUrl);
                 bol.setBio(bio.isEmpty() ? null : bio);
-                
+
                 bolsistaService.atualizar(bol);
                 session.setAttribute("usuario", bol);
             }
