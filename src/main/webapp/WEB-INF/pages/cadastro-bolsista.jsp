@@ -37,11 +37,11 @@
                     </div>
                     <div class="form-group" id="group-dataNascimento">
                         <label>Data de Nascimento <span class="asterisco">*</span></label>
-                        <input type="date" name="dataNascimento" id="dataNascimento" value="${bolsista.dataNascimento}" required>
+                        <input type="date" name="dataNascimento" id="dataNascimento" value="${bolsista.tipoUsuario != 'PROFESSOR' ? bolsista.dataNascimento : ''}" required>
                     </div>
                     <div class="form-group" id="group-curso">
                         <label>Curso <span class="asterisco">*</span></label>
-                        <input type="text" name="curso" id="curso" value="${bolsista.curso}" required placeholder="Ex: Ciência da Computação">
+                        <input type="text" name="curso" id="curso" value="${bolsista.tipoUsuario != 'PROFESSOR' ? bolsista.curso : ''}" required placeholder="Ex: Ciência da Computação">
                     </div>
                     <div class="form-group">
                         <label>E-mail <span class="asterisco">*</span></label>
@@ -49,7 +49,7 @@
                     </div>
                     <div class="form-group" id="group-matricula">
                         <label>Matrícula <span class="asterisco">*</span></label>
-                        <input type="text" name="matricula" id="matricula" value="${bolsista.matricula}" required placeholder="Ex: 2021001234">
+                        <input type="text" name="matricula" id="matricula" value="${bolsista.tipoUsuario != 'PROFESSOR' ? bolsista.matricula : ''}" required placeholder="Ex: 2021001234">
                     </div>
                     <c:choose>
                         <c:when test="${usuario.admin}">
@@ -71,7 +71,7 @@
                         <select name="laboratorioId" id="laboratorioId">
                             <option value="">Selecione um laboratório...</option>
                             <c:forEach var="lab" items="${laboratorios}">
-                                <option value="${lab.id}" ${bolsista.laboratorioId == lab.id ? 'selected' : ''}>${lab.nome}</option>
+                                <option value="${lab.id}" ${bolsista.tipoUsuario != 'PROFESSOR' and bolsista.laboratorioId == lab.id ? 'selected' : ''}>${lab.nome}</option>
                             </c:forEach>
                         </select>
                     </div>
@@ -80,7 +80,7 @@
                         <select name="cargo" id="cargo">
                             <option value="">Selecione um cargo...</option>
                             <c:forEach var="c" items="${cargos}">
-                                <option value="${c.name()}" ${bolsista.cargo == c ? 'selected' : ''}>${c.descricao}</option>
+                                <option value="${c.name()}" ${bolsista.tipoUsuario != 'PROFESSOR' and bolsista.cargo == c ? 'selected' : ''}>${c.descricao}</option>
                             </c:forEach>
                         </select>
                     </div>
