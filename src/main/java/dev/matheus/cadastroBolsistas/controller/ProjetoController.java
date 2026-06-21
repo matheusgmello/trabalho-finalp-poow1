@@ -20,6 +20,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/*
+ * controller responsavel pelo crud de projetos e gerenciamento de membros.
+ * rotas de leitura: /projeto (lista), /projeto/novo, /projeto/editar, /projeto/detalhes.
+ * rotas de escrita: /projeto/salvar, /projeto/desativar, /projeto/vincular, /projeto/desvincular.
+ * permissoes verificadas via laboratorioService.podeGerenciar antes de qualquer alteracao.
+ */
 @Controller
 @RequestMapping("/projeto")
 public class ProjetoController {

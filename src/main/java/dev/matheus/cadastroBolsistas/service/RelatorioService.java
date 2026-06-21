@@ -8,6 +8,11 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+/*
+ * service responsavel por agregar os dados analiticos exibidos na tela de relatorios.
+ * todas as queries sao executadas diretamente no banco via relatorioDAO com group by e sum.
+ * acessivel apenas para o perfil admin.
+ */
 @Service
 public class RelatorioService {
 

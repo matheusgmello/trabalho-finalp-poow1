@@ -11,6 +11,11 @@ import org.springframework.stereotype.Service;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/*
+ * service responsavel pelas regras de negocio relacionadas a bolsistas.
+ * centraliza a logica de permissao podeGerenciar para evitar duplicacao nos controllers.
+ * delega o acesso ao banco para bolsistaDAO e laboratorioDAO.
+ */
 @Service
 public class BolsistaService {
 

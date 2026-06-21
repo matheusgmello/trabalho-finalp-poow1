@@ -6,6 +6,11 @@ import org.springframework.stereotype.Repository;
 import java.sql.*;
 import java.util.ArrayList;
 
+/*
+ * dao responsavel pelo acesso a tabela professor no banco de dados.
+ * professores coordenam laboratorios e possuem permissoes intermediarias no sistema.
+ * autenticacao verifica email e hash sha256 da senha, igual ao fluxo de bolsistas.
+ */
 @Repository
 public class ProfessorDAO {
 

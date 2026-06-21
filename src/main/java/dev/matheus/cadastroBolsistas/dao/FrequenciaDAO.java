@@ -6,6 +6,11 @@ import org.springframework.stereotype.Repository;
 import java.sql.*;
 import java.util.ArrayList;
 
+/*
+ * dao responsavel pelo acesso a tabela frequencia no banco de dados.
+ * suporta paginacao via limit e offset para listagens grandes.
+ * registros sao desativados por soft delete (ativo = false), nao removidos fisicamente.
+ */
 @Repository
 public class FrequenciaDAO {
 
@@ -102,6 +107,10 @@ public class FrequenciaDAO {
         }
     }
 
+    /*
+     * busca frequencias com filtro opcional por bolsista e paginacao via limit/offset.
+     * a query e construida dinamicamente conforme os parametros fornecidos.
+     */
     public ArrayList<Frequencia> buscarFrequencias(Integer bolsistaId, Integer limit, Integer offset) throws SQLException {
         StringBuilder sql = new StringBuilder("SELECT f.*, b.nome as nome_bolsista FROM frequencia f ");
         sql.append("JOIN bolsista b ON f.bolsista_id = b.id ");

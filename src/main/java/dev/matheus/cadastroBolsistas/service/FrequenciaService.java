@@ -8,6 +8,11 @@ import org.springframework.stereotype.Service;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/*
+ * service responsavel pelas regras de negocio de registros de frequencia.
+ * expoe metodos de listagem filtrada por bolsista, laboratorio e paginacao.
+ * todo novo registro e marcado como ativo = true antes de ser persistido.
+ */
 @Service
 public class FrequenciaService {
 

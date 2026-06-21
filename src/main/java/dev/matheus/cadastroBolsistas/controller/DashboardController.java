@@ -14,6 +14,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.ArrayList;
 
+/*
+ * controller responsavel pelo dashboard principal do sistema.
+ * renderiza uma visao personalizada por tipo de usuario:
+ * - admin: contadores e atalhos gerais
+ * - professor: laboratorios coordenados e bolsistas supervisionados
+ * - bolsista: equipe do laboratorio e projetos vinculados
+ */
 @Controller
 public class DashboardController {
 

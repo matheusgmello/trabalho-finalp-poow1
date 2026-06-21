@@ -7,11 +7,20 @@ import org.springframework.stereotype.Repository;
 import java.sql.*;
 import java.util.ArrayList;
 
+/*
+ * dao responsavel pelo acesso a tabela bolsista no banco de dados.
+ * todas as queries usam preparedstatement para prevencao de sql injection.
+ * operacoes de exclusao sao logicas (soft delete via campo ativo = false).
+ */
 @Repository
 public class BolsistaDAO {
 
     public BolsistaDAO() {}
 
+    /*
+     * insere um novo bolsista no banco com todos os campos mapeados.
+     * a senha ja deve chegar hasheada em sha256 antes de ser persistida.
+     */
     public boolean inserir(Bolsista b) throws SQLException {
         String sql = "INSERT INTO bolsista (nome, data_nascimento, curso, email, matricula, cpf, telefone, senha, ativo, laboratorio_id, tipo_usuario, foto_url, cargo, bio) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -41,6 +50,10 @@ public class BolsistaDAO {
         }
     }
 
+    /*
+     * autentica o usuario comparando email e hash sha256 da senha.
+     * retorna o objeto bolsista com o nome do laboratorio via join, ou null se nao encontrado.
+     */
     public Bolsista autenticar(String email, String senha) throws SQLException {
         String sql = "SELECT b.*, l.nome as nome_laboratorio FROM bolsista b " +
                      "LEFT JOIN laboratorio l ON b.laboratorio_id = l.id " +
@@ -74,6 +87,10 @@ public class BolsistaDAO {
         }
     }
 
+    /*
+     * busca bolsistas por nome usando ilike (case insensitive) com wildcards.
+     * retorna apenas registros ativos ordenados por nome.
+     */
     public ArrayList<Bolsista> getBolsistasPorNome(String nome) throws SQLException {
         String sql = "SELECT b.*, l.nome as nome_laboratorio FROM bolsista b " +
                      "LEFT JOIN laboratorio l ON b.laboratorio_id = l.id " +

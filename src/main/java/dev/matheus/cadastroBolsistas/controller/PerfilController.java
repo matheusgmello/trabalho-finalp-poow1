@@ -15,6 +15,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/*
+ * controller responsavel pela visualizacao e atualizacao do perfil do usuario logado.
+ * suporta bolsista e professor, atualizando a sessao apos salvar as mudancas.
+ * a troca de senha exige confirmacao da senha atual hasheada via securityutil.
+ */
 @Controller
 @RequestMapping("/perfil")
 public class PerfilController {

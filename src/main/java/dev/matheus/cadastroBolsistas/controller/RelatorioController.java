@@ -17,6 +17,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/*
+ * controller responsavel pela tela de relatorios analiticos.
+ * exibe estatisticas agregadas via sql: horas mensais, projetos por lab,
+ * distribuicao por cargo e alertas de ocupacao de laboratorios.
+ * acesso restrito ao perfil admin verificado no proprio metodo.
+ */
 @Controller
 public class RelatorioController {
 

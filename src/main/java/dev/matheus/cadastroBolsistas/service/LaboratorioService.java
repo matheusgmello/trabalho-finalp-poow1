@@ -10,6 +10,11 @@ import org.springframework.stereotype.Service;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/*
+ * service responsavel pelas regras de negocio de laboratorios.
+ * centraliza a verificacao de permissao podeGerenciar para admin e professor coordenador.
+ * o metodo temVaga consulta capacidade e ocupacao atual antes de permitir novo vinculo.
+ */
 @Service
 public class LaboratorioService {
 

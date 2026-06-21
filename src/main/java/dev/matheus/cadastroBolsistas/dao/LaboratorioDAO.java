@@ -6,6 +6,11 @@ import org.springframework.stereotype.Repository;
 import java.sql.*;
 import java.util.ArrayList;
 
+/*
+ * dao responsavel pelo acesso a tabela laboratorio no banco de dados.
+ * queries de busca fazem join com professor para retornar o nome do coordenador.
+ * exclusoes sao logicas via soft delete (ativo = false).
+ */
 @Repository
 public class LaboratorioDAO {
 
@@ -51,6 +56,10 @@ public class LaboratorioDAO {
         }
     }
 
+    /*
+     * retorna apenas os laboratorios coordenados pelo professor informado.
+     * utilizado para restringir o escopo de acesso do perfil professor.
+     */
     public ArrayList<Laboratorio> getLaboratoriosPorCoordenador(int professorId) throws SQLException {
         String sql = "SELECT l.*, p.nome as coordenador FROM laboratorio l " +
                      "LEFT JOIN professor p ON l.coordenador_id = p.id " +

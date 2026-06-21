@@ -10,6 +10,11 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
+/*
+ * service responsavel pelas regras de negocio de projetos.
+ * gerencia o vinculo many-to-many entre bolsistas e projetos via tabela bolsista_projeto.
+ * o metodo listarPorBolsistaEmLote resolve associacoes em batch para evitar n+1 queries.
+ */
 @Service
 public class ProjetoService {
 

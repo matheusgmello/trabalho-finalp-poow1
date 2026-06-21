@@ -2,6 +2,10 @@ package dev.matheus.cadastroBolsistas.model;
 
 import java.time.LocalDate;
 
+/*
+ * model que representa um registro de frequencia de um bolsista.
+ * o campo nomeBolsista e preenchido via join no dao e nao existe na tabela.
+ */
 public class Frequencia {
     private int id;
     private int bolsistaId;
